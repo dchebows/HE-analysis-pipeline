@@ -1,0 +1,33 @@
+name: Daily CRR Analysis
+
+on:
+  schedule:
+    - cron: '0 19 * * *'  # 7pm UTC daily
+  workflow_dispatch:  # Allows manual testing
+
+jobs:
+  run-analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install -r requirements_CRR.txt
+      
+      - name: Run analysis script
+        run: python CRR_v7.py
+      
+      - name: Commit and push results
+        run: |
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "GitHub Actions Bot"
+          git add output.csv
+          git diff --quiet && git diff --staged --quiet || git commit -m "📊 Daily data update $(date +'%Y-%m-%d %H:%M UTC')"
+          git push
