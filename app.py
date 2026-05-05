@@ -6,7 +6,7 @@ from datetime import datetime
 # PAGE CONFIG
 # ============================================================
 st.set_page_config(
-    page_title="Stock Analysis Dashboard",
+    page_title="CRR Analysis Dashboard",
     page_icon="📊",
     layout="wide"
 )
@@ -28,7 +28,7 @@ def load_data():
 # ============================================================
 # MAIN APP
 # ============================================================
-st.title("📊 Daily Stock Analysis Dashboard")
+st.title("📊 Daily CRR Analysis Dashboard")
 st.caption("🤖 Automated updates daily at 7pm UTC")
 
 # Load data
