@@ -16,7 +16,7 @@ from datetime import datetime, timedelta
 # Today's date (GitHub Actions runs in UTC, adjust if needed)
 today = datetime.now()
 end_date = (today + timedelta(days=1)).strftime('%Y-%m-%d')  # Yahoo Finance needs +1 day
-start_date = (today - timedelta(days=90)).strftime('%Y-%m-%d')  # Last 90 days
+start_date = (today - timedelta(days=300)).strftime('%Y-%m-%d')  # Last 90 days
 
 print(f"📅 Fetching data from {start_date} to {end_date}")
 
