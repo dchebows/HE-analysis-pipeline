@@ -6,7 +6,6 @@ Outputs: output.csv
 """
 
 import yfinance as yf
-from pandas_datareader import data as pdr
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
