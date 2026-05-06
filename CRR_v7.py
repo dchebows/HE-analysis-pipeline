@@ -9,7 +9,136 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
+import json
+import requests
+from scipy.stats import norm
 
+# ============================================================
+# CBOE OPTIONS CHAIN FUNCTIONS FOR SPX GAMMA
+# ============================================================
+
+def get_cboe_options_chain(symbol):
+    """Fetch options chain from CBOE"""
+    s = requests.Session()
+    response = s.get(f'https://cdn.cboe.com/api/global/delayed_quotes/options/{symbol}.json')
+    data = json.loads(response.content)
+    s.close()
+    quote = data['data']
+    options = pd.DataFrame(quote['options'])
+    quote.pop('options')
+
+    options[['symbol', 'expiration_date', 'put_call', 'strike_price']] = options.option.str.extract(r'([A-Z]+)(\d{6})([CP])(\d+)')
+    options['expiration_date'] = pd.to_datetime(options.expiration_date, yearfirst=True)
+
+    for c in ['strike_price', 'open_interest', 'iv', 'gamma']:
+        options[c] = pd.to_numeric(options[c])
+    options['strike_price'] = options['strike_price'] / 1000
+    snapshot_time = pd.to_datetime(data['timestamp'])
+    options['days_to_expiration'] = np.busday_count(
+        pd.Series(snapshot_time).dt.date.values.astype('datetime64[D]'),
+        options['expiration_date'].dt.date.values.astype('datetime64[D]')) / 262
+
+    return quote, options, snapshot_time
+
+
+def _calcGammaExCall(S, K, iv, T, r, q, OI):
+    """Calculate gamma exposure for calls"""
+    d1 = (np.log(S / K) + T * (r - q + 0.5 * iv ** 2)) / (iv * np.sqrt(T))
+    gamma = np.exp(-q * T) * norm.pdf(d1) / (S * iv * np.sqrt(T))
+    return OI * 100 * S * S * 0.01 * gamma
+
+
+def _isThirdFriday(d):
+    """Check if date is third Friday of month"""
+    return d.weekday() == 4 and 15 <= d.day <= 21
+
+
+def _gamma_range(quote, from_range=0.8, to_range=1.2):
+    """Calculate gamma range around spot"""
+    spotPrice = quote['current_price']
+    fromStrike = from_range * spotPrice
+    toStrike = to_range * spotPrice
+    return spotPrice, fromStrike, toStrike
+
+
+def calculate_spx_gamma_metrics(symbol='_SPX'):
+    """
+    Calculate SPX gamma exposure, spot, and flip point
+    Returns: dict with gamma, spot, flip, timestamp
+    """
+    print(f"📊 Fetching CBOE options chain for {symbol}...")
+    
+    try:
+        quote, options, snapshot_time = get_cboe_options_chain(symbol)
+        
+        spotPrice, fromStrike, toStrike = _gamma_range(quote)
+        levels = np.linspace(fromStrike, toStrike, 60)
+        
+        # For 0DTE options, set DTE = 1 day
+        options.loc[options['days_to_expiration'] <= 0, 'days_to_expiration'] = 1/262
+        
+        totalGamma = []
+        
+        # Calculate gamma at each level
+        df = options.copy()
+        for level in levels:
+            df_ = df[df.put_call == 'C']
+            df.loc[df_.index, 'callGammaEx'] = _calcGammaExCall(
+                level, df_.strike_price, df_.iv, df_.days_to_expiration, 0, 0, df_.open_interest
+            )
+            
+            df_ = df[df.put_call == 'P']
+            df.loc[df_.index, 'putGammaEx'] = _calcGammaExCall(
+                level, df_.strike_price, df_.iv, df_.days_to_expiration, 0, 0, df_.open_interest
+            )
+            
+            totalGamma.append(df.callGammaEx.sum() - df.putGammaEx.sum())
+        
+        # Convert to billions
+        totalGamma = np.array(totalGamma) / 10 ** 9
+        
+        # Find Gamma Flip Point
+        zeroCrossIdx = np.where(np.diff(np.sign(totalGamma)))[0]
+        
+        if len(zeroCrossIdx) > 0:
+            negGamma = totalGamma[zeroCrossIdx]
+            posGamma = totalGamma[zeroCrossIdx + 1]
+            negStrike = levels[zeroCrossIdx]
+            posStrike = levels[zeroCrossIdx + 1]
+            
+            zeroGamma = posStrike - ((posStrike - negStrike) * posGamma / (posGamma - negGamma))
+            zeroGamma = float(zeroGamma[0])
+        else:
+            zeroGamma = float(spotPrice)
+        
+        # Calculate total gamma at spot
+        spot_gamma = float(np.interp(spotPrice, levels, totalGamma))
+        
+        result = {
+            'spx_gamma': round(spot_gamma, 2),
+            'spx_spot': round(float(spotPrice), 2),
+            'spx_flip': round(zeroGamma, 2),
+            'timestamp': snapshot_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'symbol': symbol
+        }
+        
+        print(f"✅ SPX Gamma Metrics:")
+        print(f"   Spot: ${result['spx_spot']:,.2f}")
+        print(f"   Gamma: ${result['spx_gamma']:.2f} Bn")
+        print(f"   Flip: ${result['spx_flip']:,.2f}")
+        
+        return result
+        
+    except Exception as e:
+        print(f"❌ Error calculating SPX gamma: {e}")
+        return {
+            'spx_gamma': 0,
+            'spx_spot': 0,
+            'spx_flip': 0,
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+            'symbol': symbol,
+            'error': str(e)
+        }
 # ============================================================
 # DYNAMIC DATE CALCULATION
 # ============================================================
@@ -39,6 +168,17 @@ ATH_Data = yf.download(tickers, period='max', auto_adjust=False)['Adj Close']
 max_close_prices = ATH_Data.max()
 
 print("✅ Data download complete\n")
+
+# ============================================================
+# CALCULATE SPX GAMMA METRICS
+# ============================================================
+print("🎯 Calculating SPX Gamma Exposure...")
+spx_metrics = calculate_spx_gamma_metrics('_SPX')
+
+# Save to JSON file for Streamlit dashboard
+with open('spx_gamma.json', 'w') as f:
+    json.dump(spx_metrics, f, indent=2)
+print(f"💾 SPX gamma data saved to spx_gamma.json\n")
 
 # ============================================================
 # INITIALIZE LOOP VARIABLES
