@@ -71,19 +71,16 @@ with col2:
     # Get Machine status from ^GSPC row
     if not spx_row.empty:
         machine_status = spx_row['Machine'].values[0]
+        bg_color = "#28a745" if machine_status == 'Systematic Buying' else "#dc3545"
         
-        if machine_status == 'Systematic Buying':
-            st.markdown(f"""
-                <div style="background-color: #28a745; padding: 15px; border-radius: 5px; text-align: center;">
-                    <h3 style="color: white; margin: 0;">Machine: {machine_status}</h3>
+        st.markdown(f"""
+            <div style="text-align: center;">
+                <h3 style="margin-bottom: 10px;">Machine:</h3>
+                <div style="background-color: {bg_color}; padding: 10px 20px; border-radius: 5px; display: inline-block;">
+                    <span style="color: white; font-size: 20px; font-weight: bold;">{machine_status}</span>
                 </div>
-            """, unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-                <div style="background-color: #dc3545; padding: 15px; border-radius: 5px; text-align: center;">
-                    <h3 style="color: white; margin: 0;">Machine: {machine_status}</h3>
-                </div>
-            """, unsafe_allow_html=True)
+            </div>
+        """, unsafe_allow_html=True)
     else:
         st.markdown("### Machine: Data Not Available")
 
@@ -107,15 +104,14 @@ if not vix_row.empty:
         vix_status = "F BUCKET"
         vix_bg_color = "#dc3545"  # Red
     
-    col1, col2 = st.columns([1, 3])
-    with col1:
-        st.markdown(f"### VIX: {vix_value:.2f}")
-    with col2:
-        st.markdown(f"""
-            <div style="background-color: {vix_bg_color}; padding: 15px; border-radius: 5px; text-align: center; margin-top: 10px;">
-                <h3 style="color: white; margin: 0;">{vix_status}</h3>
+    st.markdown(f"""
+        <div style="text-align: center;">
+            <h3 style="margin-bottom: 10px;">VIX: {vix_value:.2f}</h3>
+            <div style="background-color: {vix_bg_color}; padding: 10px 20px; border-radius: 5px; display: inline-block;">
+                <span style="color: white; font-size: 20px; font-weight: bold;">{vix_status}</span>
             </div>
-        """, unsafe_allow_html=True)
+        </div>
+    """, unsafe_allow_html=True)
 else:
     st.markdown("### VIX: Data Not Available")
 
@@ -128,24 +124,24 @@ if spx_gamma and 'error' not in spx_gamma:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        gamma_value = spx_gamma['spx_gamma']
-        gamma_status = "Positive" if gamma_value >= 0 else "Negative"
-        gamma_color = "🟢" if gamma_value >= 0 else "🔴"
-        st.metric(
-            label=f"_SPX Gamma {gamma_color}",
-            value=f"{gamma_status}",
-            delta=f"{gamma_value:,.2f} Bn per 1% move"
-        )
-    
+    gamma_value = spx_gamma['spx_gamma']
+    gamma_status = "Positive" if gamma_value >= 0 else "Negative"
+    gamma_color = "🟢" if gamma_value >= 0 else "🔴"
+    st.metric(
+        label=f"S&P 500 Gamma {gamma_color}",
+        value=f"{gamma_status}",
+        delta=f"{gamma_value:,.2f} Bn per 1% move"
+    )
+
     with col2:
         st.metric(
-            label="_SPX Spot Price",
+            label="S&P 500 Spot Price",
             value=f"{spx_gamma['spx_spot']:,.2f}"
         )
-
+    
     with col3:
         st.metric(
-            label="_SPX Gamma Flip Line",
+            label="S&P 500 Gamma Flip Line",
             value=f"{spx_gamma['spx_flip']:,.2f}"
         )
     
