@@ -322,7 +322,13 @@ styled_df = df.style\
 st.dataframe(styled_df, use_container_width=True, height=600)
 
 # Add data refresh timestamp at bottom
-st.caption(f"🔄 Analysis data last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')} (Auto-refreshes hourly)")
+if spx_gamma and 'timestamp' in spx_gamma:
+    data_timestamp = spx_gamma['timestamp']
+else:
+    data_timestamp = "Unknown"
+
+st.caption(f"🔄 Data generated: {data_timestamp} UTC | GitHub Actions runs daily at 7:00 PM EST")
+st.caption(f"📊 Dashboard cache refreshes hourly from GitHub")
 
 # ============================================================
 # FILTERS (OPTIONAL - IN SIDEBAR)
