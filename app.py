@@ -51,24 +51,106 @@ if df is None:
     st.stop()
 
 # ============================================================
-# SUMMARY METRICS
+# HEADER: S&P 500 INDEX & MACHINE STATUS
 # ============================================================
-col1, col2, col3, col4 = st.columns(4)
+col1, col2 = st.columns(2)
 
 with col1:
-    st.metric("Total Tickers", len(df))
+    # Get S&P 500 data from dataframe
+    spx_row = df[df['Ticker'] == '^GSPC']
+    if not spx_row.empty:
+        spx_close = spx_row['Close'].values[0]
+        spx_change = spx_row['1D %'].values[0]
+        
+        change_color = "🟢" if spx_change >= 0 else "🔴"
+        st.markdown(f"### S&P 500 Index: ${spx_close:,.2f} {change_color} ({spx_change:+.2f}%)")
+    else:
+        st.markdown("### S&P 500 Index: Data Not Available")
 
 with col2:
-    bullish_count = df[df['Trade'] == 'Bullish'].shape[0]
-    st.metric("Bullish Signals", bullish_count)
+    # Get Machine status from ^GSPC row
+    if not spx_row.empty:
+        machine_status = spx_row['Machine'].values[0]
+        
+        if machine_status == 'Systematic Buying':
+            st.markdown(f"""
+                <div style="background-color: #28a745; padding: 15px; border-radius: 5px; text-align: center;">
+                    <h3 style="color: white; margin: 0;">Machine: {machine_status}</h3>
+                </div>
+            """, unsafe_allow_html=True)
+        else:
+            st.markdown(f"""
+                <div style="background-color: #dc3545; padding: 15px; border-radius: 5px; text-align: center;">
+                    <h3 style="color: white; margin: 0;">Machine: {machine_status}</h3>
+                </div>
+            """, unsafe_allow_html=True)
+    else:
+        st.markdown("### Machine: Data Not Available")
 
-with col3:
-    bearish_count = df[df['Trade'] == 'Bearish'].shape[0]
-    st.metric("Bearish Signals", bearish_count)
+st.divider()
 
-with col4:
-    avg_ss_score = df['SS_Score'].mean()
-    st.metric("Avg Signal Strength", f"{avg_ss_score:.1f}")
+# ============================================================
+# VIX STATUS
+# ============================================================
+vix_row = df[df['Ticker'] == '^VIX']
+if not vix_row.empty:
+    vix_value = vix_row['Close'].values[0]
+    
+    # Determine VIX status and color
+    if vix_value <= 19:
+        vix_status = "INVESTABLE"
+        vix_bg_color = "#28a745"  # Green
+    elif vix_value <= 29.99:
+        vix_status = "CHOP BUCKET"
+        vix_bg_color = "#ffc107"  # Yellow
+    else:
+        vix_status = "F BUCKET"
+        vix_bg_color = "#dc3545"  # Red
+    
+    col1, col2 = st.columns([1, 3])
+    with col1:
+        st.markdown(f"### VIX: {vix_value:.2f}")
+    with col2:
+        st.markdown(f"""
+            <div style="background-color: {vix_bg_color}; padding: 15px; border-radius: 5px; text-align: center; margin-top: 10px;">
+                <h3 style="color: white; margin: 0;">{vix_status}</h3>
+            </div>
+        """, unsafe_allow_html=True)
+else:
+    st.markdown("### VIX: Data Not Available")
+
+st.divider()
+
+# ============================================================
+# SPX GAMMA METRICS
+# ============================================================
+if spx_gamma and 'error' not in spx_gamma:
+    col1, col2, col3 = st.columns(3)
+    
+    with col1:
+        gamma_value = spx_gamma['spx_gamma']
+        gamma_color = "🟢" if gamma_value >= 0 else "🔴"
+        st.metric(
+            label="_SPX Gamma ($ Bn per 1% move)",
+            value=f"${gamma_value:,.2f} {gamma_color}"
+        )
+    
+    with col2:
+        st.metric(
+            label="_SPX Spot Price",
+            value=f"${spx_gamma['spx_spot']:,.2f}"
+        )
+    
+    with col3:
+        st.metric(
+            label="_SPX Gamma Flip Line",
+            value=f"${spx_gamma['spx_flip']:,.2f}"
+        )
+    
+    # Data refresh timestamp
+    st.caption(f"🔄 SPX Gamma data refreshed: {spx_gamma['timestamp']} UTC")
+else:
+    st.warning("⚠️ SPX Gamma data not available")
 
 st.divider()
 
@@ -92,28 +174,153 @@ with col2:
 st.divider()
 
 # ============================================================
-# FULL DATA TABLE
+# FULL DATA TABLE WITH COLOR STYLING
 # ============================================================
 st.subheader("📋 Full Analysis Table")
 
-# Create column configuration for better display
-column_config = {
-    "Ticker": st.column_config.TextColumn("Ticker", width="small"),
-    "Close": st.column_config.NumberColumn("Close", format="%.2f"),
-    "SS_Score": st.column_config.NumberColumn("SS Score", format="%.0f"),
-    "SS_Status": st.column_config.TextColumn("Status", width="medium"),
-    "Trade": st.column_config.TextColumn("Trade", width="small"),
-    "Trend": st.column_config.TextColumn("Trend", width="small"),
-    "RSI": st.column_config.NumberColumn("RSI", format="%.1f"),
-}
+# Define styling functions
+def color_negative_positive(val):
+    """Color percentage columns: green for positive, red for negative"""
+    try:
+        color = '#28a745' if float(val) >= 0 else '#dc3545'
+        return f'background-color: {color}; color: white'
+    except:
+        return ''
 
-# Display full table
-st.dataframe(
-    df,
-    use_container_width=True,
-    hide_index=True,
-    column_config=column_config
-)
+def color_trade_trend(val):
+    """Color Trade/Trend columns"""
+    if val == 'Bullish':
+        return 'background-color: #28a745; color: white; font-weight: bold'
+    elif val == 'Bearish':
+        return 'background-color: #dc3545; color: white; font-weight: bold'
+    elif val == 'Neutral':
+        return 'background-color: #6c757d; color: white'
+    return ''
+
+def color_machine(val):
+    """Color Machine column"""
+    if val == 'Systematic Buying':
+        return 'background-color: #28a745; color: white; font-weight: bold'
+    elif val == 'Systematic Selling':
+        return 'background-color: #dc3545; color: white; font-weight: bold'
+    return ''
+
+def color_change_indicator(val):
+    """Color change indicators"""
+    if val == '⚠':
+        return 'background-color: #ffc107; color: black; font-weight: bold'
+    return ''
+
+def color_rsi_level(val):
+    """Color RSI Level"""
+    if val in ['Overbought', 'Oversold']:
+        return 'background-color: #dc3545; color: white; font-weight: bold'
+    elif val == 'In-Range':
+        return 'background-color: #28a745; color: white; font-weight: bold'
+    return ''
+
+def color_ss_score(val):
+    """Color SS_Score with gradient"""
+    try:
+        val = float(val)
+        if val >= 60:
+            return 'background-color: #00aa00; color: white; font-weight: bold'
+        elif val >= 40:
+            return 'background-color: #44cc44; color: white'
+        elif val >= 20:
+            return 'background-color: #88dd88; color: black'
+        elif val >= 0:
+            return 'background-color: #cceecc; color: black'
+        elif val >= -20:
+            return 'background-color: #eecccc; color: black'
+        elif val >= -40:
+            return 'background-color: #dd8888; color: black'
+        elif val >= -60:
+            return 'background-color: #cc4444; color: white'
+        else:
+            return 'background-color: #aa0000; color: white; font-weight: bold'
+    except:
+        return ''
+
+def color_ss_status(val):
+    """Color SS_Status"""
+    if not isinstance(val, str):
+        return ''
+    if 'MAX BULL' in val or 'RECOVERY IMMINENT' in val:
+        return 'background-color: #00aa00; color: white; font-weight: bold'
+    elif 'STRONG BULL' in val:
+        return 'background-color: #44cc44; color: white; font-weight: bold'
+    elif 'BULL INTACT' in val or 'ALL CLEAR' in val:
+        return 'background-color: #88dd88; color: black'
+    elif 'WEAK BULL' in val:
+        return 'background-color: #cceecc; color: black'
+    elif 'LEANING BULL' in val or 'RECOVERY LIKELY' in val:
+        return 'background-color: #dddd44; color: black'
+    elif 'BULL WATCH' in val or 'RECOVERY WATCH' in val:
+        return 'background-color: #ffcc00; color: black'
+    elif 'BULL CAUTION' in val:
+        return 'background-color: #ff8800; color: white'
+    elif 'BULL DANGER' in val:
+        return 'background-color: #cc0000; color: white; font-weight: bold'
+    elif 'NEUTRAL' in val:
+        return 'background-color: #dddddd; color: black'
+    elif 'LEANING BEAR' in val:
+        return 'background-color: #ffcc00; color: black'
+    elif 'BEAR HOLD' in val:
+        return 'background-color: #dd8888; color: black'
+    elif 'BEAR INTACT' in val:
+        return 'background-color: #cc4444; color: white'
+    elif 'STRONG BEAR' in val or 'MAX BEAR' in val:
+        return 'background-color: #aa0000; color: white; font-weight: bold'
+    return ''
+
+def color_warning_level(val):
+    """Color warning levels"""
+    try:
+        val = int(val)
+        if val == 0:
+            return 'background-color: #88dd88; color: black'
+        elif val == 1:
+            return 'background-color: #ffcc00; color: black'
+        elif val == 2:
+            return 'background-color: #ff8800; color: white'
+        else:
+            return 'background-color: #cc0000; color: white; font-weight: bold'
+    except:
+        return ''
+
+# Apply styling
+styled_df = df.style\
+    .applymap(color_negative_positive, subset=['1D %', '1W %', '1M %', '3M %', 'Vlm 1D %', 'Vlm 1W %', 'Vlm 1M %', 'Vlm 3M %'])\
+    .applymap(color_trade_trend, subset=['Trade', 'Trend'])\
+    .applymap(color_machine, subset=['Machine'])\
+    .applymap(color_change_indicator, subset=['Trade_Chg', 'Trend_Chg'])\
+    .applymap(color_rsi_level, subset=['Level'])\
+    .applymap(color_ss_score, subset=['SS_Score'])\
+    .applymap(color_ss_status, subset=['SS_Status'])\
+    .applymap(color_warning_level, subset=['Warn_Lvl'])\
+    .format({
+        'Close': '${:.2f}',
+        'Bottom End': '${:.2f}',
+        'Top End': '${:.2f}',
+        'Down side %': '{:.2f}%',
+        'Up side %': '{:.2f}%',
+        '1D %': '{:+.2f}%',
+        '1W %': '{:+.2f}%',
+        '1M %': '{:+.2f}%',
+        '3M %': '{:+.2f}%',
+        'RVOL_1M': '{:.2f}',
+        'RVOL_3M': '{:.2f}',
+        'RSI': '{:.1f}',
+        'Beta_1Y': '{:.2f}',
+        'SS_Score': '{:.0f}'
+    })
+
+# Display styled table
+st.dataframe(styled_df, use_container_width=True, height=600)
+
+# Add data refresh timestamp at bottom
+st.caption(f"🔄 Analysis data last updated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S UTC')} (Auto-refreshes hourly)")
 
 # ============================================================
 # FILTERS (OPTIONAL - IN SIDEBAR)
