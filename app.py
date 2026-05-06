@@ -128,26 +128,26 @@ if spx_gamma and 'error' not in spx_gamma:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-    gamma_value = spx_gamma['spx_gamma']
-    gamma_status = "Positive" if gamma_value >= 0 else "Negative"
-    gamma_color = "🟢" if gamma_value >= 0 else "🔴"
-    st.metric(
-        label=f"_SPX Gamma {gamma_color}",
-        value=f"{gamma_status}",
-        delta=f"{gamma_value:,.2f} Bn per 1% move"
-    )
+        gamma_value = spx_gamma['spx_gamma']
+        gamma_status = "Positive" if gamma_value >= 0 else "Negative"
+        gamma_color = "🟢" if gamma_value >= 0 else "🔴"
+        st.metric(
+            label=f"_SPX Gamma {gamma_color}",
+            value=f"{gamma_status}",
+            delta=f"{gamma_value:,.2f} Bn per 1% move"
+        )
     
     with col2:
-    st.metric(
-        label="_SPX Spot Price",
-        value=f"{spx_gamma['spx_spot']:,.2f}"
-    )
+        st.metric(
+            label="_SPX Spot Price",
+            value=f"{spx_gamma['spx_spot']:,.2f}"
+        )
 
     with col3:
-    st.metric(
-        label="_SPX Gamma Flip Line",
-        value=f"{spx_gamma['spx_flip']:,.2f}"
-    )
+        st.metric(
+            label="_SPX Gamma Flip Line",
+            value=f"{spx_gamma['spx_flip']:,.2f}"
+        )
     
     # Data refresh timestamp
     st.caption(f"🔄 SPX Gamma data refreshed: {spx_gamma['timestamp']} UTC")
