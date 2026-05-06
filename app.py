@@ -124,14 +124,14 @@ if spx_gamma and 'error' not in spx_gamma:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-    gamma_value = spx_gamma['spx_gamma']
-    gamma_status = "Positive" if gamma_value >= 0 else "Negative"
-    gamma_color = "🟢" if gamma_value >= 0 else "🔴"
-    st.metric(
-        label=f"S&P 500 Gamma {gamma_color}",
-        value=f"{gamma_status}",
-        delta=f"{gamma_value:,.2f} Bn per 1% move"
-    )
+        gamma_value = spx_gamma['spx_gamma']
+        gamma_status = "Positive" if gamma_value >= 0 else "Negative"
+        gamma_color = "🟢" if gamma_value >= 0 else "🔴"
+        st.metric(
+            label=f"S&P 500 Gamma {gamma_color}",
+            value=f"{gamma_status}",
+            delta=f"{gamma_value:,.2f} Bn per 1% move"
+        )
 
     with col2:
         st.metric(
