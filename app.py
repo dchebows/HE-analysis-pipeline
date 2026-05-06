@@ -128,24 +128,26 @@ if spx_gamma and 'error' not in spx_gamma:
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        gamma_value = spx_gamma['spx_gamma']
-        gamma_color = "🟢" if gamma_value >= 0 else "🔴"
-        st.metric(
-            label="_SPX Gamma ($ Bn per 1% move)",
-            value=f"${gamma_value:,.2f} {gamma_color}"
-        )
+    gamma_value = spx_gamma['spx_gamma']
+    gamma_status = "Positive" if gamma_value >= 0 else "Negative"
+    gamma_color = "🟢" if gamma_value >= 0 else "🔴"
+    st.metric(
+        label=f"_SPX Gamma {gamma_color}",
+        value=f"{gamma_status}",
+        delta=f"{gamma_value:,.2f} Bn per 1% move"
+    )
     
     with col2:
-        st.metric(
-            label="_SPX Spot Price",
-            value=f"${spx_gamma['spx_spot']:,.2f}"
-        )
-    
+    st.metric(
+        label="_SPX Spot Price",
+        value=f"{spx_gamma['spx_spot']:,.2f}"
+    )
+
     with col3:
-        st.metric(
-            label="_SPX Gamma Flip Line",
-            value=f"${spx_gamma['spx_flip']:,.2f}"
-        )
+    st.metric(
+        label="_SPX Gamma Flip Line",
+        value=f"{spx_gamma['spx_flip']:,.2f}"
+    )
     
     # Data refresh timestamp
     st.caption(f"🔄 SPX Gamma data refreshed: {spx_gamma['timestamp']} UTC")
@@ -289,16 +291,16 @@ def color_warning_level(val):
     except:
         return ''
 
-# Apply styling
+# Apply styling (using .map() instead of deprecated .applymap())
 styled_df = df.style\
-    .applymap(color_negative_positive, subset=['1D %', '1W %', '1M %', '3M %', 'Vlm 1D %', 'Vlm 1W %', 'Vlm 1M %', 'Vlm 3M %'])\
-    .applymap(color_trade_trend, subset=['Trade', 'Trend'])\
-    .applymap(color_machine, subset=['Machine'])\
-    .applymap(color_change_indicator, subset=['Trade_Chg', 'Trend_Chg'])\
-    .applymap(color_rsi_level, subset=['Level'])\
-    .applymap(color_ss_score, subset=['SS_Score'])\
-    .applymap(color_ss_status, subset=['SS_Status'])\
-    .applymap(color_warning_level, subset=['Warn_Lvl'])\
+    .map(color_negative_positive, subset=['1D %', '1W %', '1M %', '3M %', 'Vlm 1D %', 'Vlm 1W %', 'Vlm 1M %', 'Vlm 3M %'])\
+    .map(color_trade_trend, subset=['Trade', 'Trend'])\
+    .map(color_machine, subset=['Machine'])\
+    .map(color_change_indicator, subset=['Trade_Chg', 'Trend_Chg'])\
+    .map(color_rsi_level, subset=['Level'])\
+    .map(color_ss_score, subset=['SS_Score'])\
+    .map(color_ss_status, subset=['SS_Status'])\
+    .map(color_warning_level, subset=['Warn_Lvl'])\
     .format({
         'Close': '${:.2f}',
         'Bottom End': '${:.2f}',
