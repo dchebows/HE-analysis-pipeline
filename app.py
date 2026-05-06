@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
+import json
 
 # ============================================================
 # PAGE CONFIG
@@ -18,12 +19,19 @@ CSV_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/
 
 @st.cache_data(ttl=3600)  # Cache for 1 hour
 def load_data():
-    """Load data from GitHub CSV"""
+    """Load data from GitHub CSV and SPX gamma JSON"""
     try:
         df = pd.read_csv(CSV_URL)
-        return df, None
+        
+        # Load SPX gamma data
+        SPX_GAMMA_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/spx_gamma.json"
+        import requests
+        gamma_response = requests.get(SPX_GAMMA_URL)
+        spx_gamma = json.loads(gamma_response.text)
+        
+        return df, spx_gamma, None
     except Exception as e:
-        return None, str(e)
+        return None, None, str(e)
 
 # ============================================================
 # MAIN APP
@@ -32,7 +40,7 @@ st.title("📊 Daily CRR Analysis Dashboard")
 st.caption("🤖 Automated updates daily at 7pm UTC")
 
 # Load data
-df, error = load_data()
+df, spx_gamma, error = load_data()
 
 if error:
     st.error(f"❌ Error loading data: {error}")
