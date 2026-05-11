@@ -335,6 +335,40 @@ with open('spx_gamma.json', 'w') as f:
     json.dump(spx_metrics, f, indent=2)
 print(f"💾 SPX gamma data saved to spx_gamma.json\n")
 
+# Save daily throttle history for charting
+if 'gamma_throttle' in spx_metrics and spx_metrics['gamma_throttle'] != 0:
+    history_file = 'throttle_history.csv'
+    
+    # Create new row
+    new_row = pd.DataFrame({
+        'date': [spx_metrics['timestamp']],
+        'throttle': [spx_metrics['gamma_throttle']],
+        'rv_10': [spx_metrics['rv_10day']],
+        'spot': [spx_metrics['spx_spot']],
+        'flip': [spx_metrics['spx_flip']],
+        'regime': [spx_metrics['regime']]
+    })
+    
+    # Append to history (or create if doesn't exist)
+    try:
+        if pd.io.common.file_exists(history_file):
+            history = pd.read_csv(history_file)
+            # Don't duplicate today's entry
+            history['date'] = pd.to_datetime(history['date'])
+            new_row['date'] = pd.to_datetime(new_row['date'])
+            if new_row['date'].iloc[0] not in history['date'].values:
+                history = pd.concat([history, new_row], ignore_index=True)
+                history.to_csv(history_file, index=False)
+                print(f"✅ Throttle history updated: {len(history)} days")
+            else:
+                print(f"ℹ️  Today's throttle data already in history")
+        else:
+            new_row.to_csv(history_file, index=False)
+            print(f"✅ Created throttle history file")
+    except Exception as e:
+        print(f"⚠️  Could not update throttle history: {e}")
+
+print(f"💾 SPX gamma data saved to spx_gamma.json\n")
 # ============================================================
 # INITIALIZE LOOP VARIABLES
 # ============================================================
