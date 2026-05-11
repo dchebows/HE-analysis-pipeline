@@ -155,12 +155,19 @@ def calculate_gamma_throttle_metrics(quote, options, spot_price, gamma_flip, tot
         spx_hist = yf.download('^GSPC', start=start_date, end=end_date, progress=False)
         vix_hist = yf.download('^VIX', start=start_date, end=end_date, progress=False)
         
+        # Handle multi-index columns from yfinance (flatten if needed)
+        if isinstance(spx_hist.columns, pd.MultiIndex):
+            spx_hist.columns = spx_hist.columns.get_level_values(0)
+        if isinstance(vix_hist.columns, pd.MultiIndex):
+            vix_hist.columns = vix_hist.columns.get_level_values(0)
+        
         # Calculate 10-day realized volatility
         spx_hist['log_returns'] = np.log(spx_hist['Close'] / spx_hist['Close'].shift(1))
         spx_hist['RV_10'] = spx_hist['log_returns'].rolling(10).std() * np.sqrt(252) * 100
         
-        current_rv_10 = spx_hist['RV_10'].iloc[-1]
-        current_vix = vix_hist['Close'].iloc[-1]
+        # Extract scalar values properly
+        current_rv_10 = float(spx_hist['RV_10'].iloc[-1])
+        current_vix = float(vix_hist['Close'].iloc[-1])
         
         # Calculate throttle (calibrated formula)
         distance_from_flip_pct = (spot_price - gamma_flip) / spot_price * 100
