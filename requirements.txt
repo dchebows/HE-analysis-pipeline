@@ -1,0 +1,8 @@
+# This is needed because plotly ← NOT pre-installed
+#scipy ← NOT pre-installed
+
+streamlit>=1.32.0
+pandas>=2.0.0
+numpy>=1.24.0
+plotly>=5.0.0
+requests
