@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """
 Automated Daily Stock Analysis Script
-Runs via GitHub Actions at 7pm daily
-Outputs: output.csv
+Runs via GitHub Actions at 7pm EST/EDT (Mon-Fri only)
+Outputs: output.csv, spx_gamma.json
 """
 
 import yfinance as yf
@@ -12,7 +12,8 @@ from datetime import datetime, timedelta
 import json
 import requests
 from scipy.stats import norm
-
+import warnings
+warnings.filterwarnings('ignore')
 # ============================================================
 # CBOE OPTIONS CHAIN FUNCTIONS FOR SPX GAMMA
 # ============================================================
@@ -139,6 +140,136 @@ def calculate_spx_gamma_metrics(symbol='_SPX'):
             'symbol': symbol,
             'error': str(e)
         }
+def calculate_gamma_throttle_metrics(quote, options, spot_price, gamma_flip, total_gex_bn):
+    """
+    Calculate gamma throttle and related metrics for dashboard
+    Returns: dict with throttle, regime, signals, key levels
+    """
+    print("📊 Calculating gamma throttle metrics...")
+    
+    try:
+        # Download historical data for context
+        end_date = datetime.now()
+        start_date = end_date - timedelta(days=365)
+        
+        spx_hist = yf.download('^GSPC', start=start_date, end=end_date, progress=False)
+        vix_hist = yf.download('^VIX', start=start_date, end=end_date, progress=False)
+        
+        # Calculate 10-day realized volatility
+        spx_hist['log_returns'] = np.log(spx_hist['Close'] / spx_hist['Close'].shift(1))
+        spx_hist['RV_10'] = spx_hist['log_returns'].rolling(10).std() * np.sqrt(252) * 100
+        
+        current_rv_10 = spx_hist['RV_10'].iloc[-1]
+        current_vix = vix_hist['Close'].iloc[-1]
+        
+        # Calculate throttle (calibrated formula)
+        distance_from_flip_pct = (spot_price - gamma_flip) / spot_price * 100
+        dealer_fraction = 0.15  # Adjust for dealer-relevant OI
+        adjusted_gex = total_gex_bn * dealer_fraction
+        
+        if distance_from_flip_pct >= 0:
+            # Positive gamma regime
+            throttle = distance_from_flip_pct * 2 + adjusted_gex * 3
+            throttle = min(throttle, 35)
+        else:
+            # Negative gamma regime
+            throttle = distance_from_flip_pct * 3 - abs(adjusted_gex) * 5
+            throttle = max(throttle, -100)
+        
+        # Determine regime
+        if throttle > 20:
+            regime = "STRONG POSITIVE GAMMA"
+            regime_desc = "Dealers aggressively long gamma. Market pinned. Vol crushed."
+            risk_level = "LOW"
+            position_size = "100% of normal"
+        elif throttle > 10:
+            regime = "POSITIVE GAMMA"
+            regime_desc = "Dealers moderately long gamma. Mean-reversion dominant."
+            risk_level = "LOW-MODERATE"
+            position_size = "75-100% of normal"
+        elif throttle > 0:
+            regime = "WEAK POSITIVE GAMMA"
+            regime_desc = "Mild positive gamma. Some suppression but fragile."
+            risk_level = "MODERATE"
+            position_size = "50-75% of normal"
+        elif throttle > -10:
+            regime = "TRANSITION ZONE"
+            regime_desc = "Gamma near neutral. Regime could flip. Elevated uncertainty."
+            risk_level = "ELEVATED"
+            position_size = "25-50% of normal"
+        elif throttle > -30:
+            regime = "NEGATIVE GAMMA"
+            regime_desc = "Dealers short gamma. Moves amplified. Trending market."
+            risk_level = "HIGH"
+            position_size = "25% of normal or hedged"
+        else:
+            regime = "DEEP NEGATIVE GAMMA"
+            regime_desc = "Extreme negative gamma. Crash/melt-up dynamics possible."
+            risk_level = "EXTREME"
+            position_size = "Flat or fully hedged"
+        
+        # Volatility signal
+        vix_rv_spread = current_vix - current_rv_10
+        if throttle > 10 and vix_rv_spread > 5:
+            vol_signal = "SELL VOLATILITY"
+        elif throttle > 10:
+            vol_signal = "NEUTRAL (Vol fairly priced)"
+        elif -10 <= throttle <= 10:
+            vol_signal = "CAUTION - REDUCE EXPOSURE"
+        else:
+            vol_signal = "BUY VOLATILITY / TREND FOLLOW"
+        
+        # Directional signal
+        if throttle > 10:
+            if distance_from_flip_pct > 3:
+                dir_signal = "BULLISH BIAS (strong support from gamma)"
+            else:
+                dir_signal = "NEUTRAL-BULLISH (close to flip)"
+        elif throttle < -10:
+            dir_signal = "FOLLOW THE TREND"
+        else:
+            dir_signal = "NO CLEAR DIRECTION"
+        
+        # Key levels
+        key_levels = {
+            'gamma_flip': round(gamma_flip, 0),
+            'put_wall': round(gamma_flip * 0.97, 0),
+            'call_wall': round(spot_price * 1.03, 0),
+            'danger_zone': round(gamma_flip * 0.95, 0)
+        }
+        
+        result = {
+            'gamma_throttle': round(throttle, 2),
+            'rv_10day': round(current_rv_10, 2),
+            'vix': round(current_vix, 2),
+            'dist_to_flip_pct': round(distance_from_flip_pct, 2),
+            'regime': regime,
+            'regime_description': regime_desc,
+            'risk_level': risk_level,
+            'position_size': position_size,
+            'vol_signal': vol_signal,
+            'dir_signal': dir_signal,
+            'key_levels': key_levels
+        }
+        
+        print(f"✅ Throttle: {throttle:.2f} | Regime: {regime}")
+        return result
+        
+    except Exception as e:
+        print(f"❌ Error calculating throttle: {e}")
+        return {
+            'gamma_throttle': 0,
+            'rv_10day': 0,
+            'vix': 0,
+            'dist_to_flip_pct': 0,
+            'regime': 'UNKNOWN',
+            'regime_description': 'Error calculating metrics',
+            'risk_level': 'UNKNOWN',
+            'position_size': 'Unknown',
+            'vol_signal': 'Unknown',
+            'dir_signal': 'Unknown',
+            'key_levels': {}
+        }
 # ============================================================
 # DYNAMIC DATE CALCULATION
 # ============================================================
@@ -174,6 +305,23 @@ print("✅ Data download complete\n")
 # ============================================================
 print("🎯 Calculating SPX Gamma Exposure...")
 spx_metrics = calculate_spx_gamma_metrics('_SPX')
+
+# If gamma calculation was successful, add throttle metrics
+if 'error' not in spx_metrics:
+    # Re-fetch options data for throttle calculation
+    quote, options, snapshot_time = get_cboe_options_chain('_SPX')
+    
+    # Calculate throttle metrics
+    throttle_metrics = calculate_gamma_throttle_metrics(
+        quote=quote,
+        options=options,
+        spot_price=spx_metrics['spx_spot'],
+        gamma_flip=spx_metrics['spx_flip'],
+        total_gex_bn=spx_metrics['spx_gamma']
+    )
+    
+    # Merge throttle metrics into spx_metrics
+    spx_metrics.update(throttle_metrics)
 
 # Save to JSON file for Streamlit dashboard
 with open('spx_gamma.json', 'w') as f:
