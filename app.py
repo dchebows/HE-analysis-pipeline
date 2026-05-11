@@ -51,9 +51,9 @@ if df is None:
     st.stop()
 
 # ============================================================
-# HEADER: S&P 500 INDEX & MACHINE STATUS
+# HEADER: S&P 500 INDEX, VIX & MACHINE STATUS
 # ============================================================
-col1, col2 = st.columns(2)
+col1, col2, col3 = st.columns(3)
 
 with col1:
     # Get S&P 500 data from dataframe
@@ -68,6 +68,34 @@ with col1:
         st.markdown("### S&P 500 Index: Data Not Available")
 
 with col2:
+    # VIX Status
+    vix_row = df[df['Ticker'] == '^VIX']
+    if not vix_row.empty:
+        vix_value = vix_row['Close'].values[0]
+        
+        # Determine VIX status and color
+        if vix_value <= 19:
+            vix_status = "INVESTABLE"
+            vix_bg_color = "#28a745"  # Green
+        elif vix_value <= 29.99:
+            vix_status = "CHOP BUCKET"
+            vix_bg_color = "#ffc107"  # Yellow
+        else:
+            vix_status = "F BUCKET"
+            vix_bg_color = "#dc3545"  # Red
+        
+        st.markdown(f"""
+            <div style="text-align: center;">
+                <h3 style="margin-bottom: 10px;">VIX: {vix_value:.2f}</h3>
+                <div style="background-color: {vix_bg_color}; padding: 10px 20px; border-radius: 5px; display: inline-block;">
+                    <span style="color: white; font-size: 20px; font-weight: bold;">{vix_status}</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+    else:
+        st.markdown("### VIX: Data Not Available")
+
+with col3:
     # Get Machine status from ^GSPC row
     if not spx_row.empty:
         machine_status = spx_row['Machine'].values[0]
@@ -75,82 +103,18 @@ with col2:
         
         st.markdown(f"""
             <div style="text-align: center;">
-                <h3 style="margin-bottom: 10px;">Machine:</h3>
+                <h3 style="margin-bottom: 10px;">The Machine:</h3>
                 <div style="background-color: {bg_color}; padding: 10px 20px; border-radius: 5px; display: inline-block;">
                     <span style="color: white; font-size: 20px; font-weight: bold;">{machine_status}</span>
                 </div>
             </div>
         """, unsafe_allow_html=True)
     else:
-        st.markdown("### Machine: Data Not Available")
+        st.markdown("### The Machine: Data Not Available")
 
 st.divider()
-
 # ============================================================
-# VIX STATUS
-# ============================================================
-vix_row = df[df['Ticker'] == '^VIX']
-if not vix_row.empty:
-    vix_value = vix_row['Close'].values[0]
-    
-    # Determine VIX status and color
-    if vix_value <= 19:
-        vix_status = "INVESTABLE"
-        vix_bg_color = "#28a745"  # Green
-    elif vix_value <= 29.99:
-        vix_status = "CHOP BUCKET"
-        vix_bg_color = "#ffc107"  # Yellow
-    else:
-        vix_status = "F BUCKET"
-        vix_bg_color = "#dc3545"  # Red
-    
-    st.markdown(f"""
-        <div style="text-align: center;">
-            <h3 style="margin-bottom: 10px;">VIX: {vix_value:.2f}</h3>
-            <div style="background-color: {vix_bg_color}; padding: 10px 20px; border-radius: 5px; display: inline-block;">
-                <span style="color: white; font-size: 20px; font-weight: bold;">{vix_status}</span>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-else:
-    st.markdown("### VIX: Data Not Available")
 
-st.divider()
-
-# ============================================================
-# SPX GAMMA METRICS
-# ============================================================
-if spx_gamma and 'error' not in spx_gamma:
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        gamma_value = spx_gamma['spx_gamma']
-        gamma_status = "Positive" if gamma_value >= 0 else "Negative"
-        gamma_color = "🟢" if gamma_value >= 0 else "🔴"
-        st.metric(
-            label=f"S&P 500 Gamma {gamma_color}",
-            value=f"{gamma_status}",
-            delta=f"{gamma_value:,.2f} Bn per 1% move"
-        )
-
-    with col2:
-        st.metric(
-            label="S&P 500 Spot Price",
-            value=f"{spx_gamma['spx_spot']:,.2f}"
-        )
-    
-    with col3:
-        st.metric(
-            label="S&P 500 Gamma Flip Line",
-            value=f"{spx_gamma['spx_flip']:,.2f}"
-        )
-    
-    # Data refresh timestamp
-    st.caption(f"🔄 SPX Gamma data refreshed: {spx_gamma['timestamp']} UTC")
-else:
-    st.warning("⚠️ SPX Gamma data not available")
-
-st.divider()
 # ============================================================
 # SPX GAMMA VOLATILITY THROTTLE DASHBOARD
 # ============================================================
@@ -287,6 +251,9 @@ if spx_gamma and 'gamma_throttle' in spx_gamma:
                 <span style="color: white; font-weight: bold;">{dir_signal}</span>
             </div>
         """, unsafe_allow_html=True)
+    
+    # Data source and timestamp
+    st.caption(f"🔄 Data refreshed: {spx_gamma['timestamp']} UTC | Source: CBOE GEX + Yahoo Finance")
 
 st.divider()
 # ============================================================
