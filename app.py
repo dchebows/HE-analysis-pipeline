@@ -311,8 +311,41 @@ styled_df = df.style\
         'RSI': '{:.1f}',
         'Beta_1Y': '{:.2f}',
         'SS_Score': '{:.0f}'
-    })\
-    .format(lambda x: f'{x:.2f}%' if df.loc[x.name, 'Ticker'] == '^TNX' else (f'{x:,.2f}' if df.loc[x.name, 'Ticker'] in ['^GSPC', '^IXIC', '^RUT', '^VIX'] else f'${x:,.2f}'), subset=['Close'])
+    })
+
+# Custom formatting for Close column based on ticker type
+def format_close(row):
+    ticker = row['Ticker']
+    close = row['Close']
+    if ticker == '^TNX':
+        return f'{close:.2f}%'
+    elif ticker in ['^GSPC', '^IXIC', '^RUT', '^VIX']:
+        return f'{close:,.2f}'
+    else:
+        return f'${close:,.2f}'
+
+df['Close_Formatted'] = df.apply(format_close, axis=1)
+
+# Reorder columns to replace Close with Close_Formatted
+cols = df.columns.tolist()
+close_idx = cols.index('Close')
+cols[close_idx] = 'Close_Formatted'
+cols.remove('Close_Formatted')
+cols.insert(close_idx, 'Close_Formatted')
+
+# Create display dataframe
+display_df = df[cols].rename(columns={'Close_Formatted': 'Close'})
+
+# Apply styling
+styled_df = display_df.style\
+    .map(color_negative_positive, subset=['1D %', '1W %', '1M %', '3M %', 'Vlm 1D %', 'Vlm 1W %', 'Vlm 1M %', 'Vlm 3M %'])\
+    .map(color_trade_trend, subset=['Trade', 'Trend'])\
+    .map(color_machine, subset=['Machine'])\
+    .map(color_change_indicator, subset=['Trade_Chg', 'Trend_Chg'])\
+    .map(color_rsi_level, subset=['Level'])\
+    .map(color_ss_score, subset=['SS_Score'])\
+    .map(color_ss_status, subset=['SS_Status'])\
+    .map(color_warning_level, subset=['Warn_Lvl'])
 
 # Display styled table
 st.dataframe(styled_df, use_container_width=True, height=600)
