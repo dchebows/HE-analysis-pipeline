@@ -313,22 +313,26 @@ styled_df = df.style\
         'SS_Score': '{:.0f}'
     })
 
-# Custom formatting for Close column based on ticker type
-def format_close(row):
+# Custom formatting for price columns based on ticker type
+def format_price(row, column_name):
     ticker = row['Ticker']
-    close = row['Close']
+    value = row[column_name]
+    if pd.isna(value):
+        return ''
     if ticker == '^TNX':
-        return f'{close:.2f}%'
+        return f'{value:.2f}%'
     elif ticker in ['^GSPC', '^IXIC', '^RUT', '^VIX']:
-        return f'{close:,.2f}'
+        return f'{value:,.2f}'
     else:
-        return f'${close:,.2f}'
+        return f'${value:,.2f}'
 
 # Create a copy for display
 display_df = df.copy()
-display_df['Close'] = display_df.apply(format_close, axis=1)
+display_df['Close'] = display_df.apply(lambda row: format_price(row, 'Close'), axis=1)
+display_df['Bottom End'] = display_df.apply(lambda row: format_price(row, 'Bottom End'), axis=1)
+display_df['Top End'] = display_df.apply(lambda row: format_price(row, 'Top End'), axis=1)
 
-# Apply styling (now Close is already formatted as string, so exclude it from numeric formatting)
+# Apply styling (Close, Bottom End, Top End are already formatted as strings)
 styled_df = display_df.style\
     .map(color_negative_positive, subset=['1D %', '1W %', '1M %', '3M %', 'Vlm 1D %', 'Vlm 1W %', 'Vlm 1M %', 'Vlm 3M %'])\
     .map(color_trade_trend, subset=['Trade', 'Trend'])\
@@ -339,8 +343,9 @@ styled_df = display_df.style\
     .map(color_ss_status, subset=['SS_Status'])\
     .map(color_warning_level, subset=['Warn_Lvl'])\
     .format({
-        'Bottom End': '${:.2f}',
-        'Top End': '${:.2f}',
+        'ATH': '{:.2f}',
+        'Trade_lvl': '{:.2f}',
+        'Trend_Lvl': '{:.2f}',
         'Down side %': '{:.2f}%',
         'Up side %': '{:.2f}%',
         '1D %': '{:+.2f}%',
