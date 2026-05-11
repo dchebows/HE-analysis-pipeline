@@ -151,7 +151,144 @@ else:
     st.warning("⚠️ SPX Gamma data not available")
 
 st.divider()
+# ============================================================
+# SPX GAMMA VOLATILITY THROTTLE DASHBOARD
+# ============================================================
+if spx_gamma and 'gamma_throttle' in spx_gamma:
+    st.subheader("📊 S&P 500 Gamma Volatility Throttle")
+    
+    # Top metrics row
+    col1, col2, col3, col4 = st.columns(4)
+    
+    with col1:
+        throttle_value = spx_gamma['gamma_throttle']
+        st.metric(
+            label="Gamma Throttle",
+            value=f"{throttle_value:.1f}"
+        )
+    
+    with col2:
+        st.metric(
+            label="10-Day RV",
+            value=f"{spx_gamma['rv_10day']:.2f}%"
+        )
+    
+    with col3:
+        st.metric(
+            label="VIX",
+            value=f"{spx_gamma['vix']:.2f}"
+        )
+    
+    with col4:
+        st.metric(
+            label="Dist. to Flip",
+            value=f"{spx_gamma['dist_to_flip_pct']:+.2f}%"
+        )
+    
+    # Regime display
+    regime = spx_gamma['regime']
+    regime_desc = spx_gamma['regime_description']
+    
+    # Determine regime color
+    if 'POSITIVE' in regime:
+        regime_color = "#28a745"  # Green
+    elif 'TRANSITION' in regime:
+        regime_color = "#ffc107"  # Yellow
+    else:
+        regime_color = "#dc3545"  # Red
+    
+    st.markdown(f"""
+        <div style="text-align: center; margin: 20px 0;">
+            <div style="background-color: {regime_color}; padding: 15px 30px; border-radius: 8px; display: inline-block;">
+                <span style="color: white; font-size: 18px; font-weight: bold;">{regime}</span>
+            </div>
+            <p style="margin-top: 10px; font-style: italic; color: #666;">{regime_desc}</p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    # Risk & Position Size
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        risk_level = spx_gamma['risk_level']
+        if risk_level in ['LOW', 'LOW-MODERATE']:
+            risk_color = "#28a745"
+        elif risk_level in ['MODERATE', 'ELEVATED']:
+            risk_color = "#ffc107"
+        else:
+            risk_color = "#dc3545"
+        
+        st.markdown(f"""
+            <div style="text-align: center;">
+                <p style="margin-bottom: 5px; font-weight: bold;">Risk Level</p>
+                <div style="background-color: {risk_color}; padding: 10px; border-radius: 5px;">
+                    <span style="color: white; font-size: 16px; font-weight: bold;">{risk_level}</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown(f"""
+            <div style="text-align: center;">
+                <p style="margin-bottom: 5px; font-weight: bold;">Position Size</p>
+                <div style="background-color: #6c757d; padding: 10px; border-radius: 5px;">
+                    <span style="color: white; font-size: 16px; font-weight: bold;">{spx_gamma['position_size']}</span>
+                </div>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Key Levels
+    st.markdown("**🎯 Key Levels**")
+    key_levels = spx_gamma['key_levels']
+    
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.metric("Gamma Flip", f"{key_levels['gamma_flip']:,.0f}")
+    with col2:
+        st.metric("Put Wall", f"{key_levels['put_wall']:,.0f}")
+    with col3:
+        st.metric("Call Wall", f"{key_levels['call_wall']:,.0f}")
+    with col4:
+        st.metric("Danger Zone", f"{key_levels['danger_zone']:,.0f}")
+    
+    # Signals
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**📊 Volatility Signal**")
+        vol_signal = spx_gamma['vol_signal']
+        if 'SELL' in vol_signal:
+            vol_bg = "#28a745"
+        elif 'BUY' in vol_signal:
+            vol_bg = "#dc3545"
+        else:
+            vol_bg = "#ffc107"
+        
+        st.markdown(f"""
+            <div style="background-color: {vol_bg}; padding: 10px; border-radius: 5px; text-align: center;">
+                <span style="color: white; font-weight: bold;">{vol_signal}</span>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("**📈 Directional Signal**")
+        dir_signal = spx_gamma['dir_signal']
+        if 'BULLISH' in dir_signal:
+            dir_bg = "#28a745"
+        elif 'BEAR' in dir_signal or 'TREND' in dir_signal:
+            dir_bg = "#dc3545"
+        else:
+            dir_bg = "#6c757d"
+        
+        st.markdown(f"""
+            <div style="background-color: {dir_bg}; padding: 10px; border-radius: 5px; text-align: center;">
+                <span style="color: white; font-weight: bold;">{dir_signal}</span>
+            </div>
+        """, unsafe_allow_html=True)
 
+st.divider()
 # ============================================================
 # SIGNAL STRENGTH HIGHLIGHTS
 # ============================================================
