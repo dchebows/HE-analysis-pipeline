@@ -324,19 +324,11 @@ def format_close(row):
     else:
         return f'${close:,.2f}'
 
-df['Close_Formatted'] = df.apply(format_close, axis=1)
+# Create a copy for display
+display_df = df.copy()
+display_df['Close'] = display_df.apply(format_close, axis=1)
 
-# Reorder columns to replace Close with Close_Formatted
-cols = df.columns.tolist()
-close_idx = cols.index('Close')
-cols[close_idx] = 'Close_Formatted'
-cols.remove('Close_Formatted')
-cols.insert(close_idx, 'Close_Formatted')
-
-# Create display dataframe
-display_df = df[cols].rename(columns={'Close_Formatted': 'Close'})
-
-# Apply styling
+# Apply styling (now Close is already formatted as string, so exclude it from numeric formatting)
 styled_df = display_df.style\
     .map(color_negative_positive, subset=['1D %', '1W %', '1M %', '3M %', 'Vlm 1D %', 'Vlm 1W %', 'Vlm 1M %', 'Vlm 3M %'])\
     .map(color_trade_trend, subset=['Trade', 'Trend'])\
@@ -345,7 +337,22 @@ styled_df = display_df.style\
     .map(color_rsi_level, subset=['Level'])\
     .map(color_ss_score, subset=['SS_Score'])\
     .map(color_ss_status, subset=['SS_Status'])\
-    .map(color_warning_level, subset=['Warn_Lvl'])
+    .map(color_warning_level, subset=['Warn_Lvl'])\
+    .format({
+        'Bottom End': '${:.2f}',
+        'Top End': '${:.2f}',
+        'Down side %': '{:.2f}%',
+        'Up side %': '{:.2f}%',
+        '1D %': '{:+.2f}%',
+        '1W %': '{:+.2f}%',
+        '1M %': '{:+.2f}%',
+        '3M %': '{:+.2f}%',
+        'RVOL_1M': '{:.2f}',
+        'RVOL_3M': '{:.2f}',
+        'RSI': '{:.1f}',
+        'Beta_1Y': '{:.2f}',
+        'SS_Score': '{:.0f}'
+    })
 
 # Display styled table
 st.dataframe(styled_df, use_container_width=True, height=600)
