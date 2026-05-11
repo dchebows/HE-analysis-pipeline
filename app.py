@@ -156,21 +156,28 @@ if spx_gamma and 'gamma_throttle' in spx_gamma:
             showlegend=False
         ))
         
-        # Add exponential fit line
+        # Add exponential fit line (with polynomial fallback)
         x_data = throttle_history['throttle'].values
         y_data = throttle_history['rv_10'].values
         
         try:
             from scipy.optimize import curve_fit
+            
+            # Try exponential decay fit first
             def exp_decay(x, a, b, c):
                 return a * np.exp(-b * x) + c
             
-            popt, _ = curve_fit(exp_decay, x_data, y_data, 
-                               p0=[40, 0.015, 8], 
-                               bounds=([0, 0.001, 0], [200, 0.1, 50]),
-                               maxfev=10000)
+            # Use data-driven initial guesses
+            y_max = y_data.max()
+            y_min = y_data.min()
             
-            x_fit = np.linspace(x_data.min(), x_data.max(), 100)
+            popt, _ = curve_fit(
+                exp_decay, x_data, y_data, 
+                p0=[y_max - y_min, 0.02, y_min], 
+                maxfev=50000
+            )
+            
+            x_fit = np.linspace(x_data.min(), x_data.max(), 200)
             y_fit = exp_decay(x_fit, *popt)
             
             fig.add_trace(go.Scatter(
@@ -178,11 +185,29 @@ if spx_gamma and 'gamma_throttle' in spx_gamma:
                 y=y_fit,
                 mode='lines',
                 line=dict(color='blue', width=2, dash='dash'),
-                name='Trend',
+                name='Exponential Trend',
                 hoverinfo='skip'
             ))
-        except:
-            pass
+            
+        except Exception as e:
+            # Fallback to polynomial fit if exponential fails
+            print(f"Exponential fit failed: {e}, using polynomial")
+            z = np.polyfit(x_data, y_data, 3)
+            p = np.poly1d(z)
+            x_fit = np.linspace(x_data.min(), x_data.max(), 200)
+            y_fit = p(x_fit)
+            
+            # Only plot where y is positive
+            valid_mask = y_fit > 0
+            
+            fig.add_trace(go.Scatter(
+                x=x_fit[valid_mask],
+                y=y_fit[valid_mask],
+                mode='lines',
+                line=dict(color='blue', width=2, dash='dash'),
+                name='Polynomial Trend',
+                hoverinfo='skip'
+            ))
         
         # Highlight current point
         current_throttle = spx_gamma['gamma_throttle']
