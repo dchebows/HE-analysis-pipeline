@@ -63,7 +63,7 @@ with col1:
         spx_change = spx_row['1D %'].values[0]
         
         change_color = "🟢" if spx_change >= 0 else "🔴"
-        st.markdown(f"### S&P 500 Index: ${spx_close:,.2f} {change_color} ({spx_change:+.2f}%)")
+        st.markdown(f"### S&P 500 Index: {spx_close:,.2f} {change_color} ({spx_change:+.2f}%)")
     else:
         st.markdown("### S&P 500 Index: Data Not Available")
 
@@ -298,7 +298,6 @@ styled_df = df.style\
     .map(color_ss_status, subset=['SS_Status'])\
     .map(color_warning_level, subset=['Warn_Lvl'])\
     .format({
-        'Close': '${:.2f}',
         'Bottom End': '${:.2f}',
         'Top End': '${:.2f}',
         'Down side %': '{:.2f}%',
@@ -312,7 +311,8 @@ styled_df = df.style\
         'RSI': '{:.1f}',
         'Beta_1Y': '{:.2f}',
         'SS_Score': '{:.0f}'
-    })
+    })\
+    .format(lambda x: f'{x:.2f}%' if df.loc[x.name, 'Ticker'] == '^TNX' else (f'{x:,.2f}' if df.loc[x.name, 'Ticker'] in ['^GSPC', '^IXIC', '^RUT', '^VIX'] else f'${x:,.2f}'), subset=['Close'])
 
 # Display styled table
 st.dataframe(styled_df, use_container_width=True, height=600)
