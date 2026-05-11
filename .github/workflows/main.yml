@@ -2,7 +2,8 @@ name: Daily CRR Analysis
 
 on:
   schedule:
-    - cron: '0 19 * * *'  # 7pm UTC daily
+    - cron: '0 23 * * 1-5'  # Runs Mon-Fri at 11pm UTC (7pm EDT)
+    - cron: '0 0 * * 2-6'   # Runs Tue-Sat at midnight UTC (7pm EST)
   workflow_dispatch:  # Allows manual testing
 
 jobs:
