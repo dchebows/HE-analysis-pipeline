@@ -1,7 +1,18 @@
 {
-  "spx_gamma": 96.47,
-  "spx_spot": 7398.93,
-  "spx_flip": 7157.29,
-  "timestamp": "2026-05-10 11:02:24",
-  "symbol": "_SPX"
+  "spx_gamma": 89.7,
+  "spx_spot": 7406.54,
+  "spx_flip": 7215.94,
+  "timestamp": "2026-05-11 14:53:26",
+  "symbol": "_SPX",
+  "gamma_throttle": 0,
+  "rv_10day": 0,
+  "vix": 0,
+  "dist_to_flip_pct": 0,
+  "regime": "UNKNOWN",
+  "regime_description": "Error calculating metrics",
+  "risk_level": "UNKNOWN",
+  "position_size": "Unknown",
+  "vol_signal": "Unknown",
+  "dir_signal": "Unknown",
+  "key_levels": {}
 }
