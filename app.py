@@ -2,6 +2,9 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import json
+import plotly.express as px
+import plotly.graph_objects as go
+import numpy as np
 
 # ============================================================
 # PAGE CONFIG
@@ -25,13 +28,22 @@ def load_data():
         
         # Load SPX gamma data
         SPX_GAMMA_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/spx_gamma.json"
+        THROTTLE_HISTORY_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/throttle_history.csv"
+        
         import requests
         gamma_response = requests.get(SPX_GAMMA_URL)
         spx_gamma = json.loads(gamma_response.text)
         
-        return df, spx_gamma, None
+        # Load throttle history for charting
+        try:
+            throttle_history = pd.read_csv(THROTTLE_HISTORY_URL)
+            throttle_history['date'] = pd.to_datetime(throttle_history['date'])
+        except:
+            throttle_history = None
+        
+        return df, spx_gamma, throttle_history, None
     except Exception as e:
-        return None, None, str(e)
+        return None, None, None, str(e)
 
 # ============================================================
 # MAIN APP
@@ -40,7 +52,7 @@ st.title("📊 Daily CRR Analysis Dashboard")
 st.caption("🤖 Automated updates daily at 7pm UTC")
 
 # Load data
-df, spx_gamma, error = load_data()
+df, spx_gamma, throttle_history, error = load_data()
 
 if error:
     st.error(f"❌ Error loading data: {error}")
@@ -120,6 +132,92 @@ st.divider()
 # ============================================================
 if spx_gamma and 'gamma_throttle' in spx_gamma:
     st.subheader("📊 S&P 500 Gamma Volatility Throttle")
+    
+    # ========== INSERT CHART CODE HERE ==========
+    # Display scatter plot if history available
+    if throttle_history is not None and len(throttle_history) > 5:
+        # Create scatter plot
+        fig = go.Figure()
+        
+        # Add scatter points with color gradient by date
+        fig.add_trace(go.Scatter(
+            x=throttle_history['throttle'],
+            y=throttle_history['rv_10'],
+            mode='markers',
+            marker=dict(
+                size=8,
+                color=throttle_history.index,
+                colorscale='RdYlGn',
+                showscale=False,
+                opacity=0.7
+            ),
+            text=throttle_history['date'].dt.strftime('%Y-%m-%d'),
+            hovertemplate='<b>%{text}</b><br>Throttle: %{x:.1f}<br>10-Day RV: %{y:.2f}%<extra></extra>',
+            showlegend=False
+        ))
+        
+        # Add exponential fit line
+        x_data = throttle_history['throttle'].values
+        y_data = throttle_history['rv_10'].values
+        
+        try:
+            from scipy.optimize import curve_fit
+            def exp_decay(x, a, b, c):
+                return a * np.exp(-b * x) + c
+            
+            popt, _ = curve_fit(exp_decay, x_data, y_data, 
+                               p0=[40, 0.015, 8], 
+                               bounds=([0, 0.001, 0], [200, 0.1, 50]),
+                               maxfev=10000)
+            
+            x_fit = np.linspace(x_data.min(), x_data.max(), 100)
+            y_fit = exp_decay(x_fit, *popt)
+            
+            fig.add_trace(go.Scatter(
+                x=x_fit,
+                y=y_fit,
+                mode='lines',
+                line=dict(color='blue', width=2, dash='dash'),
+                name='Trend',
+                hoverinfo='skip'
+            ))
+        except:
+            pass
+        
+        # Highlight current point
+        current_throttle = spx_gamma['gamma_throttle']
+        current_rv = spx_gamma['rv_10day']
+        
+        fig.add_trace(go.Scatter(
+            x=[current_throttle],
+            y=[current_rv],
+            mode='markers+text',
+            marker=dict(size=15, color='white', line=dict(color='black', width=2)),
+            text=['Last'],
+            textposition='top center',
+            textfont=dict(size=12, color='black', family='Arial Black'),
+            hovertemplate=f'<b>Current</b><br>Throttle: {current_throttle:.1f}<br>10-Day RV: {current_rv:.2f}%<extra></extra>',
+            showlegend=False
+        ))
+        
+        # Add gamma transition zone
+        fig.add_vrect(x0=-5, x1=5, fillcolor="gray", opacity=0.1, line_width=0)
+        
+        # Layout
+        fig.update_layout(
+            title="SPX Gamma Volatility Throttle vs. 10-Day Realized Volatility",
+            xaxis_title="Gamma Throttle",
+            yaxis_title="10-Day Realized Volatility (%)",
+            xaxis=dict(range=[-105, 40], gridcolor='lightgray'),
+            yaxis=dict(range=[0, max(y_data.max() * 1.1, 30)], gridcolor='lightgray'),
+            plot_bgcolor='white',
+            height=500,
+            hovermode='closest',
+            font=dict(size=11)
+        )
+        
+        st.plotly_chart(fig, use_container_width=True)
+    # ========== END CHART CODE ==========
     
     # Top metrics row
     col1, col2, col3, col4 = st.columns(4)
