@@ -793,10 +793,30 @@ for x in tickers:
         
         # Only calculate Beta if we have enough data
         if non_null_count >= 252:
-            rolling_cov = data['Stock_Returns'].rolling(252).cov(data['SP500_Returns'])
-            rolling_var = data['SP500_Returns'].rolling(252).var()
+            # Calculate rolling covariance and variance manually
+            # Beta = Cov(Stock, Market) / Var(Market)
+            
+            # Create a combined dataframe for rolling calculation
+            returns_df = pd.DataFrame({
+                'stock': data['Stock_Returns'],
+                'market': data['SP500_Returns']
+            })
+            
+            # Calculate rolling covariance between stock and market
+            rolling_cov = returns_df['stock'].rolling(window=252).cov(returns_df['market'])
+            
+            # Calculate rolling variance of market
+            rolling_var = returns_df['market'].rolling(window=252).var()
+            
+            # Beta = Covariance / Variance
             data['Beta_1Y'] = rolling_cov / rolling_var
-            print(f"   ✅ Beta calculated (252-day window)")
+            
+            # Check if Beta was actually calculated
+            beta_value = data['Beta_1Y'].iloc[-1]
+            if pd.notna(beta_value):
+                print(f"   ✅ Beta calculated: {beta_value:.3f}")
+            else:
+                print(f"   ⚠️  Beta calculation returned NaN")
         else:
             data['Beta_1Y'] = np.nan
             print(f"   ⚠️  Beta skipped ({non_null_count} < 252 days)")
