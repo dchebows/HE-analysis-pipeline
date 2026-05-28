@@ -14,6 +14,7 @@ import requests
 from scipy.stats import norm
 import warnings
 warnings.filterwarnings('ignore')
+
 # ============================================================
 # CBOE OPTIONS CHAIN FUNCTIONS FOR SPX GAMMA
 # ============================================================
@@ -140,6 +141,7 @@ def calculate_spx_gamma_metrics(symbol='_SPX'):
             'symbol': symbol,
             'error': str(e)
         }
+
 def calculate_gamma_throttle_metrics(quote, options, spot_price, gamma_flip, total_gex_bn):
     """
     Calculate gamma throttle and related metrics for dashboard
@@ -277,13 +279,14 @@ def calculate_gamma_throttle_metrics(quote, options, spot_price, gamma_flip, tot
             'dir_signal': 'Unknown',
             'key_levels': {}
         }
+
 # ============================================================
 # DYNAMIC DATE CALCULATION
 # ============================================================
 # Today's date (GitHub Actions runs in UTC, adjust if needed)
 today = datetime.now()
 end_date = (today + timedelta(days=1)).strftime('%Y-%m-%d')  # Yahoo Finance needs +1 day
-start_date = (today - timedelta(days=300)).strftime('%Y-%m-%d')  # Last 90 days
+start_date = (today - timedelta(days=500)).strftime('%Y-%m-%d')  # 🔧 500 days = ~365 trading days
 
 print(f"📅 Fetching data from {start_date} to {end_date}")
 
@@ -294,16 +297,47 @@ tickers = ['^TNX', '^GSPC', '^IXIC', '^RUT', '^VIX', '^NYICDX',
            'AAAU', 'AAPL', 'IBIT', 'QQQ', 'GLD', 'SLV', 'NVDA']
 
 # ============================================================
-# DOWNLOAD DATA
+# DOWNLOAD DATA - 🔧 FIXED DATA DOWNLOAD
 # ============================================================
 print("📊 Downloading current data...")
-StkData = yf.download(tickers, start=start_date, end=end_date)
-StkData.reset_index(inplace=True)
-StkData = StkData.rename(columns={'index': 'Date'})
+# 🔧 FIX: Download without group_by to get consistent format
+StkData = yf.download(tickers, start=start_date, end=end_date, progress=False)
 
-print("📈 Downloading all-time high data...")
-ATH_Data = yf.download(tickers, period='max', auto_adjust=False)['Adj Close']
-max_close_prices = ATH_Data.max()
+# 🔧 FIX: Handle yfinance column structure
+if len(tickers) == 1:
+    # Single ticker - columns are simple
+    print("   ℹ️  Single ticker mode")
+    StkData.reset_index(inplace=True)
+else:
+    # Multiple tickers - columns are MultiIndex
+    print("   ℹ️  Multiple ticker mode - handling MultiIndex")
+    StkData.reset_index(inplace=True)
+
+# Ensure Date column exists
+if 'Date' not in StkData.columns:
+    if 'index' in StkData.columns:
+        StkData = StkData.rename(columns={'index': 'Date'})
+
+print(f"   📅 Date range: {StkData['Date'].min()} to {StkData['Date'].max()}")
+print(f"   📊 Data shape: {StkData.shape} (rows x columns)")
+print(f"   📊 Total trading days: {len(StkData)}")
+
+# 🔧 NEW: Download ATH data separately
+print("\n📈 Downloading all-time high data...")
+max_close_prices = {}
+for ticker in tickers:
+    try:
+        ath_data = yf.download(ticker, period='max', progress=False, auto_adjust=False)
+        if not ath_data.empty:
+            if isinstance(ath_data['Adj Close'], pd.Series):
+                max_close_prices[ticker] = ath_data['Adj Close'].max()
+            else:
+                max_close_prices[ticker] = ath_data['Adj Close'].iloc[:, 0].max()
+        else:
+            max_close_prices[ticker] = None
+    except Exception as e:
+        print(f"   ⚠️  Could not get ATH for {ticker}: {e}")
+        max_close_prices[ticker] = None
 
 print("✅ Data download complete\n")
 
@@ -369,6 +403,7 @@ if 'gamma_throttle' in spx_metrics and spx_metrics['gamma_throttle'] != 0:
         print(f"⚠️  Could not update throttle history: {e}")
 
 print(f"💾 SPX gamma data saved to spx_gamma.json\n")
+
 # ============================================================
 # INITIALIZE LOOP VARIABLES
 # ============================================================
@@ -691,203 +726,303 @@ def calculate_signal_strength(trade, trend, trade_chg, trend_chg,
     return ss_score, ss_status, ss_action, warning_level, warning_flags
 
 # ============================================================
-# MAIN PROCESSING LOOP
+# MAIN PROCESSING LOOP - 🔧 COMPLETELY REWRITTEN
 # ============================================================
 print("🔄 Processing tickers...\n")
 
 for x in tickers:
-    print(f"  → {x}")
+    print(f"{'='*60}")
+    print(f"🔍 Processing: {x}")
+    print(f"{'='*60}")
     
-    data['Close'] = StkData['Close'][x]
-    data['Volume'] = StkData['Volume'][x]
-    data['VIX'] = StkData['Close']['^VIX']
-    data['SP_Volume'] = StkData['Volume']['^GSPC']
+    try:
+        # 🔧 FIX: Create a completely clean DataFrame with reset index
+        ticker_data = pd.DataFrame()
+        
+        # Extract Close and Volume for this ticker
+        if isinstance(StkData['Close'], pd.DataFrame):
+            # MultiIndex format (multiple tickers)
+            ticker_data['Close'] = StkData['Close'][x].values  # 🔧 Use .values to avoid index issues
+            ticker_data['Volume'] = StkData['Volume'][x].values
+            ticker_data['VIX'] = StkData['Close']['^VIX'].values
+            ticker_data['SP_Volume'] = StkData['Volume']['^GSPC'].values
+            ticker_data['Date'] = StkData['Date'].values
+        else:
+            # Single ticker format (shouldn't happen with multiple tickers)
+            ticker_data['Close'] = StkData['Close'].values
+            ticker_data['Volume'] = StkData['Volume'].values
+            ticker_data['VIX'] = StkData['Close'].values
+            ticker_data['SP_Volume'] = StkData['Volume'].values
+            ticker_data['Date'] = StkData['Date'].values
+        
+        # 🔧 CRITICAL: Remove any NaN rows from Close prices
+        ticker_data = ticker_data.dropna(subset=['Close']).reset_index(drop=True)
+        
+        # Now work with the clean ticker_data DataFrame
+        data = ticker_data.copy()
+        
+        # Check if we have valid data
+        non_null_count = len(data)
+        print(f"   ✅ Loaded {non_null_count} valid data points")
+        
+        if non_null_count < 63:  # Minimum for 3M calculations
+            print(f"   ⚠️  Insufficient data ({non_null_count} days), skipping...")
+            continue
+        
+        # 🔧 FIX: Weighted Moving Average
+        WeightList = [.5, .5, 2, 3, 4, 5, 6]
+        weights = np.array(WeightList)
+        wma7 = data['Close'].rolling(7).apply(lambda prices: np.dot(prices, weights)/weights.sum(), raw=True)
+        data['WMA7'] = wma7.round(3)
+        data['SMA7'] = data['Close'].rolling(9).mean()
 
-    # Weighted Moving Average
-    WeightList = [.5, .5, 2, 3, 4, 5, 6]
-    weights = np.array(WeightList)
-    wma7 = data['Close'].rolling(7).apply(lambda prices: np.dot(prices, weights)/weights.sum(), raw=True)
-    data['WMA7'] = np.round(wma7, decimals=3)
-    data['SMA7'] = data['Close'].rolling(9).mean()
+        # 🔧 FIX: Beta Calculation with proper SP500 data
+        data['Stock_Returns'] = data['Close'].pct_change()
+        
+        # Get S&P 500 returns properly
+        if isinstance(StkData['Close'], pd.DataFrame) and '^GSPC' in StkData['Close'].columns:
+            sp500_close = StkData['Close']['^GSPC'].values
+            # Align with current data length
+            if len(sp500_close) > len(data):
+                sp500_close = sp500_close[-len(data):]
+            sp500_series = pd.Series(sp500_close, index=data.index)
+        else:
+            sp500_series = data['Close'].copy()
+        
+        data['SP500_Returns'] = sp500_series.pct_change()
+        
+        # Only calculate Beta if we have enough data
+        if non_null_count >= 252:
+            rolling_cov = data['Stock_Returns'].rolling(252).cov(data['SP500_Returns'])
+            rolling_var = data['SP500_Returns'].rolling(252).var()
+            data['Beta_1Y'] = rolling_cov / rolling_var
+            print(f"   ✅ Beta calculated (252-day window)")
+        else:
+            data['Beta_1Y'] = np.nan
+            print(f"   ⚠️  Beta skipped ({non_null_count} < 252 days)")
 
-    # Beta Calculation
-    data['Stock_Returns'] = data['Close'].pct_change()
-    data['SP500_Returns'] = StkData['Close']['^GSPC'].pct_change()
-    rolling_cov = data['Stock_Returns'].rolling(252).cov(data['SP500_Returns'])
-    rolling_var = data['SP500_Returns'].rolling(252).var()
-    data['Beta_1Y'] = rolling_cov / rolling_var
+        # Standard Deviation
+        data['STD_DEV'] = data['Close'].rolling(7).std()
 
-    # Standard Deviation
-    data['STD_DEV'] = data.Close.rolling(7).std()
+        # Risk Range Calculation
+        sigma_u = 1.4
+        sigma_l = 1.8
+        data['UPPER'] = data['WMA7'] + (data['STD_DEV'] * sigma_u)
+        data['LOWER'] = data['SMA7'] - (data['STD_DEV'] * sigma_l)
 
-    # Risk Range Calculation
-    sigma_u = 1.4
-    sigma_l = 1.8
-    data['UPPER'] = data.WMA7 + (data.STD_DEV * sigma_u)
-    data['LOWER'] = data.SMA7 - (data.STD_DEV * sigma_l)
+        # VIX Calculations
+        data['VIX_MA'] = data['VIX'].rolling(2).mean()
+        data['VIX_ROC'] = data['VIX'].pct_change().abs()
+        data['VIX_ROC_MA'] = data['VIX_ROC'].rolling(2).mean()
 
-    # VIX Calculations
-    data['VIX_MA'] = data.VIX.rolling(2).mean()
-    data['VIX_ROC'] = data.VIX.pct_change().abs()
-    data['VIX_ROC_MA'] = data.VIX_ROC.rolling(2).mean()
+        # Volume Calculations
+        data['VOL'] = data['SP_Volume'] / 10
+        data['VOL_MA'] = data['VOL'].rolling(7).mean()
+        data['VOL_ROC'] = data['VOL'].pct_change().abs()
+        data['VOL_ROC_MA'] = data['VOL_ROC'].rolling(2).mean()
 
-    # Volume Calculations
-    data['VOL'] = data.SP_Volume / 10
-    data['VOL_MA'] = data.VOL.rolling(7).mean()
-    data['VOL_ROC'] = data.VOL.pct_change().abs()
-    data['VOL_ROC_MA'] = data.VOL_ROC.rolling(2).mean()
+        # Final Risk Range with VIX/Volume Adjustment
+        conditions_u = [(data['VIX_ROC_MA'] > 0.08) & (data['VIX_MA'] >= 15) & (data['VOL_ROC_MA'] > 0.27), 
+                        (data['VIX_MA'].notna())]
+        choices_u = [data['UPPER'] * .9875, data['UPPER']]
+        data['TOP_END'] = np.select(conditions_u, choices_u, default=data['UPPER']).round(2)
 
-    # Final Risk Range with VIX/Volume Adjustment
-    conditions_u = [(data.VIX_ROC_MA > 0.08) & (data.VIX_MA >= 15) & (data.VOL_ROC_MA > 0.27), 
-                    (data.VIX_MA == data.VIX_MA)]
-    choices_u = [data.UPPER * .9875, data.UPPER]
-    data['TOP_END'] = np.select(conditions_u, choices_u).round(2)
+        conditions_l = [(data['VIX_ROC_MA'] > 0.08) & (data['VIX_MA'] >= 15) & (data['VOL_ROC_MA'] > 0.27), 
+                        (data['VIX_MA'].notna())]
+        choices_l = [data['LOWER'] * .99, data['LOWER']]
+        data['BOTTOM_END'] = np.select(conditions_l, choices_l, default=data['LOWER']).round(2)
 
-    conditions_l = [(data.VIX_ROC_MA > 0.08) & (data.VIX_MA >= 15) & (data.VOL_ROC_MA > 0.27), 
-                    (data.VIX_MA == data.VIX_MA)]
-    choices_l = [data.LOWER * .99, data.LOWER]
-    data['BOTTOM_END'] = np.select(conditions_l, choices_l).round(2)
+        data['DOWN_PCT'] = (((data['LOWER'] - data['Close']) / data['Close']) * 100).round(2)
+        data['UP_PCT'] = (((data['UPPER'] - data['Close']) / data['Close']) * 100).round(2)
+        
+        # 🔧 DEBUG: Check if risk range was calculated
+        last_top = data['TOP_END'].iloc[-1] if len(data) > 0 else None
+        last_bottom = data['BOTTOM_END'].iloc[-1] if len(data) > 0 else None
+        print(f"   Risk Range: Bottom={last_bottom}, Top={last_top}")
+        
+        # Trade and Trend Levels
+        data['Trade_Level'] = data['Close'].shift(periods=15).round(2)
+        data['Trend_Level'] = data['Close'].shift(periods=62).round(2)
+        
+        condlist1 = [data['Trade_Level'] < data['Close'], data['Trade_Level'] > data['Close']]
+        condlist = [data['Trend_Level'] < data['Close'], data['Trend_Level'] > data['Close']]
+        choicelist = ['Bullish', 'Bearish']
+        
+        data['Trade'] = np.select(condlist1, choicelist, 'Neutral')
+        data['Trend'] = np.select(condlist, choicelist, 'Neutral')
 
-    data['DOWN_PCT'] = (((data.LOWER - data.Close) / data.Close) * 100).round(2)
-    data['UP_PCT'] = (((data.UPPER - data.Close) / data.Close) * 100).round(2)
-    
-    # Trade and Trend Levels
-    data['Trade_Level'] = data.Close.shift(periods=15).round(2)
-    data['Trend_Level'] = data.Close.shift(periods=62).round(2)
-    
-    condlist1 = [data['Trade_Level'] < data.Close, data['Trade_Level'] > data.Close]
-    condlist = [data['Trend_Level'] < data.Close, data['Trend_Level'] > data.Close]
-    choicelist = ['Bullish', 'Bearish']
-    
-    data['Trade'] = np.select(condlist1, choicelist, 'Neutral')
-    data['Trend'] = np.select(condlist, choicelist, 'Neutral')
+        # Change Indicators
+        data['Trade_Change'] = np.where(data['Trade'] != data['Trade'].shift(1), '⚠', '')
+        data['Trend_Change'] = np.where(data['Trend'] != data['Trend'].shift(1), '⚠', '')
 
-    # Change Indicators
-    data['Trade_Change'] = np.where(data['Trade'] != data['Trade'].shift(1), '⚠', '')
-    data['Trend_Change'] = np.where(data['Trend'] != data['Trend'].shift(1), '⚠', '')
+        # Price Changes
+        data['change_1D'] = data['Close'].pct_change(periods=1).round(4) * 100
+        data['1W_change'] = data['Close'].pct_change(periods=5).round(4) * 100
+        data['1M_change'] = data['Close'].pct_change(periods=21).round(4) * 100
+        data['3M_change'] = data['Close'].pct_change(periods=63).round(4) * 100
+        
+        # Volatility Calculations
+        data['30D_sd'] = data['change_1D'].rolling(21).std()
+        data['90D_sd'] = data['change_1D'].rolling(63).std()
+        data['Vlty'] = data['30D_sd'] * 15.87450786638754
+        data['Vlty_3m'] = np.maximum(0, data['90D_sd'] * (252**0.5))
 
-    # Price Changes
-    data['change_1D'] = data.Close.pct_change(periods=1).round(4) * 100
-    data['1W_change'] = data.Close.pct_change(periods=5).round(4) * 100
-    data['1M_change'] = data.Close.pct_change(periods=21).round(4) * 100
-    data['3M_change'] = data.Close.pct_change(periods=63).round(4) * 100
-    
-    # Volatility Calculations
-    data['30D_sd'] = data.change_1D.rolling(21).std()
-    data['90D_sd'] = data.change_1D.rolling(63).std()
-    data['Vlty'] = data['30D_sd'] * 15.87450786638754
-    data['Vlty_3m'] = np.maximum(0, data['90D_sd'] * (252**0.5))
+        # 🔧 DEBUG: Check volatility calculations
+        last_rvol_1m = data['Vlty'].iloc[-1] if len(data) > 0 else None
+        last_rvol_3m = data['Vlty_3m'].iloc[-1] if len(data) > 0 else None
+        print(f"   RVOL: 1M={last_rvol_1m}, 3M={last_rvol_3m}")
 
-    # Band Analysis
-    data['H_TRR'] = data.UPPER.iloc[-63:-2].max()
-    data['L_TRR'] = data.UPPER.iloc[-63:-2].min()
-    data['H_LRR'] = data.LOWER.iloc[-63:-2].max()
-    data['L_LRR'] = data.LOWER.iloc[-63:-2].min()
-    data['C_TRR'] = data.UPPER.iloc[-1]
-    data['C_LRR'] = data.LOWER.iloc[-1]
+        # Band Analysis
+        if len(data) >= 63:
+            data['H_TRR'] = data['UPPER'].iloc[-63:-2].max()
+            data['L_TRR'] = data['UPPER'].iloc[-63:-2].min()
+            data['H_LRR'] = data['LOWER'].iloc[-63:-2].max()
+            data['L_LRR'] = data['LOWER'].iloc[-63:-2].min()
+            data['C_TRR'] = data['UPPER'].iloc[-1]
+            data['C_LRR'] = data['LOWER'].iloc[-1]
+        else:
+            data['H_TRR'] = data['UPPER'].max()
+            data['L_TRR'] = data['UPPER'].min()
+            data['H_LRR'] = data['LOWER'].max()
+            data['L_LRR'] = data['LOWER'].min()
+            data['C_TRR'] = data['UPPER'].iloc[-1]
+            data['C_LRR'] = data['LOWER'].iloc[-1]
 
-    # Get ATH value
-    ath_value = None
-    if x in max_close_prices.index:
-        ath_value = max_close_prices.loc[x]
+        # Get ATH value
+        ath_value = max_close_prices.get(x, None)
 
-    # Upper Band Logic with HATH Detection
-    if ath_value is not None:
-        condlist_high = [
-            data['C_TRR'] > ath_value,
-            np.logical_and(data['C_TRR'] > data['H_TRR'], data['C_TRR'] <= ath_value),
-            data['C_TRR'] < data['L_TRR'],
-            np.logical_and(data['C_TRR'] <= data['H_TRR'], data['C_TRR'] >= data['L_TRR'])
+        # Upper Band Logic with HATH Detection
+        if ath_value is not None and not pd.isna(ath_value):
+            condlist_high = [
+                data['C_TRR'] > ath_value,
+                np.logical_and(data['C_TRR'] > data['H_TRR'], data['C_TRR'] <= ath_value),
+                data['C_TRR'] < data['L_TRR'],
+                np.logical_and(data['C_TRR'] <= data['H_TRR'], data['C_TRR'] >= data['L_TRR'])
+            ]
+            choice_high = ['HATH', 'HH', 'LH', 'Brownian']
+        else:
+            condlist_high = [
+                data['C_TRR'] > data['H_TRR'],
+                data['C_TRR'] < data['L_TRR'],
+                np.logical_and(data['C_TRR'] <= data['H_TRR'], data['C_TRR'] >= data['L_TRR'])
+            ]
+            choice_high = ['HH', 'LH', 'Brownian']
+
+        data['Upper Band'] = np.select(condlist_high, choice_high, 'Brownian')
+        data['HATH_Flag'] = np.where(data['Upper Band'] == 'HATH', 1, 0)
+
+        # Lower Band Logic
+        condlist_low = [data['C_LRR'] > data['H_LRR'], data['C_LRR'] < data['L_LRR'], data['C_LRR'] < data['H_LRR']]
+        choice_low = ['HL', 'LL', 'Brownian']
+        data['Lower Band'] = np.select(condlist_low, choice_low, 'Brownian')
+
+        # Volume Indicators
+        data['Volume_1D'] = data['Volume'].pct_change(periods=1).round(4) * 100
+        data['Volume_1W'] = data['Volume'].pct_change(periods=5).round(4) * 100
+        data['Volume_1M'] = data['Volume'].pct_change(periods=21).round(4) * 100
+        data['Volume_3M'] = data['Volume'].pct_change(periods=63).round(4) * 100
+
+        # RSI Calculation
+        periods = 14
+        close_delta = data['Close'].diff()
+        up = close_delta.clip(lower=0)
+        down = -1 * close_delta.clip(upper=0)
+        ma_up = up.ewm(com=periods - 1, adjust=True, min_periods=periods).mean()
+        ma_down = down.ewm(com=periods - 1, adjust=True, min_periods=periods).mean()
+        rsi = ma_up / ma_down
+        data['RSI'] = 100 - (100 / (1 + rsi))
+
+        # RSI Level
+        condlist_rsi = [data['RSI'] > 70, data['RSI'] < 30, (data['RSI'] >= 30) & (data['RSI'] <= 70)]
+        choice_rsi = ['Overbought', 'Oversold', 'In-Range']
+        data['Level'] = np.select(condlist_rsi, choice_rsi, 'In-Range')
+
+        # Machine Classification
+        current_rvol_1m = data['Vlty'].iloc[-1]
+        current_rvol_3m = data['Vlty_3m'].iloc[-1]
+
+        if pd.notna(current_rvol_1m) and pd.notna(current_rvol_3m) and current_rvol_3m > 0:
+            if current_rvol_1m < current_rvol_3m:
+                machine_classification = 'Systematic Buying'
+            else:
+                machine_classification = 'Systematic Selling'
+        else:
+            machine_classification = 'Systematic Selling'  # Default
+
+        # Calculate Signal Strength
+        ss_score, ss_status, ss_action, warning_level, warning_flags = calculate_signal_strength(
+            trade=data['Trade'].iloc[-1],
+            trend=data['Trend'].iloc[-1],
+            trade_chg=data['Trade_Change'].iloc[-1],
+            trend_chg=data['Trend_Change'].iloc[-1],
+            close=data['Close'].iloc[-1],
+            lrr=data['BOTTOM_END'].iloc[-1],
+            trr=data['TOP_END'].iloc[-1],
+            upper_band=data['Upper Band'].iloc[-1],
+            lower_band=data['Lower Band'].iloc[-1],
+            ath_value=ath_value,
+            rsi=data['RSI'].iloc[-1],
+            rvol_1m=data['Vlty'].iloc[-1],
+            rvol_3m=data['Vlty_3m'].iloc[-1],
+            vix=data['VIX'].iloc[-1],
+            vix_ma=data['VIX_MA'].iloc[-1],
+            vix_roc_ma=data['VIX_ROC_MA'].iloc[-1],
+            vol_roc_ma=data['VOL_ROC_MA'].iloc[-1],
+            chg_1d=data['change_1D'].iloc[-1],
+            chg_1w=data['1W_change'].iloc[-1],
+            chg_1m=data['1M_change'].iloc[-1],
+            chg_3m=data['3M_change'].iloc[-1],
+            volume_1d=data['Volume_1D'].iloc[-1],
+            volume_1w=data['Volume_1W'].iloc[-1]
+        )
+
+        # Build Row for Summary
+        rowList = [
+            x, 
+            data['Close'].iloc[-1], 
+            data['BOTTOM_END'].iloc[-1], 
+            data['TOP_END'].iloc[-1], 
+            data['DOWN_PCT'].iloc[-1], 
+            data['UP_PCT'].iloc[-1], 
+            data['Lower Band'].iloc[-1], 
+            data['Upper Band'].iloc[-1], 
+            ath_value, 
+            data['Trade_Level'].iloc[-1], 
+            data['Trend_Level'].iloc[-1], 
+            data['Trade'].iloc[-1], 
+            data['Trade_Change'].iloc[-1],
+            data['Trend'].iloc[-1], 
+            data['Trend_Change'].iloc[-1], 
+            data['change_1D'].iloc[-1],
+            data['1W_change'].iloc[-1], 
+            data['1M_change'].iloc[-1], 
+            data['3M_change'].iloc[-1],
+            data['Vlty'].iloc[-1], 
+            data['Vlty_3m'].iloc[-1], 
+            machine_classification,
+            data['Volume_1D'].iloc[-1], 
+            data['Volume_1W'].iloc[-1], 
+            data['Volume_1M'].iloc[-1],
+            data['Volume_3M'].iloc[-1], 
+            data['RSI'].iloc[-1], 
+            data['Level'].iloc[-1], 
+            data['Beta_1Y'].iloc[-1], 
+            ss_score, 
+            ss_status, 
+            ss_action, 
+            warning_level, 
+            warning_flags
         ]
-        choice_high = ['HATH', 'HH', 'LH', 'Brownian']
-    else:
-        condlist_high = [
-            data['C_TRR'] > data['H_TRR'],
-            data['C_TRR'] < data['L_TRR'],
-            np.logical_and(data['C_TRR'] <= data['H_TRR'], data['C_TRR'] >= data['L_TRR'])
-        ]
-        choice_high = ['HH', 'LH', 'Brownian']
 
-    data['Upper Band'] = np.select(condlist_high, choice_high, 'Brownian')
-    data['HATH_Flag'] = np.where(data['Upper Band'] == 'HATH', 1, 0)
-
-    # Lower Band Logic
-    condlist_low = [data['C_LRR'] > data['H_LRR'], data['C_LRR'] < data['L_LRR'], data['C_LRR'] < data['H_LRR']]
-    choice_low = ['HL', 'LL', 'Brownian']
-    data['Lower Band'] = np.select(condlist_low, choice_low, 'Brownian')
-
-    # Volume Indicators
-    data['Volume_1D'] = data.Volume.pct_change(periods=1).round(4) * 100
-    data['Volume_1W'] = data.Volume.pct_change(periods=5).round(4) * 100
-    data['Volume_1M'] = data.Volume.pct_change(periods=21).round(4) * 100
-    data['Volume_3M'] = data.Volume.pct_change(periods=63).round(4) * 100
-
-    # RSI Calculation
-    periods = 14
-    close_delta = data['Close'].diff()
-    up = close_delta.clip(lower=0)
-    down = -1 * close_delta.clip(upper=0)
-    ma_up = up.ewm(com=periods - 1, adjust=True, min_periods=periods).mean()
-    ma_down = down.ewm(com=periods - 1, adjust=True, min_periods=periods).mean()
-    rsi = ma_up / ma_down
-    data['RSI'] = 100 - (100 / (1 + rsi))
-
-    # RSI Level
-    condlist_rsi = [data['RSI'] > 70, data['RSI'] < 30, (data['RSI'] >= 30) & (data['RSI'] <= 70)]
-    choice_rsi = ['Overbought', 'Oversold', 'In-Range']
-    data['Level'] = np.select(condlist_rsi, choice_rsi, 'In-Range')
-
-    # Machine Classification
-    current_rvol_1m = data['Vlty'].iloc[-1]
-    current_rvol_3m = data['Vlty_3m'].iloc[-1]
-
-    if current_rvol_1m < current_rvol_3m:
-        machine_classification = 'Systematic Buying'
-    else:
-        machine_classification = 'Systematic Selling'
-
-    # Calculate Signal Strength
-    ss_score, ss_status, ss_action, warning_level, warning_flags = calculate_signal_strength(
-        trade=data['Trade'].iloc[-1],
-        trend=data['Trend'].iloc[-1],
-        trade_chg=data['Trade_Change'].iloc[-1],
-        trend_chg=data['Trend_Change'].iloc[-1],
-        close=data['Close'].iloc[-1],
-        lrr=data['BOTTOM_END'].iloc[-1],
-        trr=data['TOP_END'].iloc[-1],
-        upper_band=data['Upper Band'].iloc[-1],
-        lower_band=data['Lower Band'].iloc[-1],
-        ath_value=ath_value,
-        rsi=data['RSI'].iloc[-1],
-        rvol_1m=data['Vlty'].iloc[-1],
-        rvol_3m=data['Vlty_3m'].iloc[-1],
-        vix=data['VIX'].iloc[-1],
-        vix_ma=data['VIX_MA'].iloc[-1],
-        vix_roc_ma=data['VIX_ROC_MA'].iloc[-1],
-        vol_roc_ma=data['VOL_ROC_MA'].iloc[-1],
-        chg_1d=data['change_1D'].iloc[-1],
-        chg_1w=data['1W_change'].iloc[-1],
-        chg_1m=data['1M_change'].iloc[-1],
-        chg_3m=data['3M_change'].iloc[-1],
-        volume_1d=data['Volume_1D'].iloc[-1],
-        volume_1w=data['Volume_1W'].iloc[-1]
-    )
-
-    # Build Row for Summary
-    rowList = [
-        x, data.Close.iloc[-1], data.BOTTOM_END.iloc[-1], data.TOP_END.iloc[-1], 
-        data.DOWN_PCT.iloc[-1], data.UP_PCT.iloc[-1], data['Lower Band'].iloc[-1], 
-        data['Upper Band'].iloc[-1], ath_value, data.Trade_Level.iloc[-1], 
-        data.Trend_Level.iloc[-1], data['Trade'].iloc[-1], data['Trade_Change'].iloc[-1],
-        data['Trend'].iloc[-1], data['Trend_Change'].iloc[-1], data['change_1D'].iloc[-1],
-        data['1W_change'].iloc[-1], data['1M_change'].iloc[-1], data['3M_change'].iloc[-1],
-        data['Vlty'].iloc[-1], data['Vlty_3m'].iloc[-1], machine_classification,
-        data['Volume_1D'].iloc[-1], data['Volume_1W'].iloc[-1], data['Volume_1M'].iloc[-1],
-        data['Volume_3M'].iloc[-1], data['RSI'].iloc[-1], data['Level'].iloc[-1], 
-        data['Beta_1Y'].iloc[-1], ss_score, ss_status, ss_action, warning_level, warning_flags
-    ]
-
-    summaryList.append(rowList)
+        summaryList.append(rowList)
+        print(f"   ✅ {x} processing complete\n")
+        
+    except Exception as e:
+        print(f"   ❌ ERROR processing {x}: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        print()
+        continue
 
 print("\n✅ Processing complete\n")
 
@@ -906,6 +1041,12 @@ smry = pd.DataFrame(summaryList, columns=[
 print("📋 Summary DataFrame created")
 print(f"   Rows: {len(smry)}")
 print(f"   Columns: {len(smry.columns)}")
+
+# 🔧 DEBUG: Check for missing data in output
+print("\n🔍 Checking for missing data in output:")
+for col in ['Bottom End', 'Top End', 'RVOL_1M', 'RVOL_3M', 'Beta_1Y']:
+    missing_count = smry[col].isna().sum()
+    print(f"   {col:15s}: {missing_count} missing values")
 
 # ============================================================
 # SAVE TO CSV
