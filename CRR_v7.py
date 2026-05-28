@@ -793,30 +793,53 @@ for x in tickers:
         
         # Only calculate Beta if we have enough data
         if non_null_count >= 252:
-            # Calculate rolling covariance and variance manually
-            # Beta = Cov(Stock, Market) / Var(Market)
-            
-            # Create a combined dataframe for rolling calculation
-            returns_df = pd.DataFrame({
-                'stock': data['Stock_Returns'],
-                'market': data['SP500_Returns']
-            })
-            
-            # Calculate rolling covariance between stock and market
-            rolling_cov = returns_df['stock'].rolling(window=252).cov(returns_df['market'])
-            
-            # Calculate rolling variance of market
-            rolling_var = returns_df['market'].rolling(window=252).var()
-            
-            # Beta = Covariance / Variance
-            data['Beta_1Y'] = rolling_cov / rolling_var
-            
-            # Check if Beta was actually calculated
-            beta_value = data['Beta_1Y'].iloc[-1]
-            if pd.notna(beta_value):
-                print(f"   ✅ Beta calculated: {beta_value:.3f}")
-            else:
-                print(f"   ⚠️  Beta calculation returned NaN")
+            try:
+                # Simple approach: Calculate Beta for the most recent 252 days
+                stock_returns = data['Stock_Returns'].dropna()
+                market_returns = data['SP500_Returns'].dropna()
+                
+                # Make sure we have enough data points
+                if len(stock_returns) >= 252 and len(market_returns) >= 252:
+                    # Get last 252 days
+                    stock_ret_252 = stock_returns.iloc[-252:].values
+                    market_ret_252 = market_returns.iloc[-252:].values
+                    
+                    # Align the arrays (in case of different lengths due to NaN)
+                    min_len = min(len(stock_ret_252), len(market_ret_252))
+                    stock_ret_252 = stock_ret_252[-min_len:]
+                    market_ret_252 = market_ret_252[-min_len:]
+                    
+                    # Remove any remaining NaN pairs
+                    mask = ~(np.isnan(stock_ret_252) | np.isnan(market_ret_252))
+                    stock_ret_clean = stock_ret_252[mask]
+                    market_ret_clean = market_ret_252[mask]
+                    
+                    if len(stock_ret_clean) >= 200:  # Need at least 200 valid pairs
+                        # Calculate Beta = Covariance(stock, market) / Variance(market)
+                        covariance_matrix = np.cov(stock_ret_clean, market_ret_clean)
+                        covariance = covariance_matrix[0, 1]
+                        variance = np.var(market_ret_clean, ddof=1)
+                        
+                        if variance > 0 and not np.isnan(variance):
+                            beta_value = covariance / variance
+                            
+                            # Assign Beta to all rows (or just the last row)
+                            data['Beta_1Y'] = beta_value
+                            
+                            print(f"   ✅ Beta calculated: {beta_value:.3f} ({len(stock_ret_clean)} valid pairs)")
+                        else:
+                            data['Beta_1Y'] = np.nan
+                            print(f"   ⚠️  Beta: Market variance is zero or NaN")
+                    else:
+                        data['Beta_1Y'] = np.nan
+                        print(f"   ⚠️  Beta: Only {len(stock_ret_clean)} valid pairs (need 200+)")
+                else:
+                    data['Beta_1Y'] = np.nan
+                    print(f"   ⚠️  Beta: Insufficient returns data (stock: {len(stock_returns)}, market: {len(market_returns)})")
+                    
+            except Exception as e:
+                data['Beta_1Y'] = np.nan
+                print(f"   ❌ Beta calculation error: {str(e)}")
         else:
             data['Beta_1Y'] = np.nan
             print(f"   ⚠️  Beta skipped ({non_null_count} < 252 days)")
