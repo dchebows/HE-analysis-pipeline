@@ -746,6 +746,7 @@ for x in tickers:
             ticker_data['Volume'] = StkData['Volume'][x].values
             ticker_data['VIX'] = StkData['Close']['^VIX'].values
             ticker_data['SP_Volume'] = StkData['Volume']['^GSPC'].values
+            ticker_data['SP500_Close'] = StkData['Close']['^GSPC'].values  # 🔧 ADDed THIS LINE
             ticker_data['Date'] = StkData['Date'].values
         else:
             # Single ticker format (shouldn't happen with multiple tickers)
@@ -778,18 +779,7 @@ for x in tickers:
 
         # 🔧 FIX: Beta Calculation with proper SP500 data
         data['Stock_Returns'] = data['Close'].pct_change()
-        
-        # Get S&P 500 returns properly
-        if isinstance(StkData['Close'], pd.DataFrame) and '^GSPC' in StkData['Close'].columns:
-            sp500_close = StkData['Close']['^GSPC'].values
-            # Align with current data length
-            if len(sp500_close) > len(data):
-                sp500_close = sp500_close[-len(data):]
-            sp500_series = pd.Series(sp500_close, index=data.index)
-        else:
-            sp500_series = data['Close'].copy()
-        
-        data['SP500_Returns'] = sp500_series.pct_change()
+        data['SP500_Returns'] = data['SP500_Close'].pct_change()
         
         # Only calculate Beta if we have enough data
         if non_null_count >= 252:
@@ -859,7 +849,7 @@ for x in tickers:
         data['VIX_ROC_MA'] = data['VIX_ROC'].rolling(2).mean()
 
         # Volume Calculations
-        data['VOL'] = data['SP_Volume'] / 10
+        data['VOL'] = data['SP_Volume']
         data['VOL_MA'] = data['VOL'].rolling(7).mean()
         data['VOL_ROC'] = data['VOL'].pct_change().abs()
         data['VOL_ROC_MA'] = data['VOL_ROC'].rolling(2).mean()
