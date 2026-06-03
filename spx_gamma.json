@@ -1,8 +1,8 @@
 {
-  "spx_gamma": 81.92,
+  "spx_gamma": 81.11,
   "spx_spot": 7609.78,
-  "spx_flip": 7444.6,
-  "timestamp": "2026-06-03 00:24:48",
+  "spx_flip": 7444.65,
+  "timestamp": "2026-06-03 03:54:56",
   "symbol": "_SPX",
   "gamma_throttle": 35,
   "rv_10day": 7.18,
