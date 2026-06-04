@@ -1,13 +1,13 @@
 {
-  "spx_gamma": 45.03,
+  "spx_gamma": 48.03,
   "spx_spot": 7553.68,
-  "spx_flip": 7467.33,
-  "timestamp": "2026-06-04 00:26:47",
+  "spx_flip": 7458.73,
+  "timestamp": "2026-06-04 03:57:12",
   "symbol": "_SPX",
-  "gamma_throttle": 22.55,
+  "gamma_throttle": 24.13,
   "rv_10day": 7.45,
   "vix": 16.06,
-  "dist_to_flip_pct": 1.14,
+  "dist_to_flip_pct": 1.26,
   "regime": "STRONG POSITIVE GAMMA",
   "regime_description": "Dealers aggressively long gamma. Market pinned. Vol crushed.",
   "risk_level": "LOW",
@@ -15,9 +15,9 @@
   "vol_signal": "SELL VOLATILITY",
   "dir_signal": "NEUTRAL-BULLISH (close to flip)",
   "key_levels": {
-    "gamma_flip": 7467.0,
-    "put_wall": 7243.0,
+    "gamma_flip": 7459.0,
+    "put_wall": 7235.0,
     "call_wall": 7780.0,
-    "danger_zone": 7094.0
+    "danger_zone": 7086.0
   }
 }
