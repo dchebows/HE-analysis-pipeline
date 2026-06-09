@@ -232,7 +232,7 @@ class HTMLParser:
     def _extract_table_data(self, html_path):
         try:
             with open(html_path, encoding='utf-8') as f:
-                tables = pd.read_html(f, attrs={'class': 'dtr-table'})
+                tables = pd.read_html(f, attrs={'class': 'dtr-table'}, flavor='html5lib')
                 
                 if not tables:
                     self.logger.error(f"  No table found with class='dtr-table'")
