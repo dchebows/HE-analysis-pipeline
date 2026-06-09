@@ -1,8 +1,26 @@
-# This is needed because plotly ← NOT pre-installed
-#scipy ← NOT pre-installed
+# ============================================================
+# HEDGEYE ANALYSIS PROJECT - FULL DEPENDENCIES
+# ============================================================
+# Used by: GitHub Actions (ETL + CRR workflows)
+# ============================================================
 
-streamlit>=1.32.0
+# Data Download & Processing
+yfinance>=0.2.28
 pandas>=2.0.0
 numpy>=1.24.0
+scipy>=1.10.0
+
+# ETL Pipeline (HTML parsing)
+beautifulsoup4>=4.12.0
+html5lib>=1.1
+pyyaml>=6.0
+
+# Analysis & Export
+openpyxl>=3.1.0
+
+# Visualization (for local testing)
+streamlit>=1.32.0
 plotly>=5.0.0
-requests
+
+# Utilities
+requests>=2.31.0
