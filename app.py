@@ -548,7 +548,7 @@ with tab1:
             return f'${value:,.2f}'
 
     # Create a copy for display
-    display_df = df.copy()
+    display_df = filtered_df.copy()
     display_df['Close'] = display_df.apply(lambda row: format_price(row, 'Close'), axis=1)
     display_df['Bottom End'] = display_df.apply(lambda row: format_price(row, 'Bottom End'), axis=1)
     display_df['Top End'] = display_df.apply(lambda row: format_price(row, 'Top End'), axis=1)
