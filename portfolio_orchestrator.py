@@ -1277,7 +1277,7 @@ def main():
     
     for _, row in summary_df.iterrows():
         delta_pct = row['Weight_Change'] * 100
-        delta_str = f"{row['delta_icon']}{delta_pct:+.0f}%" if abs(delta_pct) >= 0.5 else "—"
+        delta_str = f"{row['Delta_Icon']}{delta_pct:+.0f}%" if abs(delta_pct) >= 0.5 else "—"
         logger.info(
             f"{row['Asset']:<8s} │ {row['Action_Icon']} {row['Action']:<8s} │ {delta_str:>6s} │ "
             f"{row['Target_Weight']*100:>3.0f}% │ {row['Danger_Score']:>4.0f} │ {row['Sharpe']:>5.2f} │ "
