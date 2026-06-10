@@ -1,0 +1,135 @@
+================================================================================
+  MULTI-ASSET DAILY ACTION SIGNALS
+  Generated: 2026-06-10 11:06:09 UTC
+================================================================================
+
+SUMMARY TABLE:
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ASSET    │ ACTION       │  ΔWeight │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
+──────────────────────────────────────────────────────────────────────────────────────────────────────────────
+SPX      │ ⏸️ HOLD      │        — │ 100% │   19 │  0.74 │  11.0% │ -20.0% │ BULLISH
+GOLD     │ ⏸️ HOLD      │        — │  58% │   52 │  0.79 │  14.4% │ -21.2% │ BEARISH
+COMPQ    │ ⏸️ HOLD      │        — │ 100% │   22 │  0.86 │  14.9% │ -27.4% │ BULLISH
+RUT      │ ⏸️ HOLD      │        — │ 100% │    3 │  0.33 │   6.3% │ -30.7% │ BULLISH
+USD      │ 🟢 BUY        │      +6% │  76% │   41 │ -0.37 │  -0.2% │ -13.1% │ BEARISH
+
+Legend: ΔWeight = Target - Current | TGT% = Target Position | DNGR = Danger Score
+        SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
+        🟢 = Buy | 🔴 = Sell | 🟡 = Light adjustment | ⏸️ = Hold
+
+================================================================================
+
+
+================================================================================
+  S&P 500 (SPX)
+  Data from: 2026-06-09
+================================================================================
+
+  ACTION:   HOLD
+  TARGET:   100%  (was 100%, change: +0.0pp)
+
+  On $100,000 portfolio:
+    Invested:  $   100,000  (100%)
+    Cash:      $         0  (0%)
+    → No trade needed
+
+  ZONE: SAFE 🟢  |  Danger: 19/100
+  TREND: BULLISH  |  V5B Score: 0.581
+
+  BACKTEST METRICS:
+    Sharpe:           0.74
+    CAGR:            11.0%
+    Max Drawdown:   -20.0%
+
+
+================================================================================
+  GOLD FUTURES (GOLD)
+  Data from: 2026-06-09
+================================================================================
+
+  ACTION:   HOLD
+  TARGET:   58%  (was 58%, change: +0.0pp)
+
+  On $100,000 portfolio:
+    Invested:  $    57,750  (58%)
+    Cash:      $    42,250  (42%)
+    → No trade needed
+
+  ZONE: RISK 🟠  |  Danger: 52/100
+  TREND: BEARISH  |  V5B Score: -1.131
+
+  BACKTEST METRICS:
+    Sharpe:           0.79
+    CAGR:            14.4%
+    Max Drawdown:   -21.2%
+
+
+================================================================================
+  NASDAQ COMPOSITE (COMPQ)
+  Data from: 2026-06-09
+================================================================================
+
+  ACTION:   HOLD
+  TARGET:   100%  (was 100%, change: +0.0pp)
+
+  On $100,000 portfolio:
+    Invested:  $   100,000  (100%)
+    Cash:      $         0  (0%)
+    → No trade needed
+
+  ZONE: SAFE 🟢  |  Danger: 22/100
+  TREND: BULLISH  |  V5B Score: 0.115
+
+  BACKTEST METRICS:
+    Sharpe:           0.86
+    CAGR:            14.9%
+    Max Drawdown:   -27.4%
+
+
+================================================================================
+  RUSSELL 2000 (RUT)
+  Data from: 2026-06-09
+================================================================================
+
+  ACTION:   HOLD
+  TARGET:   100%  (was 100%, change: +0.0pp)
+
+  On $100,000 portfolio:
+    Invested:  $   100,000  (100%)
+    Cash:      $         0  (0%)
+    → No trade needed
+
+  ZONE: SAFE 🟢  |  Danger: 3/100
+  TREND: BULLISH  |  V5B Score: 0.875
+
+  BACKTEST METRICS:
+    Sharpe:           0.33
+    CAGR:             6.3%
+    Max Drawdown:   -30.7%
+
+
+================================================================================
+  US DOLLAR INDEX (USD)
+  Data from: 2026-06-09
+================================================================================
+
+  ACTION:   BUY
+  TARGET:   76%  (was 70%, change: +6.0pp)
+
+  On $100,000 portfolio:
+    Invested:  $    76,000  (76%)
+    Cash:      $    24,000  (24%)
+    → BUY  $     6,000
+
+  ZONE: WATCH 🟡  |  Danger: 41/100
+  TREND: BEARISH  |  V5B Score: -0.292
+
+  BACKTEST METRICS:
+    Sharpe:          -0.37
+    CAGR:            -0.2%
+    Max Drawdown:   -13.1%
+
+
+================================================================================
+END OF REPORT
+================================================================================
