@@ -419,6 +419,43 @@ with tab1:
     st.divider()
 
     # ============================================================
+    # FILTERS (OPTIONAL - IN SIDEBAR)
+    # ============================================================
+    st.sidebar.header("🔍 Filters")
+
+    # Filter by Trade signal
+    trade_filter = st.sidebar.multiselect(
+        "Trade Signal",
+        options=df['Trade'].unique(),
+        default=df['Trade'].unique()
+    )
+
+    # Filter by Trend signal
+    trend_filter = st.sidebar.multiselect(
+        "Trend Signal",
+        options=df['Trend'].unique(),
+        default=df['Trend'].unique()
+    )
+
+    # Filter by Warning Level
+    warning_filter = st.sidebar.slider(
+        "Max Warning Level",
+        min_value=0,
+        max_value=3,
+        value=3
+    )
+
+    # Apply filters
+    filtered_df = df[
+        (df['Trade'].isin(trade_filter)) &
+        (df['Trend'].isin(trend_filter)) &
+        (df['Warn_Lvl'] <= warning_filter)
+    ]
+
+    st.sidebar.divider()
+    st.sidebar.metric("Filtered Results", len(filtered_df))
+
+    # ============================================================
     # FULL DATA TABLE WITH COLOR STYLING
     # ============================================================
     st.subheader("📋 Full Analysis Table")
@@ -548,7 +585,7 @@ with tab1:
             return f'${value:,.2f}'
 
     # Create a copy for display
-    display_df = df.copy()
+    display_df = filtered_df.copy()
     display_df['Close'] = display_df.apply(lambda row: format_price(row, 'Close'), axis=1)
     display_df['Bottom End'] = display_df.apply(lambda row: format_price(row, 'Bottom End'), axis=1)
     display_df['Top End'] = display_df.apply(lambda row: format_price(row, 'Top End'), axis=1)
@@ -603,42 +640,7 @@ with tab1:
     st.caption(f"🔄 Data generated: {data_timestamp} UTC | GitHub Actions runs daily at 7:00 PM EST")
     st.caption(f"📊 Dashboard cache refreshes hourly from GitHub")
 
-    # ============================================================
-    # FILTERS (OPTIONAL - IN SIDEBAR)
-    # ============================================================
-    st.sidebar.header("🔍 Filters")
-
-    # Filter by Trade signal
-    trade_filter = st.sidebar.multiselect(
-        "Trade Signal",
-        options=df['Trade'].unique(),
-        default=df['Trade'].unique()
-    )
-
-    # Filter by Trend signal
-    trend_filter = st.sidebar.multiselect(
-        "Trend Signal",
-        options=df['Trend'].unique(),
-        default=df['Trend'].unique()
-    )
-
-    # Filter by Warning Level
-    warning_filter = st.sidebar.slider(
-        "Max Warning Level",
-        min_value=0,
-        max_value=3,
-        value=3
-    )
-
-    # Apply filters
-    filtered_df = df[
-        (df['Trade'].isin(trade_filter)) &
-        (df['Trend'].isin(trend_filter)) &
-        (df['Warn_Lvl'] <= warning_filter)
-    ]
-
-    st.sidebar.divider()
-    st.sidebar.metric("Filtered Results", len(filtered_df))
+    
 
     # ============================================================
     # DOWNLOAD BUTTON
