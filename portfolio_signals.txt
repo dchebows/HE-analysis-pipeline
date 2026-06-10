@@ -1,16 +1,16 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-06-10 12:23:34
+  Generated: 2026-06-10 23:18:26
 ================================================================================
 
 SUMMARY TABLE:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-SPX      │ 🔴 SELL       │     -21% │  79% │   39 │  1.08 │   9.8% │  -9.8% │ BULLISH
-GOLD     │ 🟢 BUY        │     +12% │  24% │   73 │  1.04 │  13.2% │  -8.9% │ BEARISH
-COMPQ    │ 🔴 SELL       │     -15% │  72% │   44 │  1.05 │  12.1% │ -11.6% │ BULLISH
-RUT      │ 🟢 BUY        │     +18% │  30% │   24 │  0.86 │   8.2% │  -8.4% │ BULLISH
+SPX      │ 🔴 SELL       │     -14% │  74% │   42 │  1.06 │   9.7% │  -9.8% │ BULLISH
+GOLD     │ 🟡 LIGHT BUY  │      +3% │  15% │   84 │  1.03 │  13.1% │  -8.9% │ BEARISH
+COMPQ    │ 🔴 SELL       │     -40% │  23% │   75 │  1.04 │  12.0% │ -11.6% │ BEARISH
+RUT      │ 🟢 BUY        │     +18% │  30% │   22 │  0.86 │   8.2% │  -8.4% │ BULLISH
 USD      │ 🟢 BUY        │     +18% │  59% │   48 │ -0.28 │   0.8% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
@@ -23,127 +23,127 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   S&P 500 (SPX)
-  Data from: 2026-06-09
+  Data from: 2026-06-10
 ================================================================================
 
   ACTION:   SELL
-  TARGET:   79%  (was 100%, change: -21.0pp)
-  ΔDay:     -21% from previous backtest day
+  TARGET:   74%  (was 88%, change: -13.5pp)
+  ΔDay:     -14% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    79,000  (79%)
-    Cash:      $    21,000  (21%)
-    → SELL $    21,000 of ^GSPC
+    Invested:  $    74,500  (74%)
+    Cash:      $    25,500  (26%)
+    → SELL $    13,500 of ^GSPC
 
-  ZONE: WATCH  |  Danger: 39/100
+  ZONE: WATCH  |  Danger: 42/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.558        0
-  Score Velocity                 -0.347       15
+  V5B Score                       0.381        0
+  Score Velocity                 -0.497       15
   TREND                         BULLISH        0
   TRADE                         BEARISH       15
-  ^VIX Level                       21.0        1
-  ^VIX Accel                      32.9%        7
-  Mkt Drawdown                    -3.4%        1
+  ^VIX Level                       22.2        4
+  ^VIX Accel                      38.4%        7
+  Mkt Drawdown                    -4.5%        1
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                39
+  TOTAL DANGER                                42
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
   Metric                         D1
   ────────────────────────────────────────────────────
-  Sharpe                       1.08
-  CAGR                         9.8%
+  Sharpe                       1.06
+  CAGR                         9.7%
   Max Drawdown                -9.8%
   Avg Exposure                  51%
 
 
 ================================================================================
   GOLD FUTURES (GOLD)
-  Data from: 2026-06-09
+  Data from: 2026-06-10
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   24%  (was 12%, change: +12.3pp)
-  ΔDay:     +12% from previous backtest day
+  ACTION:   LIGHT BUY
+  TARGET:   15%  (was 12%, change: +3.0pp)
+  ΔDay:     +3% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    24,333  (24%)
-    Cash:      $    75,667  (76%)
-    → BUY  $    12,333 of GC=F
+    Invested:  $    15,000  (15%)
+    Cash:      $    85,000  (85%)
+    → BUY  $     3,000 of GC=F
 
-  ZONE: DANGER  |  Danger: 73/100
+  ZONE: CRISIS  |  Danger: 84/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -1.337       20
-  Score Velocity                 -0.188        5
+  V5B Score                      -1.354       20
+  Score Velocity                 -0.134        5
   TREND                         BEARISH       15
   TRADE                         BEARISH       15
-  ^GVZ Level                       28.4        8
-  ^GVZ Accel                      16.4%        3
-  Mkt Drawdown                   -19.4%        7
+  ^GVZ Level                       32.2       12
+  ^GVZ Accel                      31.4%        7
+  Mkt Drawdown                   -23.5%       10
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                73
+  TOTAL DANGER                                84
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
   Metric                         D1
   ────────────────────────────────────────────────────
-  Sharpe                       1.04
-  CAGR                        13.2%
+  Sharpe                       1.03
+  CAGR                        13.1%
   Max Drawdown                -8.9%
   Avg Exposure                  52%
 
 
 ================================================================================
   NASDAQ COMPOSITE (COMPQ)
-  Data from: 2026-06-09
+  Data from: 2026-06-10
 ================================================================================
 
   ACTION:   SELL
-  TARGET:   72%  (was 86%, change: -15.0pp)
-  ΔDay:     -15% from previous backtest day
+  TARGET:   23%  (was 63%, change: -40.0pp)
+  ΔDay:     -40% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    71,500  (72%)
-    Cash:      $    28,500  (29%)
-    → SELL $    15,000 of ^IXIC
+    Invested:  $    22,797  (23%)
+    Cash:      $    77,203  (77%)
+    → SELL $    40,000 of ^IXIC
 
-  ZONE: WATCH  |  Danger: 44/100
+  ZONE: DANGER  |  Danger: 75/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.060        2
-  Score Velocity                 -0.836       15
-  TREND                         BULLISH        0
+  V5B Score                      -0.230       15
+  Score Velocity                 -1.087       15
+  TREND                         BEARISH       15
   TRADE                         BEARISH       15
-  ^VIX Level                       21.0        1
-  ^VIX Accel                      32.9%        7
-  Mkt Drawdown                    -5.8%        4
+  ^VIX Level                       22.2        4
+  ^VIX Accel                      38.4%        7
+  Mkt Drawdown                    -7.1%        4
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                44
+  TOTAL DANGER                                75
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
   Metric                         D1
   ────────────────────────────────────────────────────
-  Sharpe                       1.05
-  CAGR                        12.1%
+  Sharpe                       1.04
+  CAGR                        12.0%
   Max Drawdown               -11.6%
   Avg Exposure                  51%
 
 
 ================================================================================
   RUSSELL 2000 (RUT)
-  Data from: 2026-06-09
+  Data from: 2026-06-10
 ================================================================================
 
   ACTION:   BUY
@@ -155,21 +155,21 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
     Cash:      $    70,000  (70%)
     → BUY  $    18,000 of ^RUT
 
-  ZONE: SAFE  |  Danger: 24/100
+  ZONE: SAFE  |  Danger: 22/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.860        0
-  Score Velocity                 -0.051        2
+  V5B Score                       0.858        0
+  Score Velocity                 -0.038        0
   TREND                         BULLISH        0
   TRADE                         BEARISH       15
-  ^VIX Level                       21.0        0
-  ^VIX Accel                      32.9%        7
+  ^VIX Level                       22.2        0
+  ^VIX Accel                      38.4%        7
   Mkt Drawdown                    -3.4%        0
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                24
+  TOTAL DANGER                                22
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
@@ -201,12 +201,12 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -0.292       15
-  Score Velocity                  0.105        0
+  V5B Score                      -0.300       20
+  Score Velocity                  0.096        0
   TREND                         BEARISH       15
   TRADE                         NEUTRAL        3
-  ^VIX Level                       21.0        1
-  ^VIX Accel                      32.9%        7
+  ^VIX Level                       19.9        0
+  ^VIX Accel                      26.0%        3
   Mkt Drawdown                   -12.4%        7
   ────────────────────────────────────────────────────
   TOTAL DANGER                                48
