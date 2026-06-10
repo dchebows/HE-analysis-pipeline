@@ -359,26 +359,45 @@ with tab1:
         # Signals
         col1, col2 = st.columns(2)
         
-        with col1:
-            st.markdown("**📊 Volatility Signal**")
-            vol_signal = spx_gamma['vol_signal']
-            if 'SELL' in vol_signal:
-                vol_bg = "#28a745"
-            elif 'BUY' in vol_signal:
-                vol_bg = "#dc3545"
-            else:
-                vol_bg = "#ffc107"
-            
-            st.markdown(f"""
-                <div style="background-color: {dir_bg}; padding: 10px; border-radius: 5px; text-align: center;">
-                    <span style="color: white; font-weight: bold;">{dir_signal}</span>
-                </div>
-            """, unsafe_allow_html=True)
+        # Signals
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("**📊 Volatility Signal**")
+        vol_signal = spx_gamma['vol_signal']
+        if 'SELL' in vol_signal:
+            vol_bg = "#28a745"
+        elif 'BUY' in vol_signal:
+            vol_bg = "#dc3545"
+        else:
+            vol_bg = "#ffc107"
         
-        # Data source and timestamp
-        st.caption(f"🔄 Data refreshed: {spx_gamma['timestamp']} UTC | Source: CBOE GEX + Yahoo Finance")
+        st.markdown(f"""
+            <div style="background-color: {vol_bg}; padding: 10px; border-radius: 5px; text-align: center;">
+                <span style="color: white; font-weight: bold;">{vol_signal}</span>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    with col2:
+        st.markdown("**📈 Directional Signal**")
+        dir_signal = spx_gamma['dir_signal']
+        if 'BULLISH' in dir_signal:
+            dir_bg = "#28a745"
+        elif 'BEAR' in dir_signal or 'TREND' in dir_signal:
+            dir_bg = "#dc3545"
+        else:
+            dir_bg = "#6c757d"
+        
+        st.markdown(f"""
+            <div style="background-color: {dir_bg}; padding: 10px; border-radius: 5px; text-align: center;">
+                <span style="color: white; font-weight: bold;">{dir_signal}</span>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    # Data source and timestamp
+    st.caption(f"🔄 Data refreshed: {spx_gamma['timestamp']} UTC | Source: CBOE GEX + Yahoo Finance")
 
-    st.divider()
+st.divider()
     
     # ============================================================
     # SIGNAL STRENGTH HIGHLIGHTS
