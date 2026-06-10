@@ -370,3 +370,299 @@ Last Updated: June 2026
 Status: ✅ Production Ready
 Made with 📊 for systematic trading
 
+# 💼 Portfolio Signals Daily Update
+
+## Overview
+
+The **Portfolio Signals Daily Update** is an automated trading signal system that generates daily position sizing and action recommendations for a multi-asset portfolio. It runs every weekday at **7:05 PM EST** via GitHub Actions, processing enriched market data through sophisticated quantitative models.
+
+## What It Does
+
+This system analyzes **5 core assets** and produces:
+- **Buy/Sell/Hold signals** with position sizing recommendations
+- **Danger scores** (0-100) for risk management
+- **Performance metrics** (Sharpe ratio, CAGR, Max Drawdown)
+- **Detailed signal breakdowns** showing what's driving each recommendation
+
+## Assets Covered
+
+| Asset | Name | Ticker |
+|-------|------|--------|
+| SPX | S&P 500 Index | ^GSPC |
+| GOLD | Gold Futures | GC=F |
+| COMPQ | NASDAQ Composite | ^IXIC |
+| RUT | Russell 2000 | ^RUT |
+| USD | US Dollar Index | DX-Y.NYB |
+
+## How It Works
+
+### 1. Data Pipeline Flow
+
+Enriched CSVs (from ETL Pipeline) ↓ Portfolio Orchestrator (Python Script) ↓ V5B Trend Model → Signals V1 Fractal Model → Signals V6 Ensemble → Combined Trend Trade Signal Model → Short-term signals ↓ Danger Score Calculation (7 inputs) ↓ D1 Strategy Backtest → Position sizing ↓ Output Files (CSV + TXT) ↓ Streamlit Dashboard (Auto-refresh)
+
+### 2. Model Architecture
+
+**V5B Trend Model:**
+- ATH distance analysis
+- Rolling high momentum
+- Rate of change
+- Volatility regime detection
+- VIX integration
+- Level slope analysis
+
+**V6 Ensemble:**
+- Context-aware model switching
+- ATH proximity logic
+- Volatility regime adaptation
+- Confirmation system with hysteresis
+
+**Trade Signal Model:**
+- Keltner channel-based levels
+- Short-term momentum
+- Dynamic position sizing
+
+**Danger Score System:**
+- V5B score contribution
+- Score velocity
+- Trend/Trade alignment
+- VIX levels and acceleration
+- Market drawdown
+- **Output:** 0-100 score (higher = more danger)
+
+### 3. Position Sizing Logic
+
+**Dynamic Weighting:**
+- Danger 0-25: 100% position (SAFE)
+- Danger 25-45: 70-100% position (WATCH)
+- Danger 45-65: 35-70% position (RISK)
+- Danger 65-80: 15-35% position (DANGER)
+- Danger 80-100: 10-15% position (CRISIS)
+
+**Safety Constraints:**
+- Maximum daily increase: 18%
+- Maximum daily decrease: 40%
+- Minimum position: 10%
+- Circuit breaker at -6% portfolio drawdown
+- Emergency reduction at -8% portfolio drawdown
+
+## Automated Schedule
+
+| Time (EST) | Action | Output |
+|------------|--------|--------|
+| 7:00 PM | ETL Pipeline runs | Enriched CSVs updated |
+| 7:05 PM | Portfolio Orchestrator runs | Signals generated |
+| 7:08 PM | Files committed to GitHub | `portfolio_summary.csv`, `portfolio_signals.txt` |
+| 8:00 PM | Streamlit cache refreshes | Dashboard updates |
+
+**Runs:** Monday-Friday (market days only)
+
+## Output Files
+
+### 1. `portfolio_summary.csv`
+
+Machine-readable CSV with columns:
+- Asset, Name, Last_Date, Close, Trend, V5B_Score
+- Action, Action_Icon, Delta_Icon
+- Current_Weight, Target_Weight, Weight_Change
+- Danger_Score, Zone, Zone_Icon
+- Sharpe, CAGR, Max_DD
+- Invested_Dollars, Cash_Dollars, Dollar_Change
+
+### 2. `portfolio_signals.txt`
+
+Human-readable text report with:
+- **Summary table** - Quick overview of all assets
+- **Detailed breakdowns** - Signal components for each asset
+- **Action recommendations** - Specific buy/sell dollar amounts
+- **Risk zones** - Current danger level classification
+- **Performance context** - Backtest metrics
+
+## Streamlit Dashboard Integration
+
+### Location
+**Tab:** 💼 Portfolio Signals (second tab)
+
+### Features
+- **Summary metrics** - Average danger, target positions, action counts
+- **Interactive table** - Sortable, filterable asset list
+- **Expandable details** - Click to see full breakdown per asset
+- **Download buttons** - Export CSV or TXT reports
+- **Real-time updates** - Auto-refresh hourly
+
+### How to Use
+1. Open Streamlit app
+2. Click **"💼 Portfolio Signals"** tab
+3. Review summary table:
+   - 🟢 = BUY signal
+   - 🔴 = SELL signal
+   - ⏸️ = HOLD signal
+   - 🟡 = Light adjustment
+4. Check **Danger Score** and **Zone** for risk context
+5. Expand asset rows for detailed signal breakdown
+6. Download reports for offline analysis
+
+## Technical Implementation
+
+### Script: `portfolio_orchestrator.py`
+
+**Location:** Root directory
+
+**Key Functions:**
+- `trend_v5b_model()` - V5B trend detection
+- `v6_ohlc_context_switch()` - Ensemble logic
+- `trade_signal_model()` - Short-term signals
+- `compute_danger_score()` - Risk assessment
+- `run_d1_strategy()` - Position sizing backtest
+- `generate_text_report()` - Human-readable output
+
+**Dependencies:**
+- pandas
+- numpy
+- yfinance (not used directly, data from enriched CSVs)
+- scipy
+
+### Workflow: `.github/workflows/portfolio_daily.yml`
+
+**Trigger:** 
+- Schedule: `5 23 * * 1-5` (7:05 PM EST, Mon-Fri)
+- Manual: workflow_dispatch
+
+**Steps:**
+1. Checkout repository
+2. Set up Python 3.11
+3. Install dependencies
+4. Run `portfolio_orchestrator.py`
+5. Verify output files exist
+6. Commit and push to GitHub
+7. Upload artifacts (backup)
+
+## Risk Management Features
+
+### Built-in Safety Systems
+
+**Circuit Breaker:**
+- Monitors portfolio drawdown in real-time
+- Reduces exposure at -6% drawdown
+- Emergency reduction at -8% drawdown
+- Auto-recovery when back above -3%
+
+**Asymmetric Position Limits:**
+- Faster selling than buying (risk management)
+- Prevents overexposure during rallies
+- Allows quick exit during downturns
+
+**Danger Score Smoothing:**
+- Multi-day confirmation required
+- Hysteresis prevents whipsaws
+- Score velocity tracking
+
+## Performance Metrics
+
+Based on backtests from 2017-01-01 to present:
+
+| Asset | Sharpe Ratio | CAGR | Max Drawdown |
+|-------|--------------|------|--------------|
+| SPX | 1.08 | 9.8% | -9.8% |
+| GOLD | 1.04 | 13.2% | -8.9% |
+| COMPQ | 1.05 | 12.1% | -11.6% |
+| RUT | 0.86 | 8.2% | -8.4% |
+| USD | -0.28 | 0.8% | -7.6% |
+
+**Portfolio Average Sharpe:** 0.75+
+
+## Interpreting Signals
+
+### Action Types
+
+| Action | Meaning | Typical Scenario |
+|--------|---------|------------------|
+| 🟢 BUY | Increase position significantly (>3%) | Strong bullish signals, low danger |
+| 🟡 LIGHT BUY | Small increase (1-3%) | Moderately positive signals |
+| ⏸️ HOLD | No change needed (<1%) | Position already optimal |
+| 🟡 LIGHT SELL | Small decrease (1-3%) | Moderately negative signals |
+| 🔴 SELL | Decrease position significantly (>3%) | Bearish signals, high danger |
+
+### Danger Zones
+
+| Score | Zone | Icon | Meaning |
+|-------|------|------|---------|
+| 0-25 | SAFE | 🟢 | Low risk, normal positioning |
+| 25-45 | WATCH | 🟡 | Moderate risk, start reducing |
+| 45-65 | RISK | 🟠 | Elevated risk, defensive positioning |
+| 65-80 | DANGER | 🔴 | High risk, minimal exposure |
+| 80-100 | CRISIS | 🚨 | Extreme risk, preservation mode |
+
+### Trend Signals
+
+- **BULLISH** - Uptrend confirmed, favor long positions
+- **BEARISH** - Downtrend confirmed, reduce or short
+- **NEUTRAL** - No clear trend, cautious positioning
+
+## Customization
+
+### Adding New Assets
+
+1. Add enriched CSV to `Risk_Range_Data/04_enriched/`
+2. Update `ASSETS_TO_RUN` in `portfolio_orchestrator.py`
+3. Add asset configuration to `ASSET_REGISTRY`
+4. Commit and workflow will include new asset
+
+### Adjusting Parameters
+
+Edit `portfolio_orchestrator.py`:
+- **V5B parameters** - Trend sensitivity
+- **Trade parameters** - Short-term signal tuning
+- **Danger parameters** - Risk thresholds
+- **Position sizing** - Danger-to-weight mapping
+
+### Changing Schedule
+
+Edit `.github/workflows/portfolio_daily.yml`:
+```yaml
+schedule:
+  - cron: '5 23 * * 1-5'  # Current: 7:05 PM EST
+
+Maintenance
+Daily Monitoring
+Check GitHub Actions for green checkmarks
+Verify output files updated with current date
+Review Streamlit dashboard for anomalies
+Weekly Review
+Compare signals to actual market performance
+Check for failed workflow runs
+Verify enriched CSVs are updating
+Monthly Analysis
+Review backtest performance metrics
+Compare actual vs. predicted results
+Adjust parameters if needed
+Troubleshooting
+Issue: Workflow fails with "File not found"
+Cause: Enriched CSVs not created by ETL pipeline
+Solution: Run ETL workflow first to generate enriched data
+Issue: Signals different from Colab output
+Cause: Path-dependent backtest (uses yesterday's position)
+Solution: This is expected behavior for live trading
+Issue: Streamlit shows old data
+Cause: Cache not refreshed
+Solution: Press "C" key in Streamlit app → Clear cache
+Issue: Missing danger score components
+Cause: Missing VIX data in enriched CSVs
+Solution: Verify enriched CSVs have VIX_Close column
+Credits
+Models:
+V5B Trend Model - Proprietary distance/momentum composite
+V6 Ensemble - Context-aware regime switching
+D1 Strategy - Dynamic danger-based allocation
+Data Sources:
+Hedgeye Risk Range signals (manual HTML upload)
+Yahoo Finance OHLC data (automated via ETL)
+CBOE VIX/GVZ volatility indices
+Infrastructure:
+GitHub Actions (automation)
+Streamlit Cloud (dashboard hosting)
+Python 3.11 (execution environment)
+License
+This portfolio signal system is part of the HE-analysis-pipeline project.
+Last Updated: 2026-06-10
+Version: 1.0.0
+Status: ✅ Production Ready
