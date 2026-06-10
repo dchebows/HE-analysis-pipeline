@@ -580,8 +580,19 @@ with tab1:
             'SS_Score': '{:.0f}'
         })
 
-    # Display styled table
-    st.dataframe(styled_df, use_container_width=True, height=600)
+    # Display styled table with frozen Ticker column
+    st.dataframe(
+        styled_df,
+        use_container_width=True,
+        height=600,
+        column_config={
+            "Ticker": st.column_config.TextColumn(
+                "Ticker",
+                width="small",
+                pinned=True,
+            ),
+        },
+    )
 
     # Add data refresh timestamp at bottom
     if spx_gamma and 'timestamp' in spx_gamma:
