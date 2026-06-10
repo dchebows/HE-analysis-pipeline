@@ -397,7 +397,7 @@ with tab1:
     # Data source and timestamp
     st.caption(f"🔄 Data refreshed: {spx_gamma['timestamp']} UTC | Source: CBOE GEX + Yahoo Finance")
 
-st.divider()
+    st.divider()
     
     # ============================================================
     # SIGNAL STRENGTH HIGHLIGHTS
