@@ -1105,6 +1105,7 @@ def generate_summary_dataframe(results):
             'V5B_Score': result['bt']['v5b_score'].iloc[-1],
             'Action': result['action'],
             'Action_Icon': result['action_icon'],
+            'Delta_Icon': result['delta_icon'],  # ← ADDED THIS LINE
             'Current_Weight': result['current_weight'],
             'Target_Weight': result['prosp_weight'],
             'Weight_Change': result['weight_change'],
