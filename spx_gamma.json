@@ -1,13 +1,13 @@
 {
-  "spx_gamma": -47.17,
+  "spx_gamma": -51.23,
   "spx_spot": 7266.99,
-  "spx_flip": 7412.08,
-  "timestamp": "2026-06-10 23:13:45",
+  "spx_flip": 7415.78,
+  "timestamp": "2026-06-11 00:13:47",
   "symbol": "_SPX",
-  "gamma_throttle": -41.37,
+  "gamma_throttle": -44.56,
   "rv_10day": 16.74,
-  "vix": 19.87,
-  "dist_to_flip_pct": -2.0,
+  "vix": 22.22,
+  "dist_to_flip_pct": -2.05,
   "regime": "DEEP NEGATIVE GAMMA",
   "regime_description": "Extreme negative gamma. Crash/melt-up dynamics possible.",
   "risk_level": "EXTREME",
@@ -15,9 +15,9 @@
   "vol_signal": "BUY VOLATILITY / TREND FOLLOW",
   "dir_signal": "FOLLOW THE TREND",
   "key_levels": {
-    "gamma_flip": 7412.0,
-    "put_wall": 7190.0,
+    "gamma_flip": 7416.0,
+    "put_wall": 7193.0,
     "call_wall": 7485.0,
-    "danger_zone": 7041.0
+    "danger_zone": 7045.0
   }
 }
