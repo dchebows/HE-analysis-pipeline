@@ -1,52 +1,55 @@
 name: ETL Pipeline - Risk Range Data
-
 on:
   schedule:
-    - cron: '0 11 * * 1-5'  # 6am EST/EDT Mon-Fri (11am UTC)
-  
-  workflow_dispatch:  # Allows manual trigger
-  
+    - cron: '0 11 * * 1-5'  # 6am EST Mon-Fri (11am UTC)
+  workflow_dispatch:
   push:
+    branches:
+      - main                              # Only fire on pushes to default branch
     paths:
-      - 'Risk_Range_Data/00_raw_html/**'
+      - 'Risk_Range_Data/00_raw_html/**'  # Only fire when raw HTML data changes
+
+concurrency:
+  group: daily-pipeline
+  cancel-in-progress: false
 
 jobs:
   etl-pipeline:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
-      
+
       - name: Install dependencies
         run: |
           pip install --upgrade pip
           pip install -r requirements.txt
-      
+
       - name: Run ETL Pipeline
         run: python scripts/etl_pipeline.py
         env:
           TZ: America/New_York
-      
+
       - name: Commit results
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          
+
           git add Risk_Range_Data/**/*.csv
           git add Risk_Range_Data/logs/*.log
-          
+
           git diff --staged --quiet || git commit -m "🔄 ETL update $(date +'%Y-%m-%d %H:%M EST')"
           git push
-      
+
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
