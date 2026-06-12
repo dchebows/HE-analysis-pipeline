@@ -1,85 +1,81 @@
 name: Portfolio Signals Daily Update
-
-# Run at 7:05 PM EST/EDT Monday-Friday
-# (5 minutes after CRR script to ensure enriched data is ready)
+# Runs automatically after Daily CRR Analysis completes successfully.
+# Can also be triggered manually via workflow_dispatch.
 on:
-  schedule:
-    - cron: '5 23 * * 1-5'  # 23:05 UTC = 7:05 PM EST (winter) / 6:05 PM EDT (summer)
-  workflow_dispatch:  # Allows manual trigger for testing
+  workflow_run:
+    workflows: ["Daily CRR Analysis"]  # Must match the 'name:' field in crr_analysis.yml exactly
+    types:
+      - completed
+  workflow_dispatch:
+
+concurrency:
+  group: daily-pipeline
+  cancel-in-progress: false
 
 jobs:
   generate-portfolio-signals:
     runs-on: ubuntu-latest
-    
+    # On scheduled runs, only proceed if CRR succeeded.
+    # workflow_dispatch bypasses this check so you can run manually anytime.
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+
     steps:
-    # Step 1: Checkout repository
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        fetch-depth: 0
-    
-    # Step 2: Set up Python
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
-    
-    # Step 3: Install dependencies
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pandas numpy yfinance requests scipy
-    
-    # Step 4: Run portfolio orchestrator
-    - name: Run portfolio orchestrator
-      run: |
-        python portfolio_orchestrator.py
-    
-    # Step 5: Verify output files were created
-    - name: Verify output files
-      run: |
-        if [ ! -f portfolio_summary.csv ]; then
-          echo "ERROR: portfolio_summary.csv not generated"
-          exit 1
-        fi
-        if [ ! -f portfolio_signals.txt ]; then
-          echo "ERROR: portfolio_signals.txt not generated"
-          exit 1
-        fi
-        echo "✅ Output files verified"
-        
-        # Show summary stats
-        echo "📊 Summary CSV rows: $(wc -l < portfolio_summary.csv)"
-        echo "📄 Signals TXT size: $(wc -l < portfolio_signals.txt) lines"
-    
-    # Step 6: Configure git
-    - name: Configure git
-      run: |
-        git config --global user.name 'github-actions[bot]'
-        git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-    
-    # Step 7: Commit and push output files
-    - name: Commit and push output files
-      run: |
-        git add portfolio_summary.csv portfolio_signals.txt
-        
-        # Only commit if there are changes
-        if git diff --staged --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "📊 Portfolio signals update $(date +'%Y-%m-%d %H:%M UTC')"
-          git push
-          echo "✅ Changes pushed to repository"
-        fi
-    
-    # Step 8: Upload artifacts (backup in case push fails)
-    - name: Upload artifacts
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: portfolio-signals-${{ github.run_number }}
-        path: |
-          portfolio_summary.csv
-          portfolio_signals.txt
-        retention-days: 30
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy yfinance requests scipy
+
+      - name: Run portfolio orchestrator
+        run: python portfolio_orchestrator.py
+
+      - name: Verify output files
+        run: |
+          if [ ! -f portfolio_summary.csv ]; then
+            echo "ERROR: portfolio_summary.csv not generated"
+            exit 1
+          fi
+          if [ ! -f portfolio_signals.txt ]; then
+            echo "ERROR: portfolio_signals.txt not generated"
+            exit 1
+          fi
+          echo "✅ Output files verified"
+          echo "📊 Summary CSV rows: $(wc -l < portfolio_summary.csv)"
+          echo "📄 Signals TXT size: $(wc -l < portfolio_signals.txt) lines"
+
+      - name: Configure git
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+      - name: Commit and push output files
+        run: |
+          git add portfolio_summary.csv portfolio_signals.txt
+
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "📊 Portfolio signals update $(date +'%Y-%m-%d %H:%M UTC')"
+            git push
+            echo "✅ Changes pushed to repository"
+          fi
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portfolio-signals-${{ github.run_number }}
+          path: |
+            portfolio_summary.csv
+            portfolio_signals.txt
+          retention-days: 30
