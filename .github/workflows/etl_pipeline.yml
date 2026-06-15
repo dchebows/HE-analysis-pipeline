@@ -1,7 +1,7 @@
 name: ETL Pipeline - Risk Range Data
 on:
   schedule:
-    - cron: '0 11 * * 1-5'  # 6am EST Mon-Fri (11am UTC)
+    - cron: '0 13 * * 1-5'  # 8am EST Mon-Fri (13:00 UTC)
   workflow_dispatch:
   push:
     branches:
@@ -10,7 +10,7 @@ on:
       - 'Risk_Range_Data/00_raw_html/**'  # Only fire when raw HTML data changes
 
 concurrency:
-  group: daily-pipeline
+  group: etl-portfolio-chain
   cancel-in-progress: false
 
 jobs:
