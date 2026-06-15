@@ -1,11 +1,11 @@
 name: Daily CRR Analysis
 on:
   schedule:
-    - cron: '0 23 * * 1-5'  # 7pm EST Mon-Fri (11pm UTC)
+    - cron: '0 22 * * 1-5'  # 6pm EST Mon-Fri (22:00 UTC)
   workflow_dispatch:
 
 concurrency:
-  group: daily-pipeline
+  group: crr-pipeline
   cancel-in-progress: false
 
 jobs:
