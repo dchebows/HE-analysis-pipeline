@@ -1,15 +1,15 @@
 """
 parse_huntington.py
 --------------------
-Extracts the "Debit Card / POS Activity (-)" section from a Huntington Bank
-PDF statement, auto-categorizes each transaction, and writes a CSV with
-columns: Date, Description, Category, Amount.
+Extracts the "Debit Card / POS Activity (-)" section from Huntington Bank
+PDF statements in a directory, auto-categorizes each transaction, and writes 
+a combined CSV with columns: Date, Description, Category, Amount.
 
 Usage:
-    python parse_huntington.py <path_to_pdf> [output_csv]
+    python parse_huntington.py <directory_path> [output_csv]
 
-If output_csv is omitted, the CSV is written next to the PDF with the same
-base name and a .csv extension.
+If output_csv is omitted, defaults to "combined_transactions.csv" in the 
+current directory.
 """
 
 import re
@@ -163,10 +163,14 @@ def parse_transactions(pdf_path: str) -> list:
     transactions = []
     all_text_lines = []
 
-    with pdfplumber.open(pdf_path) as pdf:
-        for page in pdf.pages:
-            text = page.extract_text() or ""
-            all_text_lines.extend(text.splitlines())
+    try:
+        with pdfplumber.open(pdf_path) as pdf:
+            for page in pdf.pages:
+                text = page.extract_text() or ""
+                all_text_lines.extend(text.splitlines())
+    except Exception as e:
+        print(f"  Error reading {pdf_path}: {e}")
+        return []
 
     full_text = "\n".join(all_text_lines)
     statement_years = extract_statement_years(full_text)
@@ -213,8 +217,6 @@ def parse_transactions(pdf_path: str) -> list:
             "Amount":      amount,
         })
 
-    # Sort by date ascending
-    transactions.sort(key=lambda r: datetime.strptime(r["Date"], "%m/%d/%Y"))
     return transactions
 
 
@@ -225,23 +227,58 @@ def write_csv(transactions: list, output_path: str):
         )
         writer.writeheader()
         writer.writerows(transactions)
-    print(f"Wrote {len(transactions)} transactions to {output_path}")
+    print(f"\n✓ Wrote {len(transactions)} total transactions to {output_path}")
 
 
 def main():
     if len(sys.argv) < 2:
-        print("Usage: python parse_huntington.py <statement.pdf> [output.csv]")
+        print("Usage: python parse_huntington.py <directory_path> [output.csv]")
         sys.exit(1)
 
-    pdf_path = sys.argv[1]
-    csv_path = sys.argv[2] if len(sys.argv) >= 3 else str(Path(pdf_path).with_suffix(".csv"))
+    directory_path = Path(sys.argv[1])
+    csv_path = sys.argv[2] if len(sys.argv) >= 3 else "combined_transactions.csv"
 
-    transactions = parse_transactions(pdf_path)
-    if not transactions:
-        print("No debit card transactions found. Check that the PDF is a Huntington statement.")
+    # Validate directory
+    if not directory_path.exists():
+        print(f"Error: Directory '{directory_path}' does not exist.")
+        sys.exit(1)
+    
+    if not directory_path.is_dir():
+        print(f"Error: '{directory_path}' is not a directory.")
         sys.exit(1)
 
-    write_csv(transactions, csv_path)
+    # Find all PDF files in the directory
+    pdf_files = sorted(directory_path.glob("*.pdf"))
+    
+    if not pdf_files:
+        print(f"No PDF files found in '{directory_path}'")
+        sys.exit(1)
+
+    print(f"Found {len(pdf_files)} PDF file(s) in '{directory_path}'")
+    print("-" * 60)
+
+    # Process all PDFs and collect transactions
+    all_transactions = []
+    
+    for pdf_file in pdf_files:
+        print(f"Processing: {pdf_file.name}...", end=" ")
+        transactions = parse_transactions(str(pdf_file))
+        
+        if transactions:
+            print(f"✓ {len(transactions)} transactions")
+            all_transactions.extend(transactions)
+        else:
+            print("⚠ No transactions found")
+
+    if not all_transactions:
+        print("\nNo debit card transactions found in any PDF files.")
+        sys.exit(1)
+
+    # Sort all transactions by date ascending
+    all_transactions.sort(key=lambda r: datetime.strptime(r["Date"], "%m/%d/%Y"))
+
+    print("-" * 60)
+    write_csv(all_transactions, csv_path)
 
 
 if __name__ == "__main__":
