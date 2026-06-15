@@ -282,7 +282,7 @@ def parse_transactions(pdf_path: str) -> list:
 def write_csv(transactions: list, output_path: str):
     with open(output_path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(
-            f, fieldfields=["Date", "Description", "Category", "Amount", "Type"]
+            f, fieldnames=["Date", "Description", "Category", "Amount", "Type"]
         )
         writer.writeheader()
         writer.writerows(transactions)
