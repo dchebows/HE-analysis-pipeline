@@ -1,17 +1,17 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-06-18 18:55:36
+  Generated: 2026-06-18 19:14:42
 ================================================================================
 
 SUMMARY TABLE:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-SPX      │ 🟢 BUY        │     +18% │  36% │    0 │  0.00 │   0.0% │   0.0% │ BULLISH
-GOLD     │ 🟢 BUY        │     +13% │  31% │   68 │  0.00 │   0.0% │   0.0% │ BEARISH
-COMPQ    │ 🟢 BUY        │     +18% │  36% │   15 │  0.00 │   0.0% │   0.0% │ BULLISH
-RUT      │ 🟢 BUY        │     +18% │  36% │    0 │  0.00 │   0.0% │   0.0% │ BULLISH
-USD      │ 🟢 BUY        │     +18% │  36% │   40 │  0.00 │   0.0% │   0.0% │ BEARISH
+SPX      │ ⏸️ HOLD      │        — │ 100% │    0 │  0.00 │   0.0% │   0.0% │ BULLISH
+GOLD     │ 🟡 LIGHT BUY  │      +1% │  31% │   68 │  0.00 │   0.0% │   0.0% │ BEARISH
+COMPQ    │ 🟢 BUY        │     +18% │  94% │   15 │  0.00 │   0.0% │   0.0% │ BULLISH
+RUT      │ 🟢 BUY        │     +18% │  48% │    0 │  0.00 │   0.0% │   0.0% │ BULLISH
+USD      │ 🟢 BUY        │     +18% │  58% │   40 │  0.00 │   0.0% │   0.0% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -26,14 +26,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-06-18 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   36%  (was 18%, change: +18.0pp)
-  ΔDay:     +18% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   100%  (was 100%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    36,000  (36%)
-    Cash:      $    64,000  (64%)
-    → BUY  $    18,000 of ^GSPC
+    Invested:  $   100,000  (100%)
+    Cash:      $         0  (0%)
+    → No trade needed
 
   ZONE: SAFE  |  Danger: 0/100
 
@@ -57,14 +57,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-06-18 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   31%  (was 18%, change: +13.0pp)
-  ΔDay:     +13% from previous backtest day
+  ACTION:   LIGHT BUY
+  TARGET:   31%  (was 30%, change: +1.0pp)
+  ΔDay:     +1% from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    31,000  (31%)
     Cash:      $    69,000  (69%)
-    → BUY  $    13,000 of GC=F
+    → BUY  $     1,000 of GC=F
 
   ZONE: DANGER  |  Danger: 68/100
 
@@ -89,12 +89,12 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   36%  (was 18%, change: +18.0pp)
+  TARGET:   94%  (was 76%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    36,000  (36%)
-    Cash:      $    64,000  (64%)
+    Invested:  $    94,000  (94%)
+    Cash:      $     6,000  (6%)
     → BUY  $    18,000 of ^IXIC
 
   ZONE: SAFE  |  Danger: 15/100
@@ -120,12 +120,12 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   36%  (was 18%, change: +18.0pp)
+  TARGET:   48%  (was 30%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    36,000  (36%)
-    Cash:      $    64,000  (64%)
+    Invested:  $    48,000  (48%)
+    Cash:      $    52,000  (52%)
     → BUY  $    18,000 of ^RUT
 
   ZONE: SAFE  |  Danger: 0/100
@@ -151,12 +151,12 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   36%  (was 18%, change: +18.0pp)
+  TARGET:   58%  (was 40%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    36,000  (36%)
-    Cash:      $    64,000  (64%)
+    Invested:  $    58,000  (58%)
+    Cash:      $    42,000  (42%)
     → BUY  $    18,000 of DX-Y.NYB
 
   ZONE: WATCH  |  Danger: 40/100
