@@ -37,7 +37,7 @@ jobs:
           pip install pandas numpy yfinance requests scipy
 
       - name: Run portfolio orchestrator
-        run: python portfolio_orchestrator.py
+        run: python portfolio_orchestrator.py --mode production
 
       - name: Verify output files
         run: |
@@ -60,7 +60,7 @@ jobs:
 
       - name: Commit and push output files
         run: |
-          git add portfolio_summary.csv portfolio_signals.txt
+          git add portfolio_summary.csv portfolio_signals.txt position_history.csv position_history_backup_*.csv
 
           if git diff --staged --quiet; then
             echo "No changes to commit"
