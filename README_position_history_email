@@ -1,0 +1,222 @@
+## Recent Updates - Position History System (June 2026)
+
+### 🎯 Problem Solved
+Previously, the portfolio orchestrator recalculated the entire backtest history every time it ran, causing "yesterday's position" to shift when new data was added. This made day-over-day delta calculations unstable and unreliable for trading decisions.
+
+### ✅ Solution Implemented
+
+#### 1. **Position History Tracking**
+- New `position_history.csv` file stores actual positions taken each day
+- Locks in historical decisions (can't change the past)
+- Provides stable baseline for delta calculations
+
+**File Format:**
+```csv
+date,asset,close,trend,trade,v5b_score,danger_score,target_weight,action,data_source
+2026-06-18,SPX,7496.01,BULLISH,BULLISH,0.7953,0,1.00,HOLD,hedgeye_actual
+
+2. Three Operating Modes
+Production Mode (Default)
+Example
+python portfolio_orchestrator.py --mode production
+Purpose: Daily trading signals
+Speed: ~5 seconds per asset
+Behavior:
+Loads yesterday's position from position_history.csv
+Calculates today's target based on current danger scores
+Applies daily smoothing limits (+18% max increase, -40% max decrease)
+Computes full backtest metrics (Sharpe, CAGR, MaxDD) for monitoring
+Saves today's position to history
+Delta Calculation: Compares today vs saved yesterday (stable)
+Output: portfolio_summary.csv, portfolio_signals.txt, updated position_history.csv
+Backtest Mode
+Example
+python portfolio_orchestrator.py --mode backtest
+Purpose: Research and performance analysis
+Speed: ~5 seconds per asset
+Behavior:
+Runs full historical backtest from 2017 to present
+Shows ultimate target positions (no daily smoothing)
+Does NOT update position_history.csv
+Output: portfolio_summary_backtest.csv, portfolio_signals_backtest.txt
+Reconcile Mode
+Example
+python portfolio_orchestrator.py --mode reconcile
+Purpose: Audit position history for drift
+Frequency: Weekly (automated) or on-demand
+Behavior:
+Runs fresh backtest
+Compares saved positions vs backtest positions
+Detects data corrections, backfills, or accumulating errors
+Generates drift analysis report
+Output: reconciliation_report.txt
+3. Automated Weekly Reconciliation
+Workflow: .github/workflows/portfolio_reconcile.yml
+Schedule: Every Sunday at 10am EST
+Features:
+Compares saved position history against fresh backtest
+Detects position drift (>5pp = warning)
+Sends email report to configured address
+If drift detected: Saves detailed report to reports/ folder
+Can be triggered manually via GitHub Actions
+Email Alert:
+✅ No drift: 📊 Portfolio Reconciliation - ✅ All Clear
+⚠️ Drift detected: 📊 Portfolio Reconciliation - ⚠️ DRIFT DETECTED (high priority)
+4. Key Features
+Stable Delta Calculations
+Deltas compare: Today's target vs Yesterday's SAVED position
+No more shifting baseline from backtest recalculations
+Consistent day-over-day tracking
+Data Source Tracking
+Each position records whether it used:
+hedgeye_actual - Actual Hedgeye Risk Range data
+keltner_estimate - Estimated ranges (when HTML upload is delayed)
+Danger-Based Position Sizing
+Positions automatically adjust based on danger scores:
+Danger 0-25 (Safe): Target 100% position
+Danger 26-45 (Watch): Target 70% position
+Danger 46-65 (Risk): Target 35% position
+Danger 66-80 (Danger): Target 15% position
+Danger 81-100 (Crisis): Target 10% position (minimum)
+Daily Smoothing Limits
+Prevents wild swings in position sizing:
+Maximum increase: +18% per day
+Maximum decrease: -40% per day
+Minimum position: 10% (can't go to zero)
+Performance Metrics
+Production mode now includes:
+Sharpe Ratio - Risk-adjusted returns
+CAGR - Compound annual growth rate
+Max Drawdown - Worst peak-to-trough decline
+These metrics enable ongoing strategy monitoring and early detection of performance degradation.
+5. GitHub Secrets Required
+For email notifications, configure these repository secrets:
+Secret Name
+Description
+Example
+EMAIL_USERNAME
+Gmail address (sender)
+your-email@gmail.com
+EMAIL_PASSWORD
+Gmail App Password (16 chars)
+abcd efgh ijkl mnop
+EMAIL_TO
+Email address (recipient)
+your-email@gmail.com
+Setup:
+Enable 2-Step Verification in Google Account
+Generate App Password: https://myaccount.google.com/apppasswords
+Add secrets: Repository Settings → Secrets and variables → Actions
+6. Files Created/Modified
+New Files:
+position_history.csv - Daily position tracking (auto-generated)
+position_history_backup_*.csv - Automatic backups (last 5 kept)
+reconciliation_report.txt - Weekly drift analysis
+reports/reconciliation_YYYYMMDD.txt - Archived drift reports (when detected)
+.github/workflows/portfolio_reconcile.yml - Weekly reconciliation workflow
+Modified Files:
+portfolio_orchestrator.py - Added position history system and three modes
+.github/workflows/portfolio_daily.yml - Updated to use --mode production
+7. Workflow Integration
+Daily Workflow (Automated):
+Example
+1. ETL Pipeline runs (8am EST or on HTML upload)
+   └─> Updates enriched CSVs with latest data
+   
+2. Portfolio Orchestrator runs (production mode)
+   └─> Loads yesterday's positions from position_history.csv
+   └─> Calculates today's targets
+   └─> Saves today's positions
+   └─> Generates portfolio_signals.txt
+Weekly Workflow (Automated):
+Example
+3. Reconciliation runs (Sunday 10am EST)
+   └─> Compares saved positions vs fresh backtest
+   └─> Detects drift
+   └─> Emails report
+   └─> Saves drift reports if needed
+8. Monitoring Strategy Health
+Daily Checklist:
+Review portfolio_signals.txt for position changes
+Check Sharpe ratios (all should be >0.8 ideally)
+Monitor danger scores and position adjustments
+Weekly Checklist:
+Review reconciliation email
+If drift <5pp: No action needed ✅
+If drift 5-10pp: Monitor, check again next week ⚠️
+If drift >10pp: Investigate data changes 🚨
+Alert Thresholds:
+Sharpe drops below 0.5: Review asset strategy
+MaxDD exceeds -15%: Consider reducing position sizing
+Drift exceeds 10pp: Check for data corrections/backfills
+Multiple assets declining: Possible market regime change
+9. Initial Setup
+When starting with the position history system:
+Option A: Start Fresh
+Delete existing position_history.csv (if any)
+Run production mode
+System starts from 0% and builds positions over days
+Option B: Initialize with Current Positions
+Create position_history.csv with actual current positions
+Set date to yesterday
+Production mode continues from those positions
+Example initialization:
+Example
+date,asset,close,trend,trade,v5b_score,danger_score,target_weight,action,data_source
+2026-06-17,SPX,7450.00,BULLISH,BULLISH,0.75,0,1.00,HOLD,hedgeye_actual
+2026-06-17,GOLD,4200.00,BEARISH,BEARISH,-1.20,61,0.30,HOLD,hedgeye_actual
+10. Benefits
+✅ Stable Position Tracking
+Yesterday's position never changes
+Deltas are consistent and meaningful
+No more "shifting baseline" problem
+✅ Strategy Monitoring
+Real-time Sharpe/CAGR/MaxDD metrics
+Early detection of performance degradation
+Data-driven decision making
+✅ Automated Auditing
+Weekly drift detection
+Email alerts for issues
+Historical reconciliation reports
+✅ Production Ready
+Fast daily execution (~25 seconds total)
+Handles same-day re-runs gracefully
+Robust error handling
+✅ Transparent Operations
+Data source tracking (actual vs estimated)
+Full audit trail in position history
+Comprehensive logging
+📊 Output Example
+Production Mode Summary:
+Example
+ASSET    │ ACTION     │   ΔDay │ TGT% │ DNGR │ SHRP  │  CAGR  │ MaxDD  │ TREND
+─────────────────────────────────────────────────────────────────────────────
+SPX      │ ⏸️ HOLD     │      — │ 100% │    0 │  1.09 │   9.96%│  -9.8% │ BULLISH
+GOLD     │ 🟡 LIGHT BUY│   🔼+1% │  31% │   68 │  1.04 │  13.17%│  -8.9% │ BEARISH
+COMPQ    │ 🟢 BUY      │  🔼+18% │  94% │   15 │  1.05 │  12.12%│ -11.6% │ BULLISH
+RUT      │ 🟢 BUY      │  🔼+18% │  48% │    0 │  0.86 │   8.26%│  -8.4% │ BULLISH
+USD      │ 🟢 BUY      │  🔼+18% │  58% │   40 │ -0.27 │   0.83%│  -7.6% │ BEARISH
+Reconciliation Report:
+Example
+POSITION HISTORY RECONCILIATION - 2026-06-25
+================================================================================
+
+SPX      : ✅ OK   | Max drift: 0.8pp  | Mean: 0.2pp  | Days compared: 252
+GOLD     : ✅ OK   | Max drift: 1.1pp  | Mean: 0.4pp  | Days compared: 252
+COMPQ    : ✅ OK   | Max drift: 0.9pp  | Mean: 0.3pp  | Days compared: 252
+
+✅ All positions stable - no action needed
+🔧 Maintenance
+Weekly: Review reconciliation email
+Monthly: Check that Sharpe ratios remain healthy
+Quarterly: Run full backtest mode to verify strategy performance
+As Needed:
+Refresh position history if drift >10pp persists
+Adjust strategy parameters if multiple metrics declining
+Review USD performance (currently showing negative Sharpe)
+📝 Notes
+Position history backups are kept for the last 5 runs
+Reconciliation reports are stored indefinitely in reports/ folder (only when drift detected)
+GitHub Actions artifacts retain reports for 90 days
+Same-day re-runs use the earlier position from that day (handles multiple triggers gracefully)
+Example
