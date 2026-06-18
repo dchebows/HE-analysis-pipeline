@@ -12,7 +12,109 @@ warnings.filterwarnings('ignore')
 from datetime import datetime, timedelta
 import logging
 from pathlib import Path
+import shutil  
+# ============================================================
+# POSITION HISTORY MANAGER
+# ============================================================
 
+class PositionHistory:
+    """Manages position history for production mode"""
+    
+    def __init__(self, history_file='position_history.csv'):
+        self.history_file = Path(history_file)
+        self.history_df = None
+        self._load_history()
+    
+    def _load_history(self):
+        """Load existing position history"""
+        if self.history_file.exists():
+            self.history_df = pd.read_csv(self.history_file)
+            self.history_df['date'] = pd.to_datetime(self.history_df['date'])
+            logger.info(f"📂 Loaded position history: {len(self.history_df)} records")
+            logger.info(f"   Date range: {self.history_df['date'].min().date()} to {self.history_df['date'].max().date()}")
+        else:
+            self.history_df = pd.DataFrame(columns=[
+                'date', 'asset', 'close', 'trend', 'trade', 'v5b_score', 
+                'danger_score', 'target_weight', 'action', 'data_source'
+            ])
+            logger.info("📂 No existing position history - will create new file")
+    
+    def get_yesterday_position(self, asset, today_date):
+        """Get yesterday's saved position for an asset"""
+        if self.history_df is None or self.history_df.empty:
+            return None
+        
+        asset_history = self.history_df[self.history_df['asset'] == asset].copy()
+        if asset_history.empty:
+            return None
+        
+        asset_history = asset_history.sort_values('date')
+        yesterday_records = asset_history[asset_history['date'] < today_date]
+        
+        if yesterday_records.empty:
+            return None
+        
+        yesterday = yesterday_records.iloc[-1]
+        logger.info(f"   Yesterday ({yesterday['date'].date()}): {yesterday['target_weight']*100:.0f}% | {yesterday['action']}")
+        
+        return {
+            'date': yesterday['date'],
+            'weight': yesterday['target_weight'],
+            'action': yesterday['action'],
+            'danger': yesterday['danger_score'],
+            'data_source': yesterday.get('data_source', 'unknown')
+        }
+    
+    def save_today_position(self, asset, date, close, trend, trade, v5b_score, 
+                           danger_score, target_weight, action, data_source):
+        """Save today's position to history"""
+        
+        # Remove existing record for this date/asset (if re-running same day)
+        if not self.history_df.empty:
+            self.history_df = self.history_df[
+                ~((self.history_df['date'] == date) & (self.history_df['asset'] == asset))
+            ]
+        
+        new_record = pd.DataFrame([{
+            'date': date,
+            'asset': asset,
+            'close': round(close, 2),
+            'trend': trend,
+            'trade': trade,
+            'v5b_score': round(v5b_score, 4),
+            'danger_score': int(danger_score),
+            'target_weight': round(target_weight, 4),
+            'action': action,
+            'data_source': data_source
+        }])
+        
+        self.history_df = pd.concat([self.history_df, new_record], ignore_index=True)
+        self.history_df = self.history_df.sort_values(['date', 'asset']).reset_index(drop=True)
+    
+    def write_history(self):
+        """Write history to CSV file"""
+        if self.history_df is None or self.history_df.empty:
+            logger.warning("⚠️  No position history to save")
+            return
+        
+        # Backup existing file if it exists
+        if self.history_file.exists():
+            backup_name = f"position_history_backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+            backup_path = self.history_file.parent / backup_name
+            shutil.copy2(self.history_file, backup_path)
+            logger.info(f"💾 Backed up history to: {backup_name}")
+        
+        # Write updated history
+        self.history_df['date'] = pd.to_datetime(self.history_df['date']).dt.strftime('%Y-%m-%d')
+        self.history_df.to_csv(self.history_file, index=False)
+        logger.info(f"💾 Saved position history: {len(self.history_df)} records")
+        
+        # Keep only last 5 backups
+        backups = sorted(self.history_file.parent.glob('position_history_backup_*.csv'))
+        if len(backups) > 5:
+            for old_backup in backups[:-5]:
+                old_backup.unlink()
+                logger.info(f"🗑️  Removed old backup: {old_backup.name}")
 # ============================================================
 # CONFIGURATION
 # ============================================================
@@ -565,7 +667,7 @@ def trade_signal_model(df_in, params):
     signal = pd.Series(final, index=df_in.index).map(sig_map)
     
     return signal, score, trade_buy, trade_sell
-    # Chunk 3
+    
     # ============================================================
 # DANGER SCORE CALCULATION
 # ============================================================
@@ -914,7 +1016,7 @@ def compute_prospective_danger(bt_df, danger_params):
         details['dd_pts'] = 0
     
     return danger, details
-    # Chunk 4
+    
     # ============================================================
 # ASSET PROCESSOR
 # ============================================================
@@ -1084,6 +1186,198 @@ def process_asset(asset, cfg):
         logger.error(traceback.format_exc())
         return None
 
+
+# ============================================================
+# ASSET PROCESSOR (existing - keep this for backtest mode)
+# ============================================================
+def process_asset_production(asset, cfg, position_history):
+    """Process asset in production mode - only calculate today's signal"""
+    logger.info(f"\n{'='*60}")
+    logger.info(f"Processing: {asset}")
+    logger.info(f"{'='*60}")
+    
+    try:
+        # Load data
+        df = load_enriched_data(asset, cfg)
+        if df is None:
+            return None
+        
+        last_date = df['date'].iloc[-1]
+        last_row = df.iloc[-1]
+        
+        # Check data source - do we have actual Hedgeye ranges or need estimates?
+        has_hedgeye_data = (
+            pd.notna(last_row.get('buy_trade')) and 
+            pd.notna(last_row.get('sell_trade')) and
+            last_row.get('buy_trade', 0) > 0
+        )
+        
+        data_source = 'hedgeye_actual' if has_hedgeye_data else 'keltner_estimate'
+        
+        if not has_hedgeye_data:
+            logger.warning(f"  ⚠️  No Hedgeye data for {last_date.date()} - using Keltner estimates")
+            # Generate Keltner estimates for today
+            df = add_keltner_estimates(df, cfg['trade_params'])
+        
+        # Run models on full dataset (need historical context for calculations)
+        df['pred_v5b'], df['v5b_score'] = trend_v5b_model(df, cfg['v5b_params'])
+        df['pred_v1'] = run_v1_model(df, cfg['v1_params'])
+        df['PREDICTED_TREND'] = v6_ohlc_context_switch(
+            df, df['pred_v5b'], df['pred_v1'], df['v5b_score'], cfg['v6_ohlc_params']
+        )
+        df['trade_signal'], df['trade_score'], df['trade_buy'], df['trade_sell'] = \
+            trade_signal_model(df, cfg['trade_params'])
+        
+        # Get yesterday's saved position
+        yesterday_pos = position_history.get_yesterday_position(asset, last_date)
+        
+        if yesterday_pos is None:
+            logger.warning(f"  ⚠️  No position history found - initializing")
+            yesterday_weight = 0.0
+            yesterday_date = last_date - timedelta(days=1)
+        else:
+            yesterday_weight = yesterday_pos['weight']
+            yesterday_date = yesterday_pos['date']
+        
+        # Calculate TODAY's danger score
+        # Build minimal backtest context (need recent history for velocity calcs)
+        bt_window = df.tail(252).copy().reset_index(drop=True)  # Last year of data
+        bt_window['daily_return'] = bt_window['close'].pct_change().fillna(0)
+        bt_window['score_prev'] = bt_window['v5b_score'].shift(1)
+        bt_window['score_vel_prev'] = (bt_window['v5b_score'] - bt_window['v5b_score'].shift(5)).shift(1)
+        bt_window['trend_prev'] = bt_window['PREDICTED_TREND'].shift(1)
+        bt_window['trade_sig_prev'] = bt_window['trade_signal'].shift(1)
+        bt_window['vix_prev'] = bt_window.get('vix_close', 15.0).shift(1) if 'vix_close' in bt_window.columns else 15.0
+        bt_window['vix_5d_chg'] = (bt_window['vix_prev'] / bt_window['vix_prev'].shift(5) - 1) if 'vix_close' in bt_window.columns else 0.0
+        
+        # Market drawdown from full history
+        full_market_high = df['close'].expanding().max().iloc[-1]
+        bt_window['market_dd_prev'] = ((bt_window['close'] - full_market_high) / full_market_high).shift(1)
+        
+        # Compute prospective danger for TODAY only
+        prosp_danger, det = compute_prospective_danger(bt_window, cfg['danger_params'])
+        prosp_danger = int(round(prosp_danger))
+        
+        # Calculate raw weight from danger
+        raw_weight = _raw_weight_from_danger(prosp_danger)
+        
+        # Apply smoothing (limit change from yesterday's SAVED position)
+        max_daily_up = 0.18
+        max_daily_down = 0.40
+        raw_change = raw_weight - yesterday_weight
+        
+        if raw_change > 0:
+            capped_change = min(raw_change, max_daily_up)
+        else:
+            capped_change = max(raw_change, -max_daily_down)
+        
+        prosp_weight = float(np.clip(yesterday_weight + capped_change, 0.10, 1.0))
+        
+        # Calculate delta from yesterday's SAVED position
+        weight_change = prosp_weight - yesterday_weight
+        
+        # Determine action
+        SIGNIFICANT = 0.03
+        MINOR = 0.01
+        
+        if abs(weight_change) < MINOR:
+            action = 'HOLD'
+            action_icon = '⏸️'
+        elif weight_change > SIGNIFICANT:
+            action = 'BUY'
+            action_icon = '🟢'
+        elif weight_change < -SIGNIFICANT:
+            action = 'SELL'
+            action_icon = '🔴'
+        elif weight_change > MINOR:
+            action = 'LIGHT BUY'
+            action_icon = '🟡'
+        else:
+            action = 'LIGHT SELL'
+            action_icon = '🟡'
+        
+        # Danger zone
+        if prosp_danger <= 25:
+            zone = 'SAFE'
+            zone_icon = '🟢'
+        elif prosp_danger <= 45:
+            zone = 'WATCH'
+            zone_icon = '🟡'
+        elif prosp_danger <= 65:
+            zone = 'RISK'
+            zone_icon = '🟠'
+        elif prosp_danger <= 80:
+            zone = 'DANGER'
+            zone_icon = '🔴'
+        else:
+            zone = 'CRISIS'
+            zone_icon = '🚨'
+        
+        # Delta display
+        if abs(weight_change) < 0.005:
+            delta_display = '—'
+            delta_icon = '⚪'
+        elif weight_change > 0:
+            delta_display = f'+{weight_change*100:.0f}%'
+            delta_icon = '🔼'
+        else:
+            delta_display = f'{weight_change*100:.0f}%'
+            delta_icon = '🔽'
+        
+        logger.info(f"  ✅ {asset} complete: {action} | Target: {prosp_weight*100:.0f}% | Danger: {prosp_danger:.0f} | Source: {data_source}")
+        
+        return {
+            'status': 'SUCCESS',
+            'asset': asset,
+            'cfg': cfg,
+            'df': df,
+            'bt': bt_window,  # Only recent window, not full backtest
+            'd1_m': {'sharpe': 0, 'cagr': 0, 'max_drawdown': 0},  # No backtest metrics in production
+            'last_data_date': last_date,
+            'action': action,
+            'action_icon': action_icon,
+            'prosp_weight': prosp_weight,
+            'current_weight': yesterday_weight,
+            'weight_change': weight_change,
+            'prospective_change': weight_change,
+            'delta_display': delta_display,
+            'delta_icon': delta_icon,
+            'prosp_danger': prosp_danger,
+            'zone': zone,
+            'zone_icon': zone_icon,
+            'det': det,
+            'data_source': data_source,
+            'yesterday_date': yesterday_date,
+        }
+        
+    except Exception as e:
+        logger.error(f"  ❌ Error processing {asset}: {e}")
+        import traceback
+        logger.error(traceback.format_exc())
+        return None
+
+
+def add_keltner_estimates(df, trade_params):
+    """Add Keltner channel estimates when Hedgeye data is missing"""
+    p = trade_params
+    
+    # Calculate Keltner bands
+    ema = df['close'].ewm(span=p['keltner_ema'], adjust=False).mean()
+    tr = pd.concat([
+        df['high'] - df['low'],
+        (df['high'] - df['close'].shift(1)).abs(),
+        (df['low'] - df['close'].shift(1)).abs(),
+    ], axis=1).max(axis=1)
+    atr = tr.rolling(p['keltner_atr'], min_periods=1).mean()
+    
+    keltner_buy = ema - p['keltner_mult'] * atr
+    keltner_sell = ema + p['keltner_mult'] * atr
+    
+    # Fill missing buy_trade and sell_trade with Keltner estimates
+    df['buy_trade'] = df['buy_trade'].fillna(keltner_buy)
+    df['sell_trade'] = df['sell_trade'].fillna(keltner_sell)
+    
+    return df
 # ============================================================
 # REPORT GENERATION
 # ============================================================
@@ -1096,28 +1390,39 @@ def generate_summary_dataframe(results):
         if result is None or result.get('status') != 'SUCCESS':
             continue
         
+        # Handle both production and backtest results
+        if 'bt' in result and len(result['bt']) > 0:
+            close = result['bt']['close'].iloc[-1]
+            trend = result['bt']['PREDICTED_TREND'].iloc[-1]
+            v5b_score = result['bt']['v5b_score'].iloc[-1]
+        else:
+            close = result.get('df', pd.DataFrame())['close'].iloc[-1] if 'df' in result else 0
+            trend = 'UNKNOWN'
+            v5b_score = 0
+        
         row = {
             'Asset': result['asset'],
             'Name': result['cfg']['name'],
             'Last_Date': result['last_data_date'],
-            'Close': result['bt']['close'].iloc[-1],
-            'Trend': result['bt']['PREDICTED_TREND'].iloc[-1],
-            'V5B_Score': result['bt']['v5b_score'].iloc[-1],
+            'Close': close,
+            'Trend': trend,
+            'V5B_Score': v5b_score,
             'Action': result['action'],
             'Action_Icon': result['action_icon'],
-            'Delta_Icon': result['delta_icon'],  # ← ADDED THIS LINE
+            'Delta_Icon': result['delta_icon'],
             'Current_Weight': result['current_weight'],
             'Target_Weight': result['prosp_weight'],
             'Weight_Change': result['weight_change'],
             'Danger_Score': result['prosp_danger'],
             'Zone': result['zone'],
             'Zone_Icon': result['zone_icon'],
-            'Sharpe': result['d1_m']['sharpe'],
-            'CAGR': result['d1_m']['cagr'],
-            'Max_DD': result['d1_m']['max_drawdown'],
+            'Sharpe': result.get('d1_m', {}).get('sharpe', 0),
+            'CAGR': result.get('d1_m', {}).get('cagr', 0),
+            'Max_DD': result.get('d1_m', {}).get('max_drawdown', 0),
             'Invested_Dollars': result['prosp_weight'] * PORTFOLIO_VALUE,
             'Cash_Dollars': (1 - result['prosp_weight']) * PORTFOLIO_VALUE,
             'Dollar_Change': result['weight_change'] * PORTFOLIO_VALUE,
+            'Data_Source': result.get('data_source', 'unknown'),
         }
         summary_rows.append(row)
     
@@ -1208,16 +1513,18 @@ def generate_text_report(summary_df, results):
         lines.append(f"  {'TOTAL DANGER':<22s} {'':>14s} {row['Danger_Score']:>8.0f}")
         lines.append("")
         
-        # Backtest context
-        lines.append("  BACKTEST CONTEXT:")
-        lines.append(f"  {'─'*52}")
-        lines.append(f"  {'Metric':<20s} {'D1':>12s}")
-        lines.append(f"  {'─'*52}")
-        lines.append(f"  {'Sharpe':<20s} {row['Sharpe']:>12.2f}")
-        lines.append(f"  {'CAGR':<20s} {row['CAGR']:>11.1f}%")
-        lines.append(f"  {'Max Drawdown':<20s} {row['Max_DD']:>11.1f}%")
-        lines.append(f"  {'Avg Exposure':<20s} {result['bt']['d1_weight'].mean()*100:>11.0f}%")
-        lines.append("")
+        # Backtest context (only show if we have backtest metrics)
+        if row['Sharpe'] != 0 or row['CAGR'] != 0:
+            lines.append("  BACKTEST CONTEXT:")
+            lines.append(f"  {'─'*52}")
+            lines.append(f"  {'Metric':<20s} {'D1':>12s}")
+            lines.append(f"  {'─'*52}")
+            lines.append(f"  {'Sharpe':<20s} {row['Sharpe']:>12.2f}")
+            lines.append(f"  {'CAGR':<20s} {row['CAGR']:>11.1f}%")
+            lines.append(f"  {'Max Drawdown':<20s} {row['Max_DD']:>11.1f}%")
+            if 'd1_weight' in result['bt'].columns:
+                lines.append(f"  {'Avg Exposure':<20s} {result['bt']['d1_weight'].mean()*100:>11.0f}%")
+            lines.append("")
     
     # Footer
     lines.append("")
@@ -1226,15 +1533,17 @@ def generate_text_report(summary_df, results):
     lines.append("=" * 80)
     
     return '\n'.join(lines)
-
+    
 # ============================================================
-# MAIN EXECUTION
+# MODE EXECUTION FUNCTIONS (NEW - add these)
 # ============================================================
-
-def main():
+def run_production_mode():
+    """Production mode: Calculate only today's signals using saved history"""
+    logger.info("🚀 PRODUCTION MODE: Calculating today's signals")
     logger.info("="*70)
-    logger.info("PORTFOLIO ORCHESTRATOR START")
-    logger.info("="*70)
+    
+    # Initialize position history
+    position_history = PositionHistory()
     
     results = []
     
@@ -1244,7 +1553,7 @@ def main():
             logger.error(f"No configuration found for {asset}")
             continue
         
-        result = process_asset(asset, cfg)
+        result = process_asset_production(asset, cfg, position_history)
         if result:
             results.append(result)
     
@@ -1252,53 +1561,289 @@ def main():
         logger.error("No assets processed successfully")
         return
     
-    # Generate summary DataFrame
+    # Save all today's positions to history
+    for result in results:
+        position_history.save_today_position(
+            asset=result['asset'],
+            date=result['last_data_date'],
+            close=result['bt']['close'].iloc[-1],
+            trend=result['bt']['PREDICTED_TREND'].iloc[-1],
+            trade=result['bt']['trade_signal'].iloc[-1],
+            v5b_score=result['bt']['v5b_score'].iloc[-1],
+            danger_score=result['prosp_danger'],
+            target_weight=result['prosp_weight'],
+            action=result['action'],
+            data_source=result['data_source']
+        )
+    
+    position_history.write_history()
+    
+    # Generate reports (same as before)
     summary_df = generate_summary_dataframe(results)
+    summary_df.to_csv('portfolio_summary.csv', index=False)
+    logger.info(f"\n✅ Saved summary to portfolio_summary.csv")
     
-    # Save summary CSV
-    summary_csv_path = 'portfolio_summary.csv'
-    summary_df.to_csv(summary_csv_path, index=False)
-    logger.info(f"\n✅ Saved summary to {summary_csv_path}")
-    
-    # Generate and save text report
     text_report = generate_text_report(summary_df, results)
-    txt_path = 'portfolio_signals.txt'
-    with open(txt_path, 'w') as f:
+    with open('portfolio_signals.txt', 'w') as f:
         f.write(text_report)
-    logger.info(f"✅ Saved text report to {txt_path}")
+    logger.info(f"✅ Saved text report to portfolio_signals.txt")
     
-    # Print summary table to console
+    # Print summary
     logger.info("\n" + "="*110)
     logger.info("📊 CONSOLIDATED SUMMARY TABLE")
     logger.info("="*110)
     logger.info("")
-    logger.info(f"{'ASSET':<8s} │ {'ACTION':<10s} │ {'ΔDay':>6s} │ {'TGT%':>4s} │ {'DNGR':>4s} │ {'SHRP':>5s} │ {'CAGR':>6s} │ {'MaxDD':>6s} │ {'TREND':<6s}")
+    logger.info(f"{'ASSET':<8s} │ {'ACTION':<10s} │ {'ΔDay':>6s} │ {'TGT%':>4s} │ {'DNGR':>4s} │ {'SRC':<8s} │ {'TREND':<6s}")
     logger.info("─" * 110)
     
     for _, row in summary_df.iterrows():
         delta_pct = row['Weight_Change'] * 100
         delta_str = f"{row['Delta_Icon']}{delta_pct:+.0f}%" if abs(delta_pct) >= 0.5 else "—"
+        data_src = row.get('Data_Source', 'unknown')[:8]
+        
         logger.info(
             f"{row['Asset']:<8s} │ {row['Action_Icon']} {row['Action']:<8s} │ {delta_str:>6s} │ "
+            f"{row['Target_Weight']*100:>3.0f}% │ {row['Danger_Score']:>4.0f} │ {data_src:<8s} │ {row['Trend']:<6s}"
+        )
+    
+    logger.info("")
+    logger.info("Legend: SRC = Data source (hedgeye_actual | keltner_estimate)")
+    logger.info("="*110)
+    
+    logger.info("\n" + "="*70)
+    logger.info("✅ PRODUCTION MODE COMPLETE")
+    logger.info("="*70)
+
+def run_backtest_mode():
+    """Backtest mode: Full historical backtest (existing behavior)"""
+    logger.info("📈 BACKTEST MODE: Full historical analysis")
+    logger.info("="*70)
+    logger.info("⚠️  This will NOT update position_history.csv")
+    logger.info("")
+    
+    results = []
+    
+    for asset in ASSETS_TO_RUN:
+        cfg = ASSET_REGISTRY.get(asset)
+        if not cfg:
+            logger.error(f"No configuration found for {asset}")
+            continue
+        
+        result = process_asset(asset, cfg)  # Use existing full backtest function
+        if result:
+            results.append(result)
+    
+    if not results:
+        logger.error("No assets processed successfully")
+        return
+    
+    # Generate reports
+    summary_df = generate_summary_dataframe(results)
+    
+    # Save to different filenames so we don't overwrite production outputs
+    summary_csv_path = 'portfolio_summary_backtest.csv'
+    summary_df.to_csv(summary_csv_path, index=False)
+    logger.info(f"\n✅ Saved backtest summary to {summary_csv_path}")
+    
+    text_report = generate_text_report(summary_df, results)
+    txt_path = 'portfolio_signals_backtest.txt'
+    with open(txt_path, 'w') as f:
+        f.write(text_report)
+    logger.info(f"✅ Saved backtest report to {txt_path}")
+    
+    # Print summary
+    logger.info("\n" + "="*110)
+    logger.info("📊 BACKTEST RESULTS")
+    logger.info("="*110)
+    logger.info("")
+    logger.info(f"{'ASSET':<8s} │ {'ACTION':<10s} │ {'TGT%':>4s} │ {'DNGR':>4s} │ {'SHRP':>5s} │ {'CAGR':>6s} │ {'MaxDD':>6s} │ {'TREND':<6s}")
+    logger.info("─" * 110)
+    
+    for _, row in summary_df.iterrows():
+        logger.info(
+            f"{row['Asset']:<8s} │ {row['Action_Icon']} {row['Action']:<8s} │ "
             f"{row['Target_Weight']*100:>3.0f}% │ {row['Danger_Score']:>4.0f} │ {row['Sharpe']:>5.2f} │ "
             f"{row['CAGR']:>5.1f}% │ {row['Max_DD']:>5.1f}% │ {row['Trend']:<6s}"
         )
     
-    logger.info("")
-    logger.info("Legend: ΔDay = Position % change to reach target | TGT% = Target Position")
-    logger.info("        DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown")
-    logger.info("        🟢 = Buy | 🔴 = Sell | 🟡 = Light adjustment | ⏸️ = Hold")
-    logger.info("        🔼 = Increase position | 🔽 = Decrease position | ⚪ = No change")
     logger.info("="*110)
     
     logger.info("\n" + "="*70)
-    logger.info("✅ PORTFOLIO ORCHESTRATOR COMPLETE")
+    logger.info("✅ BACKTEST MODE COMPLETE")
     logger.info("="*70)
-    logger.info(f"\n  Assets processed: {len(results)}/{len(ASSETS_TO_RUN)} successful")
-    logger.info(f"  📄 Output files:")
-    logger.info(f"     - {summary_csv_path}")
-    logger.info(f"     - {txt_path}")
+
+def run_reconcile_mode():
+    """Reconcile mode: Compare saved history vs. fresh backtest"""
+    logger.info("🔍 RECONCILE MODE: Verifying position history accuracy")
+    logger.info("="*70)
+    
+    position_history = PositionHistory()
+    
+    if position_history.history_df is None or position_history.history_df.empty:
+        logger.error("❌ No position history found - nothing to reconcile")
+        logger.info("   Run in production mode first to generate history")
+        return
+    
+    logger.info(f"Loaded history: {len(position_history.history_df)} records")
     logger.info("")
+    
+    reconciliation_results = []
+    
+    for asset in ASSETS_TO_RUN:
+        cfg = ASSET_REGISTRY.get(asset)
+        if not cfg:
+            continue
+        
+        logger.info(f"\n{'='*60}")
+        logger.info(f"Reconciling: {asset}")
+        logger.info(f"{'='*60}")
+        
+        # Run full backtest
+        result = process_asset(asset, cfg)
+        if result is None:
+            logger.error(f"  ❌ Backtest failed for {asset}")
+            continue
+        
+        # Compare backtest positions to saved history
+        bt = result['bt']
+        saved_history = position_history.history_df[
+            position_history.history_df['asset'] == asset
+        ].copy()
+        
+        if saved_history.empty:
+            logger.warning(f"  ⚠️  No saved history for {asset}")
+            continue
+        
+        # Merge on date
+        saved_history['date'] = pd.to_datetime(saved_history['date'])
+        bt['date'] = pd.to_datetime(bt['date'])
+        
+        comparison = bt.merge(
+            saved_history[['date', 'target_weight']], 
+            on='date', 
+            how='inner',
+            suffixes=('_backtest', '_saved')
+        )
+        
+        if comparison.empty:
+            logger.warning(f"  ⚠️  No overlapping dates to compare")
+            continue
+        
+        # Calculate drift
+        comparison['drift'] = (comparison['d1_weight'] - comparison['target_weight']).abs()
+        
+        max_drift = comparison['drift'].max()
+        mean_drift = comparison['drift'].mean()
+        drift_days = (comparison['drift'] > 0.02).sum()  # Days with >2pp drift
+        
+        logger.info(f"  Compared {len(comparison)} days")
+        logger.info(f"  Max drift:     {max_drift*100:.1f}pp")
+        logger.info(f"  Mean drift:    {mean_drift*100:.1f}pp")
+        logger.info(f"  Days >2pp:     {drift_days}")
+        
+        if max_drift > 0.05:  # 5pp threshold
+            logger.warning(f"  ⚠️  SIGNIFICANT DRIFT DETECTED")
+            # Find the worst days
+            worst_days = comparison.nlargest(3, 'drift')[['date', 'drift', 'd1_weight', 'target_weight']]
+            for _, day in worst_days.iterrows():
+                logger.warning(
+                    f"      {day['date'].date()}: "
+                    f"Backtest={day['d1_weight']*100:.0f}% vs "
+                    f"Saved={day['target_weight']*100:.0f}% "
+                    f"(drift={day['drift']*100:.1f}pp)"
+                )
+        else:
+            logger.info(f"  ✅ Positions are stable (drift < 5pp)")
+        
+        reconciliation_results.append({
+            'asset': asset,
+            'days_compared': len(comparison),
+            'max_drift': max_drift,
+            'mean_drift': mean_drift,
+            'drift_days': drift_days,
+            'needs_refresh': max_drift > 0.05
+        })
+    
+    # Generate reconciliation report
+    report_lines = []
+    report_lines.append("=" * 80)
+    report_lines.append(f"POSITION HISTORY RECONCILIATION - {datetime.now().strftime('%Y-%m-%d %H:%M')}")
+    report_lines.append("=" * 80)
+    report_lines.append("")
+    report_lines.append("Comparing saved history vs. full backtest recalculation...")
+    report_lines.append("")
+    
+    needs_refresh = []
+    
+    for result in reconciliation_results:
+        status = "⚠️  DRIFT" if result['needs_refresh'] else "✅ OK"
+        report_lines.append(
+            f"{result['asset']:<8s}: {status} | "
+            f"Max drift: {result['max_drift']*100:>4.1f}pp | "
+            f"Mean: {result['mean_drift']*100:>4.1f}pp | "
+            f"Days compared: {result['days_compared']}"
+        )
+        
+        if result['needs_refresh']:
+            needs_refresh.append(result['asset'])
+    
+    report_lines.append("")
+    
+    if needs_refresh:
+        report_lines.append(f"⚠️  RECOMMENDATION: Refresh history for: {', '.join(needs_refresh)}")
+        report_lines.append("")
+        report_lines.append("Possible causes of drift:")
+        report_lines.append("  - Backfilled/corrected price data from Yahoo")
+        report_lines.append("  - Updated risk ranges in enriched CSVs")
+        report_lines.append("  - Strategy parameter changes")
+        report_lines.append("")
+        report_lines.append("To refresh history, run: python portfolio_orchestrator.py --mode backtest")
+        report_lines.append("Then manually copy backtest results to position_history.csv if desired")
+    else:
+        report_lines.append("✅ All positions stable - no action needed")
+    
+    report_lines.append("")
+    report_lines.append("=" * 80)
+    
+    report_text = '\n'.join(report_lines)
+    
+    # Save report
+    report_path = 'reconciliation_report.txt'
+    with open(report_path, 'w') as f:
+        f.write(report_text)
+    
+    logger.info(f"\n💾 Saved reconciliation report to {report_path}")
+    logger.info("")
+    logger.info(report_text)
+    
+    logger.info("\n" + "="*70)
+    logger.info("✅ RECONCILE MODE COMPLETE")
+    logger.info("="*70)
+
+# ============================================================
+# MAIN EXECUTION
+# ============================================================
+
+def main():
+    import argparse
+    
+    parser = argparse.ArgumentParser(description='Portfolio Signal Orchestrator')
+    parser.add_argument('--mode', 
+                       choices=['production', 'backtest', 'reconcile'],
+                       default='production',
+                       help='Execution mode: production (daily signals), backtest (full historical), reconcile (verify history)')
+    args = parser.parse_args()
+    
+    logger.info("="*70)
+    logger.info(f"PORTFOLIO ORCHESTRATOR START - MODE: {args.mode.upper()}")
+    logger.info("="*70)
+    
+    if args.mode == 'production':
+        run_production_mode()
+    elif args.mode == 'backtest':
+        run_backtest_mode()
+    elif args.mode == 'reconcile':
+        run_reconcile_mode()
 
 if __name__ == '__main__':
     try:
