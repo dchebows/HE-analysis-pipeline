@@ -40,30 +40,31 @@ class PositionHistory:
             logger.info("📂 No existing position history - will create new file")
     
     def get_yesterday_position(self, asset, today_date):
-        """Get yesterday's saved position for an asset"""
-        if self.history_df is None or self.history_df.empty:
-            return None
-        
-        asset_history = self.history_df[self.history_df['asset'] == asset].copy()
-        if asset_history.empty:
-            return None
-        
-        asset_history = asset_history.sort_values('date')
-        yesterday_records = asset_history[asset_history['date'] < today_date]
-        
-        if yesterday_records.empty:
-            return None
-        
-        yesterday = yesterday_records.iloc[-1]
+    """Get yesterday's saved position for an asset"""
+    if self.history_df is None or self.history_df.empty:
+        return None
+    
+    asset_history = self.history_df[self.history_df['asset'] == asset].copy()
+    if asset_history.empty:
+        return None
+    
+    asset_history = asset_history.sort_values('date')
+    
+    # Get the most recent saved position (could be from today or earlier)
+    yesterday = asset_history.iloc[-1]
+    
+    if yesterday['date'].date() == today_date.date():
+        logger.info(f"   Using earlier position from today ({yesterday['date'].date()}): {yesterday['target_weight']*100:.0f}% | {yesterday['action']}")
+    else:
         logger.info(f"   Yesterday ({yesterday['date'].date()}): {yesterday['target_weight']*100:.0f}% | {yesterday['action']}")
-        
-        return {
-            'date': yesterday['date'],
-            'weight': yesterday['target_weight'],
-            'action': yesterday['action'],
-            'danger': yesterday['danger_score'],
-            'data_source': yesterday.get('data_source', 'unknown')
-        }
+    
+    return {
+        'date': yesterday['date'],
+        'weight': yesterday['target_weight'],
+        'action': yesterday['action'],
+        'danger': yesterday['danger_score'],
+        'data_source': yesterday.get('data_source', 'unknown')
+    }
     
     def save_today_position(self, asset, date, close, trend, trade, v5b_score, 
                            danger_score, target_weight, action, data_source):
