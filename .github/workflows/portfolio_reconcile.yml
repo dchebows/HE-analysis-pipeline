@@ -1,0 +1,80 @@
+name: Weekly Portfolio Reconciliation
+on:
+  schedule:
+    - cron: '0 14 * * 0'  # 10am EST Sunday (14:00 UTC)
+  workflow_dispatch:      # Manual trigger option
+
+jobs:
+  reconcile:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pandas numpy yfinance requests scipy
+      
+      - name: Run reconciliation
+        run: python portfolio_orchestrator.py --mode reconcile
+        continue-on-error: true
+      
+      - name: Check reconciliation results
+        id: check_drift
+        run: |
+          if [ -f reconciliation_report.txt ]; then
+            if grep -q "⚠️  DRIFT" reconciliation_report.txt; then
+              echo "drift_detected=true" >> $GITHUB_OUTPUT
+              echo "status=⚠️ DRIFT DETECTED" >> $GITHUB_OUTPUT
+            else
+              echo "drift_detected=false" >> $GITHUB_OUTPUT
+              echo "status=✅ All Clear" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "drift_detected=error" >> $GITHUB_OUTPUT
+            echo "status=❌ Reconciliation Failed" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Send email report
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 587
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "📊 Portfolio Reconciliation - ${{ steps.check_drift.outputs.status }}"
+          to: ${{ secrets.EMAIL_TO }}
+          from: Portfolio Monitor <${{ secrets.EMAIL_USERNAME }}>
+          body: file://reconciliation_report.txt
+          priority: ${{ steps.check_drift.outputs.drift_detected == 'true' && 'high' || 'normal' }}
+      
+      - name: Upload report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reconciliation-report-${{ github.run_number }}
+          path: reconciliation_report.txt
+          retention-days: 90
+      
+      - name: Save report to repo if drift detected
+        if: steps.check_drift.outputs.drift_detected == 'true'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          
+          mkdir -p reports
+          cp reconciliation_report.txt reports/reconciliation_$(date +'%Y%m%d').txt
+          
+          git add reports/reconciliation_$(date +'%Y%m%d').txt
+          git commit -m "⚠️ Drift detected in weekly reconciliation $(date +'%Y-%m-%d')"
+          git push
