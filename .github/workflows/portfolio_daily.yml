@@ -60,8 +60,8 @@ jobs:
 
       - name: Commit and push output files
         run: |
-          git add portfolio_summary.csv portfolio_signals.txt position_history.csv position_history_backup_*.csv
-
+          git add portfolio_summary.csv portfolio_signals.txt position_history.csv
+      
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
