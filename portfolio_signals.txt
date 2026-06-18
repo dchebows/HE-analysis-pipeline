@@ -1,17 +1,17 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-06-18 19:14:42
+  Generated: 2026-06-18 19:32:53
 ================================================================================
 
 SUMMARY TABLE:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-SPX      │ ⏸️ HOLD      │        — │ 100% │    0 │  0.00 │   0.0% │   0.0% │ BULLISH
-GOLD     │ 🟡 LIGHT BUY  │      +1% │  31% │   68 │  0.00 │   0.0% │   0.0% │ BEARISH
-COMPQ    │ 🟢 BUY        │     +18% │  94% │   15 │  0.00 │   0.0% │   0.0% │ BULLISH
-RUT      │ 🟢 BUY        │     +18% │  48% │    0 │  0.00 │   0.0% │   0.0% │ BULLISH
-USD      │ 🟢 BUY        │     +18% │  58% │   40 │  0.00 │   0.0% │   0.0% │ BEARISH
+SPX      │ ⏸️ HOLD      │        — │ 100% │    0 │  1.09 │  10.0% │  -9.8% │ BULLISH
+GOLD     │ ⏸️ HOLD      │        — │  31% │   68 │  1.04 │  13.2% │  -8.9% │ BEARISH
+COMPQ    │ 🟢 BUY        │      +6% │ 100% │   15 │  1.05 │  12.1% │ -11.6% │ BULLISH
+RUT      │ 🟢 BUY        │     +18% │  66% │    0 │  0.86 │   8.3% │  -8.4% │ BULLISH
+USD      │ 🟢 BUY        │     +18% │  76% │   40 │ -0.27 │   0.8% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -51,20 +51,29 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   TOTAL DANGER                                 0
 
+  BACKTEST CONTEXT:
+  ────────────────────────────────────────────────────
+  Metric                         D1
+  ────────────────────────────────────────────────────
+  Sharpe                       1.09
+  CAGR                        10.0%
+  Max Drawdown                -9.8%
+  Avg Exposure                  51%
+
 
 ================================================================================
   GOLD FUTURES (GOLD)
   Data from: 2026-06-18 00:00:00
 ================================================================================
 
-  ACTION:   LIGHT BUY
-  TARGET:   31%  (was 30%, change: +1.0pp)
-  ΔDay:     +1% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   31%  (was 31%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    31,000  (31%)
     Cash:      $    69,000  (69%)
-    → BUY  $     1,000 of GC=F
+    → No trade needed
 
   ZONE: DANGER  |  Danger: 68/100
 
@@ -82,6 +91,15 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   TOTAL DANGER                                68
 
+  BACKTEST CONTEXT:
+  ────────────────────────────────────────────────────
+  Metric                         D1
+  ────────────────────────────────────────────────────
+  Sharpe                       1.04
+  CAGR                        13.2%
+  Max Drawdown                -8.9%
+  Avg Exposure                  52%
+
 
 ================================================================================
   NASDAQ COMPOSITE (COMPQ)
@@ -89,13 +107,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   94%  (was 76%, change: +18.0pp)
-  ΔDay:     +18% from previous backtest day
+  TARGET:   100%  (was 94%, change: +6.0pp)
+  ΔDay:     +6% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    94,000  (94%)
-    Cash:      $     6,000  (6%)
-    → BUY  $    18,000 of ^IXIC
+    Invested:  $   100,000  (100%)
+    Cash:      $         0  (0%)
+    → BUY  $     6,000 of ^IXIC
 
   ZONE: SAFE  |  Danger: 15/100
 
@@ -113,6 +131,15 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   TOTAL DANGER                                15
 
+  BACKTEST CONTEXT:
+  ────────────────────────────────────────────────────
+  Metric                         D1
+  ────────────────────────────────────────────────────
+  Sharpe                       1.05
+  CAGR                        12.1%
+  Max Drawdown               -11.6%
+  Avg Exposure                  51%
+
 
 ================================================================================
   RUSSELL 2000 (RUT)
@@ -120,12 +147,12 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   48%  (was 30%, change: +18.0pp)
+  TARGET:   66%  (was 48%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    48,000  (48%)
-    Cash:      $    52,000  (52%)
+    Invested:  $    66,000  (66%)
+    Cash:      $    34,000  (34%)
     → BUY  $    18,000 of ^RUT
 
   ZONE: SAFE  |  Danger: 0/100
@@ -144,6 +171,15 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   TOTAL DANGER                                 0
 
+  BACKTEST CONTEXT:
+  ────────────────────────────────────────────────────
+  Metric                         D1
+  ────────────────────────────────────────────────────
+  Sharpe                       0.86
+  CAGR                         8.3%
+  Max Drawdown                -8.4%
+  Avg Exposure                  31%
+
 
 ================================================================================
   US DOLLAR INDEX (USD)
@@ -151,12 +187,12 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   58%  (was 40%, change: +18.0pp)
+  TARGET:   76%  (was 58%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    58,000  (58%)
-    Cash:      $    42,000  (42%)
+    Invested:  $    76,000  (76%)
+    Cash:      $    24,000  (24%)
     → BUY  $    18,000 of DX-Y.NYB
 
   ZONE: WATCH  |  Danger: 40/100
@@ -174,6 +210,15 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Mkt Drawdown                     0.0%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                40
+
+  BACKTEST CONTEXT:
+  ────────────────────────────────────────────────────
+  Metric                         D1
+  ────────────────────────────────────────────────────
+  Sharpe                      -0.27
+  CAGR                         0.8%
+  Max Drawdown                -7.6%
+  Avg Exposure                  49%
 
 
 ================================================================================
