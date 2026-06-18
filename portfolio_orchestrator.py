@@ -1192,7 +1192,7 @@ def process_asset(asset, cfg):
 # ASSET PROCESSOR (existing - keep this for backtest mode)
 # ============================================================
 def process_asset_production(asset, cfg, position_history):
-    """Process asset in production mode - only calculate today's signal"""
+    """Process asset in production mode - calculate today's signal with full metrics"""
     logger.info(f"\n{'='*60}")
     logger.info(f"Processing: {asset}")
     logger.info(f"{'='*60}")
@@ -1217,10 +1217,9 @@ def process_asset_production(asset, cfg, position_history):
         
         if not has_hedgeye_data:
             logger.warning(f"  ⚠️  No Hedgeye data for {last_date.date()} - using Keltner estimates")
-            # Generate Keltner estimates for today
             df = add_keltner_estimates(df, cfg['trade_params'])
         
-        # Run models on full dataset (need historical context for calculations)
+        # Run models on full dataset
         df['pred_v5b'], df['v5b_score'] = trend_v5b_model(df, cfg['v5b_params'])
         df['pred_v1'] = run_v1_model(df, cfg['v1_params'])
         df['PREDICTED_TREND'] = v6_ohlc_context_switch(
@@ -1229,7 +1228,7 @@ def process_asset_production(asset, cfg, position_history):
         df['trade_signal'], df['trade_score'], df['trade_buy'], df['trade_sell'] = \
             trade_signal_model(df, cfg['trade_params'])
         
-        # Get yesterday's saved position
+        # Get yesterday's saved position (THIS determines the delta)
         yesterday_pos = position_history.get_yesterday_position(asset, last_date)
         
         if yesterday_pos is None:
@@ -1240,9 +1239,8 @@ def process_asset_production(asset, cfg, position_history):
             yesterday_weight = yesterday_pos['weight']
             yesterday_date = yesterday_pos['date']
         
-        # Calculate TODAY's danger score
-        # Build minimal backtest context (need recent history for velocity calcs)
-        bt_window = df.tail(252).copy().reset_index(drop=True)  # Last year of data
+        # Build backtest window for TODAY's danger calculation
+        bt_window = df.tail(252).copy().reset_index(drop=True)
         bt_window['daily_return'] = bt_window['close'].pct_change().fillna(0)
         bt_window['score_prev'] = bt_window['v5b_score'].shift(1)
         bt_window['score_vel_prev'] = (bt_window['v5b_score'] - bt_window['v5b_score'].shift(5)).shift(1)
@@ -1251,18 +1249,17 @@ def process_asset_production(asset, cfg, position_history):
         bt_window['vix_prev'] = bt_window.get('vix_close', 15.0).shift(1) if 'vix_close' in bt_window.columns else 15.0
         bt_window['vix_5d_chg'] = (bt_window['vix_prev'] / bt_window['vix_prev'].shift(5) - 1) if 'vix_close' in bt_window.columns else 0.0
         
-        # Market drawdown from full history
         full_market_high = df['close'].expanding().max().iloc[-1]
         bt_window['market_dd_prev'] = ((bt_window['close'] - full_market_high) / full_market_high).shift(1)
         
-        # Compute prospective danger for TODAY only
+        # Compute prospective danger for TODAY
         prosp_danger, det = compute_prospective_danger(bt_window, cfg['danger_params'])
         prosp_danger = int(round(prosp_danger))
         
         # Calculate raw weight from danger
         raw_weight = _raw_weight_from_danger(prosp_danger)
         
-        # Apply smoothing (limit change from yesterday's SAVED position)
+        # Apply smoothing using SAVED yesterday position
         max_daily_up = 0.18
         max_daily_down = 0.40
         raw_change = raw_weight - yesterday_weight
@@ -1273,9 +1270,36 @@ def process_asset_production(asset, cfg, position_history):
             capped_change = max(raw_change, -max_daily_down)
         
         prosp_weight = float(np.clip(yesterday_weight + capped_change, 0.10, 1.0))
-        
-        # Calculate delta from yesterday's SAVED position
         weight_change = prosp_weight - yesterday_weight
+        
+        # NOW run full backtest for METRICS ONLY (doesn't affect delta)
+        logger.info(f"  Computing backtest metrics...")
+        bt = df[df['date'] >= BACKTEST_START].copy().reset_index(drop=True)
+        
+        if len(bt) < 252:
+            logger.warning(f"  Insufficient data for backtest metrics ({len(bt)} days)")
+            d1_m = {'sharpe': 0, 'cagr': 0, 'max_drawdown': 0}
+        else:
+            bt['daily_return'] = bt['close'].pct_change().fillna(0)
+            bt['score_prev'] = bt['v5b_score'].shift(1)
+            bt['score_vel_prev'] = (bt['v5b_score'] - bt['v5b_score'].shift(5)).shift(1)
+            bt['trend_prev'] = bt['PREDICTED_TREND'].shift(1)
+            bt['trade_sig_prev'] = bt['trade_signal'].shift(1)
+            bt['vix_prev'] = bt['vix_close'].shift(1) if 'vix_close' in bt.columns else 15.0
+            bt['vix_5d_chg'] = (bt['vix_prev'] / bt['vix_prev'].shift(5) - 1) if 'vix_close' in bt.columns else 0.0
+            
+            full_market_high = df['close'].expanding().max()
+            bt_start_idx = df[df['date'] >= BACKTEST_START].index[0]
+            bt['market_high'] = full_market_high.iloc[bt_start_idx:].reset_index(drop=True)
+            bt['market_dd_prev'] = ((bt['close'] - bt['market_high']) / bt['market_high']).shift(1)
+            
+            danger = compute_danger_score(bt, cfg['danger_params'])
+            bt['danger_score'] = danger
+            d1_weights, d1_equity, d1_rets = run_d1_strategy(bt, danger)
+            bt['d1_weight'] = d1_weights
+            bt['d1_equity'] = d1_equity
+            
+            d1_m = calc_metrics(d1_equity, d1_rets, bt)
         
         # Determine action
         SIGNIFICANT = 0.03
@@ -1325,15 +1349,15 @@ def process_asset_production(asset, cfg, position_history):
             delta_display = f'{weight_change*100:.0f}%'
             delta_icon = '🔽'
         
-        logger.info(f"  ✅ {asset} complete: {action} | Target: {prosp_weight*100:.0f}% | Danger: {prosp_danger:.0f} | Source: {data_source}")
+        logger.info(f"  ✅ {asset} complete: {action} | Target: {prosp_weight*100:.0f}% | Danger: {prosp_danger:.0f} | Sharpe: {d1_m['sharpe']:.2f} | Source: {data_source}")
         
         return {
             'status': 'SUCCESS',
             'asset': asset,
             'cfg': cfg,
             'df': df,
-            'bt': bt_window,  # Only recent window, not full backtest
-            'd1_m': {'sharpe': 0, 'cagr': 0, 'max_drawdown': 0},  # No backtest metrics in production
+            'bt': bt,  # Full backtest for report generation
+            'd1_m': d1_m,  # REAL metrics now!
             'last_data_date': last_date,
             'action': action,
             'action_icon': action_icon,
