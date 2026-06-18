@@ -1,17 +1,17 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-06-18 16:25:11
+  Generated: 2026-06-18 18:38:23
 ================================================================================
 
 SUMMARY TABLE:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-SPX      │ ⏸️ HOLD      │        — │ 100% │    0 │  1.09 │  10.0% │  -9.8% │ BULLISH
-GOLD     │ 🟢 BUY        │     +18% │  30% │   68 │  1.04 │  13.2% │  -8.9% │ BEARISH
-COMPQ    │ 🟢 BUY        │     +18% │  83% │   15 │  1.05 │  12.1% │ -11.6% │ BULLISH
-RUT      │ 🟢 BUY        │     +18% │  30% │    0 │  0.86 │   8.3% │  -8.4% │ BULLISH
-USD      │ 🟢 BUY        │     +18% │  44% │   47 │ -0.27 │   0.8% │  -7.6% │ BEARISH
+SPX      │ 🟢 BUY        │     +18% │  18% │    0 │  0.00 │   0.0% │   0.0% │ BULLISH
+GOLD     │ 🟢 BUY        │     +18% │  18% │   68 │  0.00 │   0.0% │   0.0% │ BEARISH
+COMPQ    │ 🟢 BUY        │     +18% │  18% │   15 │  0.00 │   0.0% │   0.0% │ BULLISH
+RUT      │ 🟢 BUY        │     +18% │  18% │    0 │  0.00 │   0.0% │   0.0% │ BULLISH
+USD      │ 🟢 BUY        │     +18% │  18% │   40 │  0.00 │   0.0% │   0.0% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -23,17 +23,17 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   S&P 500 (SPX)
-  Data from: 2026-06-18
+  Data from: 2026-06-18 00:00:00
 ================================================================================
 
-  ACTION:   HOLD
-  TARGET:   100%  (was 100%, change: +0.0pp)
-  ΔDay:     — from previous backtest day
+  ACTION:   BUY
+  TARGET:   18%  (was 0%, change: +18.0pp)
+  ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $   100,000  (100%)
-    Cash:      $         0  (0%)
-    → No trade needed
+    Invested:  $    18,000  (18%)
+    Cash:      $    82,000  (82%)
+    → BUY  $    18,000 of ^GSPC
 
   ZONE: SAFE  |  Danger: 0/100
 
@@ -51,28 +51,19 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   TOTAL DANGER                                 0
 
-  BACKTEST CONTEXT:
-  ────────────────────────────────────────────────────
-  Metric                         D1
-  ────────────────────────────────────────────────────
-  Sharpe                       1.09
-  CAGR                        10.0%
-  Max Drawdown                -9.8%
-  Avg Exposure                  51%
-
 
 ================================================================================
   GOLD FUTURES (GOLD)
-  Data from: 2026-06-18
+  Data from: 2026-06-18 00:00:00
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   30%  (was 12%, change: +18.0pp)
+  TARGET:   18%  (was 0%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    30,000  (30%)
-    Cash:      $    70,000  (70%)
+    Invested:  $    18,000  (18%)
+    Cash:      $    82,000  (82%)
     → BUY  $    18,000 of GC=F
 
   ZONE: DANGER  |  Danger: 68/100
@@ -91,28 +82,19 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   TOTAL DANGER                                68
 
-  BACKTEST CONTEXT:
-  ────────────────────────────────────────────────────
-  Metric                         D1
-  ────────────────────────────────────────────────────
-  Sharpe                       1.04
-  CAGR                        13.2%
-  Max Drawdown                -8.9%
-  Avg Exposure                  52%
-
 
 ================================================================================
   NASDAQ COMPOSITE (COMPQ)
-  Data from: 2026-06-18
+  Data from: 2026-06-18 00:00:00
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   83%  (was 65%, change: +18.0pp)
+  TARGET:   18%  (was 0%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    83,000  (83%)
-    Cash:      $    17,000  (17%)
+    Invested:  $    18,000  (18%)
+    Cash:      $    82,000  (82%)
     → BUY  $    18,000 of ^IXIC
 
   ZONE: SAFE  |  Danger: 15/100
@@ -131,28 +113,19 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   TOTAL DANGER                                15
 
-  BACKTEST CONTEXT:
-  ────────────────────────────────────────────────────
-  Metric                         D1
-  ────────────────────────────────────────────────────
-  Sharpe                       1.05
-  CAGR                        12.1%
-  Max Drawdown               -11.6%
-  Avg Exposure                  51%
-
 
 ================================================================================
   RUSSELL 2000 (RUT)
-  Data from: 2026-06-18
+  Data from: 2026-06-18 00:00:00
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   30%  (was 12%, change: +18.0pp)
+  TARGET:   18%  (was 0%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    30,000  (30%)
-    Cash:      $    70,000  (70%)
+    Invested:  $    18,000  (18%)
+    Cash:      $    82,000  (82%)
     → BUY  $    18,000 of ^RUT
 
   ZONE: SAFE  |  Danger: 0/100
@@ -171,31 +144,22 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   TOTAL DANGER                                 0
 
-  BACKTEST CONTEXT:
-  ────────────────────────────────────────────────────
-  Metric                         D1
-  ────────────────────────────────────────────────────
-  Sharpe                       0.86
-  CAGR                         8.3%
-  Max Drawdown                -8.4%
-  Avg Exposure                  31%
-
 
 ================================================================================
   US DOLLAR INDEX (USD)
-  Data from: 2026-06-18
+  Data from: 2026-06-18 00:00:00
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   44%  (was 26%, change: +18.0pp)
+  TARGET:   18%  (was 0%, change: +18.0pp)
   ΔDay:     +18% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    44,162  (44%)
-    Cash:      $    55,838  (56%)
+    Invested:  $    18,000  (18%)
+    Cash:      $    82,000  (82%)
     → BUY  $    18,000 of DX-Y.NYB
 
-  ZONE: RISK  |  Danger: 47/100
+  ZONE: WATCH  |  Danger: 40/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
@@ -207,18 +171,9 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   TRADE                         NEUTRAL        3
   ^VIX Level                       17.0        0
   ^VIX Accel                     -12.6%        0
-  Mkt Drawdown                   -11.7%        7
+  Mkt Drawdown                     0.0%        0
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                47
-
-  BACKTEST CONTEXT:
-  ────────────────────────────────────────────────────
-  Metric                         D1
-  ────────────────────────────────────────────────────
-  Sharpe                      -0.27
-  CAGR                         0.8%
-  Max Drawdown                -7.6%
-  Avg Exposure                  49%
+  TOTAL DANGER                                40
 
 
 ================================================================================

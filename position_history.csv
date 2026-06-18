@@ -1,0 +1,6 @@
+date,asset,close,trend,trade,v5b_score,danger_score,target_weight,action,data_source
+2026-06-18,COMPQ,26398.91,BULLISH,BEARISH,0.4255,15,0.18,BUY,hedgeye_actual
+2026-06-18,GOLD,4248.1,BEARISH,BEARISH,-1.2828,68,0.18,BUY,hedgeye_actual
+2026-06-18,RUT,2961.04,BULLISH,BULLISH,0.9011,0,0.18,BUY,hedgeye_actual
+2026-06-18,SPX,7496.01,BULLISH,BULLISH,0.7953,0,0.18,BUY,hedgeye_actual
+2026-06-18,USD,100.76,BEARISH,NEUTRAL,-0.339,40,0.18,BUY,hedgeye_actual
