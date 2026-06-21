@@ -1,0 +1,23 @@
+================================================================================
+POSITION HISTORY RECONCILIATION - 2026-06-21 15:50
+================================================================================
+
+Comparing saved history vs. full backtest recalculation...
+
+SPX     : ✅ OK | Max drift:  0.0pp | Mean:  0.0pp | Days compared: 2
+GOLD    : ⚠️  DRIFT | Max drift: 31.8pp | Mean: 22.9pp | Days compared: 3
+COMPQ   : ⚠️  DRIFT | Max drift: 35.0pp | Mean: 26.6pp | Days compared: 2
+RUT     : ⚠️  DRIFT | Max drift: 88.0pp | Mean: 53.0pp | Days compared: 2
+USD     : ⚠️  DRIFT | Max drift: 51.3pp | Mean: 33.0pp | Days compared: 3
+
+⚠️  RECOMMENDATION: Refresh history for: GOLD, COMPQ, RUT, USD
+
+Possible causes of drift:
+  - Backfilled/corrected price data from Yahoo
+  - Updated risk ranges in enriched CSVs
+  - Strategy parameter changes
+
+To refresh history, run: python portfolio_orchestrator.py --mode backtest
+Then manually copy backtest results to position_history.csv if desired
+
+================================================================================
