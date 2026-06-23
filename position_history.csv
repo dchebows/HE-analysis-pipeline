@@ -20,4 +20,4 @@ date,asset,close,trend,trade,v5b_score,danger_score,target_weight,action,data_so
 2026-06-23,GOLD,4151.0,BEARISH,BEARISH,-1.2696,68,0.31,HOLD,keltner_estimate
 2026-06-23,RUT,2976.55,BULLISH,BULLISH,0.9593,3,1.0,HOLD,keltner_estimate
 2026-06-23,SPX,7377.66,BULLISH,BEARISH,0.6648,19,1.0,HOLD,keltner_estimate
-2026-06-23,USD,101.36,BEARISH,NEUTRAL,-0.2228,36,0.835,SELL,keltner_estimate
+2026-06-23,USD,101.36,BEARISH,NEUTRAL,-0.2228,36,0.835,HOLD,keltner_estimate
