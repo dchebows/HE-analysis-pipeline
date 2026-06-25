@@ -86,7 +86,7 @@ def load_nasdaq_forecast():
         return None
 
 def display_risk_range(forecast, ticker_name):
-    """Display formatted risk range forecast"""
+    """Display formatted risk range forecast with charts and downloads"""
     if forecast is None or forecast.get('status') != 'success':
         st.error(f"❌ Error loading {ticker_name} forecast")
         if forecast and 'error_message' in forecast:
@@ -172,6 +172,154 @@ def display_risk_range(forecast, ticker_name):
     
     st.divider()
     
+    # Download Current Forecast
+    st.markdown("### 📥 Download Current Forecast")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        csv_data = generate_forecast_csv(forecast)
+        st.download_button(
+            label="📄 Download as CSV",
+            data=csv_data,
+            file_name=f"{ticker_name.replace(' ', '_')}_forecast_{forecast['forecast_date']}.csv",
+            mime="text/csv",
+            use_container_width=True
+        )
+    
+    with col2:
+        # Show preview button
+        if st.button(f"👁️ Preview CSV", key=f"preview_{ticker_name}"):
+            st.dataframe(pd.read_csv(pd.io.common.StringIO(csv_data)), use_container_width=True)
+    
+    st.divider()
+    
+    # Historical Comparison Section
+    st.markdown("### 📊 Historical Performance")
+    
+    ticker_code = "SPX" if ticker_name == "S&P 500" else "NASDAQ"
+    live_preds = load_live_predictions(ticker_code)
+    hedgeye_data = load_hedgeye_data(ticker_code)
+    
+    if live_preds is not None and len(live_preds) > 0:
+        # Filter to complete predictions only
+        complete_preds = live_preds.dropna(subset=['next_high', 'next_low'])
+        
+        if len(complete_preds) > 0:
+            # Performance metrics
+            col1, col2, col3, col4 = st.columns(4)
+            
+            recent_20 = complete_preds.head(20)
+            
+            with col1:
+                high_cov = recent_20['high_contained_80'].mean() * 100
+                st.metric("High Coverage (20d)", f"{high_cov:.1f}%")
+            
+            with col2:
+                low_cov = recent_20['low_contained_95'].mean() * 100
+                st.metric("Low Coverage (20d)", f"{low_cov:.1f}%")
+            
+            with col3:
+                high_mae = recent_20['high_error_80'].mean()
+                st.metric("High MAE (20d)", f"{high_mae:.1f} pts")
+            
+            with col4:
+                low_mae = recent_20['low_error_95'].mean()
+                st.metric("Low MAE (20d)", f"{low_mae:.1f} pts")
+            
+            # Charts
+            if hedgeye_data is not None:
+                st.markdown("#### 📈 Forecast vs Actual Comparison")
+                
+                days_to_plot = st.slider(
+                    "Days to display",
+                    min_value=20,
+                    max_value=min(120, len(complete_preds)),
+                    value=60,
+                    step=10,
+                    key=f"slider_{ticker_name}"
+                )
+                
+                # Comparison chart
+                comparison_fig = create_comparison_chart(complete_preds, hedgeye_data, days=days_to_plot)
+                st.plotly_chart(comparison_fig, use_container_width=True)
+                
+                # Error chart
+                st.markdown("#### 📉 Error Comparison")
+                error_fig = create_error_chart(complete_preds, hedgeye_data, days=days_to_plot)
+                st.plotly_chart(error_fig, use_container_width=True)
+                
+                # Performance summary table
+                with st.expander("📊 Detailed Performance Metrics"):
+                    merged = complete_preds.merge(
+                        hedgeye_data[['Date', 'hedgeye_high', 'hedgeye_low']],
+                        left_on='date',
+                        right_on='Date',
+                        how='left'
+                    ).dropna(subset=['hedgeye_high'])
+                    
+                    if len(merged) > 0:
+                        # Calculate metrics
+                        model_high_mae = merged['high_error_80'].mean()
+                        model_low_mae = merged['low_error_95'].mean()
+                        model_high_cov = (merged['high_contained_80'].mean() * 100)
+                        model_low_cov = (merged['low_contained_95'].mean() * 100)
+                        
+                        he_high_error = (merged['hedgeye_high'] - merged['next_high']).abs().mean()
+                        he_low_error = (merged['hedgeye_low'] - merged['next_low']).abs().mean()
+                        he_high_cov = ((merged['next_high'] <= merged['hedgeye_high']).mean() * 100)
+                        he_low_cov = ((merged['next_low'] >= merged['hedgeye_low']).mean() * 100)
+                        
+                        metrics_data = {
+                            'Metric': [
+                                'High MAE (pts)',
+                                'Low MAE (pts)',
+                                'High Coverage %',
+                                'Low Coverage %',
+                                'Sample Size'
+                            ],
+                            'V4/V5 Model': [
+                                f"{model_high_mae:.1f}",
+                                f"{model_low_mae:.1f}",
+                                f"{model_high_cov:.1f}%",
+                                f"{model_low_cov:.1f}%",
+                                len(merged)
+                            ],
+                            'Hedgeye': [
+                                f"{he_high_error:.1f}",
+                                f"{he_low_error:.1f}",
+                                f"{he_high_cov:.1f}%",
+                                f"{he_low_cov:.1f}%",
+                                len(merged)
+                            ],
+                            'Advantage': [
+                                f"{model_high_mae - he_high_error:+.1f}",
+                                f"{model_low_mae - he_low_error:+.1f}",
+                                f"{model_high_cov - he_high_cov:+.1f}",
+                                f"{model_low_cov - he_low_cov:+.1f}",
+                                "—"
+                            ]
+                        }
+                        
+                        st.dataframe(pd.DataFrame(metrics_data), use_container_width=True, hide_index=True)
+            
+            # Download live track record
+            st.markdown("#### 📥 Download Complete Track Record")
+            
+            csv_track = live_preds.to_csv(index=False)
+            st.download_button(
+                label="📊 Download Full Track Record CSV",
+                data=csv_track,
+                file_name=f"{ticker_name.replace(' ', '_')}_live_track_record.csv",
+                mime="text/csv",
+                use_container_width=True
+            )
+        else:
+            st.info("📊 Historical data will appear after predictions are backfilled (next day)")
+    else:
+        st.info("📊 Live track record will be available after the first forecast runs")
+    
+    st.divider()
+    
     # Additional reference levels (collapsible)
     with st.expander("📊 Additional Reference Levels"):
         ref_levels = forecast['reference_levels']
@@ -206,6 +354,231 @@ def display_risk_range(forecast, ticker_name):
     # Timestamp
     st.caption(f"🔄 Forecast generated: {forecast['timestamp']}")
     st.caption(f"🤖 Model version: {forecast['model_version']}")
+# ============================================================
+# RISK RANGE ENHANCED FEATURES
+# ============================================================
+
+@st.cache_data(ttl=3600)
+def load_live_predictions(ticker):
+    """Load live prediction track record"""
+    try:
+        if ticker == "SPX":
+            url = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/Risk_Range_Data/forecasts/spx_live_predictions_v4.csv"
+        else:
+            url = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/Risk_Range_Data/forecasts/nasdaq_live_predictions_v5.csv"
+        
+        df = pd.read_csv(url, parse_dates=['date'])
+        return df
+    except Exception as e:
+        return None
+
+@st.cache_data(ttl=3600)
+def load_hedgeye_data(ticker):
+    """Load Hedgeye benchmark data"""
+    try:
+        if ticker == "SPX":
+            url = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/Risk_Range_Data/04_enriched/SPX_enriched.csv"
+        else:
+            url = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/Risk_Range_Data/04_enriched/COMPQ_enriched.csv"
+        
+        df = pd.read_csv(url)
+        df['Date'] = pd.to_datetime(df['Date'])
+        df = df.rename(columns={'BUY TRADE': 'hedgeye_low', 'SELL TRADE': 'hedgeye_high'})
+        return df
+    except Exception as e:
+        return None
+
+def create_comparison_chart(live_preds, hedgeye_data, days=60):
+    """Create historical comparison chart"""
+    import plotly.graph_objects as go
+    
+    # Get recent data
+    plot_data = live_preds.tail(days).copy()
+    plot_data = plot_data.dropna(subset=['next_high', 'next_low'])
+    
+    # Merge with Hedgeye
+    plot_data = plot_data.merge(
+        hedgeye_data[['Date', 'hedgeye_high', 'hedgeye_low']],
+        left_on='date',
+        right_on='Date',
+        how='left'
+    )
+    
+    fig = go.Figure()
+    
+    # Hedgeye range (background)
+    fig.add_trace(go.Scatter(
+        x=plot_data['date'],
+        y=plot_data['hedgeye_high'],
+        name='Hedgeye High',
+        line=dict(color='blue', width=1, dash='dash'),
+        mode='lines'
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=plot_data['date'],
+        y=plot_data['hedgeye_low'],
+        name='Hedgeye Low',
+        fill='tonexty',
+        fillcolor='rgba(0, 0, 255, 0.1)',
+        line=dict(color='blue', width=1, dash='dash'),
+        mode='lines'
+    ))
+    
+    # Model predictions
+    fig.add_trace(go.Scatter(
+        x=plot_data['date'],
+        y=plot_data['high_pred_80'],
+        name='V4/V5 High (80)',
+        line=dict(color='green', width=2),
+        mode='lines'
+    ))
+    
+    low_col = 'low_pred_97' if 'low_pred_97' in plot_data.columns else 'low_pred_95'
+    fig.add_trace(go.Scatter(
+        x=plot_data['date'],
+        y=plot_data[low_col],
+        name='V4/V5 Low (95/97)',
+        fill='tonexty',
+        fillcolor='rgba(0, 255, 0, 0.2)',
+        line=dict(color='green', width=2),
+        mode='lines'
+    ))
+    
+    # Actual high/low
+    fig.add_trace(go.Scatter(
+        x=plot_data['date'],
+        y=plot_data['next_high'],
+        name='Actual High',
+        mode='markers',
+        marker=dict(size=4, color='red', symbol='triangle-up')
+    ))
+    
+    fig.add_trace(go.Scatter(
+        x=plot_data['date'],
+        y=plot_data['next_low'],
+        name='Actual Low',
+        mode='markers',
+        marker=dict(size=4, color='red', symbol='triangle-down')
+    ))
+    
+    fig.update_layout(
+        title=f"Risk Range Forecast vs Actual (Last {days} Days)",
+        xaxis_title="Date",
+        yaxis_title="Price",
+        hovermode='x unified',
+        height=500,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    
+    return fig
+
+def create_error_chart(live_preds, hedgeye_data, days=60):
+    """Create error comparison chart"""
+    import plotly.graph_objects as go
+    
+    plot_data = live_preds.tail(days).copy()
+    plot_data = plot_data.dropna(subset=['high_error_80', 'low_error_95'])
+    
+    plot_data = plot_data.merge(
+        hedgeye_data[['Date', 'hedgeye_high', 'hedgeye_low']],
+        left_on='date',
+        right_on='Date',
+        how='left'
+    )
+    
+    # Calculate Hedgeye errors
+    plot_data['he_high_error'] = (plot_data['hedgeye_high'] - plot_data['next_high']).abs()
+    plot_data['he_low_error'] = (plot_data['hedgeye_low'] - plot_data['next_low']).abs()
+    plot_data['he_total_error'] = plot_data['he_high_error'] + plot_data['he_low_error']
+    
+    low_col = 'low_error_97' if 'low_error_97' in plot_data.columns else 'low_error_95'
+    plot_data['model_total_error'] = plot_data['high_error_80'] + plot_data.get(low_col, plot_data['low_error_95'])
+    
+    fig = go.Figure()
+    
+    fig.add_trace(go.Bar(
+        x=plot_data['date'],
+        y=plot_data['model_total_error'],
+        name='V4/V5 Total Error',
+        marker_color='green',
+        opacity=0.6
+    ))
+    
+    fig.add_trace(go.Bar(
+        x=plot_data['date'],
+        y=plot_data['he_total_error'],
+        name='Hedgeye Total Error',
+        marker_color='blue',
+        opacity=0.6
+    ))
+    
+    fig.update_layout(
+        title=f"Daily Forecast Error Comparison (Last {days} Days)",
+        xaxis_title="Date",
+        yaxis_title="Total Error (points)",
+        barmode='group',
+        height=400,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    
+    return fig
+
+def generate_forecast_csv(forecast):
+    """Generate CSV export of current forecast"""
+    data = {
+        'Metric': [
+            'Forecast Date',
+            'Based On Date',
+            'Based On Close',
+            'VIX/VXN',
+            'Regime',
+            'Forecast High (TRR 80)',
+            'Forecast Low (LLR 95/97)',
+            'High Distance %',
+            'Low Distance %',
+            'Range Width (pts)',
+            'Range Width %',
+            'Floor Active',
+            'Model Version'
+        ],
+        'Value': [
+            forecast['forecast_date'],
+            forecast['based_on_date'],
+            f"{forecast['based_on_close']:.2f}",
+            f"{forecast['vix']:.2f}",
+            forecast['regime'].upper(),
+            f"{forecast['forecast_high']:.2f}",
+            f"{forecast['forecast_low']:.2f}",
+            f"{forecast['high_pct']:+.2f}%",
+            f"{forecast['low_pct']:+.2f}%",
+            f"{forecast['range_width']:.2f}",
+            f"{(forecast['range_width']/forecast['based_on_close']*100):.2f}%",
+            'Yes' if forecast.get('floor_active') else 'No',
+            forecast.get('model_version', 'N/A')
+        ]
+    }
+    
+    df = pd.DataFrame(data)
+    
+    # Add reference levels
+    ref_data = []
+    for level_name, level_value in forecast['reference_levels'].items():
+        ref_data.append({'Metric': level_name.upper(), 'Value': f"{level_value:.2f}"})
+    
+    if ref_data:
+        ref_df = pd.DataFrame(ref_data)
+        df = pd.concat([df, ref_df], ignore_index=True)
+    
+    # Add risks
+    if forecast.get('risks'):
+        df = pd.concat([df, pd.DataFrame([{'Metric': 'RISKS', 'Value': ''}])], ignore_index=True)
+        for i, risk in enumerate(forecast['risks'], 1):
+            df = pd.concat([df, pd.DataFrame([{'Metric': f'Risk {i}', 'Value': risk}])], ignore_index=True)
+    
+    return df.to_csv(index=False)
+
+
 # ============================================================
 # TAB NAVIGATION
 # ============================================================
