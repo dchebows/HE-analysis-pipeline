@@ -34,6 +34,11 @@ jobs:
         env:
           TZ: America/New_York
 
+      - name: Save Live Predictions & Backfill Actuals
+        run: python scripts/risk_range/save_live_predictions.py
+        env:
+          TZ: America/New_York
+
       - name: Verify outputs
         run: |
           if [ ! -f Risk_Range_Data/forecasts/latest_spx_forecast.json ]; then
@@ -52,6 +57,7 @@ jobs:
           git config --local user.name "github-actions[bot]"
 
           git add Risk_Range_Data/forecasts/*.json
+          git add Risk_Range_Data/forecasts/*.csv
 
           git diff --staged --quiet || git commit -m "📊 Risk Range forecast $(date +'%Y-%m-%d %H:%M EST')"
           git push
@@ -61,5 +67,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: risk-range-forecast-${{ github.run_number }}
-          path: Risk_Range_Data/forecasts/*.json
+          path: |
+            Risk_Range_Data/forecasts/*.json
+            Risk_Range_Data/forecasts/*.csv
           retention-days: 30
