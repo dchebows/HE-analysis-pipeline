@@ -2,26 +2,26 @@
   "ticker": "^IXIC",
   "forecast_date": "2026-06-26",
   "based_on_date": "2026-06-25",
-  "based_on_close": 25389.5546875,
-  "vix": 30.59000015258789,
+  "based_on_close": 25299.119140625,
+  "vix": 31.25,
   "regime": "get_out",
-  "forecast_high": 25890.266016767062,
-  "forecast_low": 24590.069115804446,
-  "high_pct": 1.9721154444413174,
-  "low_pct": -3.1488759119086205,
-  "range_width": 1300.1969009626155,
+  "forecast_high": 25798.046976504873,
+  "forecast_low": 24502.481272080797,
+  "high_pct": 1.9721154444413085,
+  "low_pct": -3.1488759119086183,
+  "range_width": 1295.565704424076,
   "floor_active": false,
   "reference_levels": {
-    "trr_50": 25633.65980263668,
-    "llr_95": 24598.004159287382,
-    "llr_90": 24780.940524452188,
-    "llr_80": 24824.862771247976
+    "trr_50": 25542.35477302147,
+    "llr_95": 24510.38805157857,
+    "llr_90": 24692.672812159108,
+    "llr_80": 24736.43861145285
   },
   "risks": [
     "Get_out regime active \u2014 model reliability reduced",
     "Predicted range (5.12%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-06-25 14:36:11 EST",
+  "timestamp": "2026-06-25 15:48:55 EST",
   "model_version": "v5",
   "status": "success"
 }

@@ -1,0 +1,2 @@
+date,close,vix,regime,high_pred_50,high_pred_80,low_pred_80,low_pred_90,low_pred_95,floor_active,model_version,next_high,next_low,high_error_80,low_error_95,high_contained_80,low_contained_95,low_pred_97
+2026-06-25 00:00:00,25299.119140625,31.25,get_out,25542.35477302147,25798.046976504873,24736.43861145285,24692.672812159108,24510.38805157857,False,v5,,,,,,,24502.481272080797
