@@ -130,7 +130,7 @@ def rolling_scaling_slope(series, window=100, horizons=[1, 2, 5, 10, 20]):
             out.iloc[i] = np.nan
     
     # Forward fill to avoid losing recent data
-    out = out.fillna(method='ffill')
+    out = out.ffill()  # ← Changed from out.fillna(method='ffill')
     return out
 
 def add_regime_features(data, regime_col, vix_col_prefix):
