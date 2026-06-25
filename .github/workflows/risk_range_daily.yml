@@ -1,0 +1,65 @@
+name: Risk Range Daily Forecast
+on:
+  schedule:
+    - cron: '30 22 * * 1-5'  # 6:30pm EST Mon-Fri (22:30 UTC)
+  workflow_dispatch:
+
+concurrency:
+  group: risk-range-forecast
+  cancel-in-progress: false
+
+jobs:
+  generate-forecasts:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Risk Range Forecasts
+        run: python scripts/risk_range/run_daily_forecast.py
+        env:
+          TZ: America/New_York
+
+      - name: Verify outputs
+        run: |
+          if [ ! -f Risk_Range_Data/forecasts/latest_spx_forecast.json ]; then
+            echo "ERROR: SPX forecast not generated"
+            exit 1
+          fi
+          if [ ! -f Risk_Range_Data/forecasts/latest_nasdaq_forecast.json ]; then
+            echo "ERROR: Nasdaq forecast not generated"
+            exit 1
+          fi
+          echo "✅ Forecast files verified"
+
+      - name: Commit results
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add Risk_Range_Data/forecasts/*.json
+
+          git diff --staged --quiet || git commit -m "📊 Risk Range forecast $(date +'%Y-%m-%d %H:%M EST')"
+          git push
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: risk-range-forecast-${{ github.run_number }}
+          path: Risk_Range_Data/forecasts/*.json
+          retention-days: 30
