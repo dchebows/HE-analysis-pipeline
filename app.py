@@ -5,6 +5,7 @@ import json
 import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
+import requests
 
 # ============================================================
 # PAGE CONFIG
@@ -61,11 +62,155 @@ def load_portfolio_data():
         return portfolio_df, portfolio_txt, None
     except Exception as e:
         return None, None, str(e)
+# ============================================================
+# RISK RANGE HELPER FUNCTIONS
+# ============================================================
+@st.cache_data(ttl=3600)
+def load_spx_forecast():
+    """Load latest SPX forecast from GitHub"""
+    try:
+        SPX_FORECAST_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/Risk_Range_Data/forecasts/latest_spx_forecast.json"
+        response = requests.get(SPX_FORECAST_URL)
+        return json.loads(response.text)
+    except Exception as e:
+        return None
 
+@st.cache_data(ttl=3600)
+def load_nasdaq_forecast():
+    """Load latest Nasdaq forecast from GitHub"""
+    try:
+        NASDAQ_FORECAST_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/Risk_Range_Data/forecasts/latest_nasdaq_forecast.json"
+        response = requests.get(NASDAQ_FORECAST_URL)
+        return json.loads(response.text)
+    except Exception as e:
+        return None
+
+def display_risk_range(forecast, ticker_name):
+    """Display formatted risk range forecast"""
+    if forecast is None or forecast.get('status') != 'success':
+        st.error(f"❌ Error loading {ticker_name} forecast")
+        if forecast and 'error_message' in forecast:
+            st.error(f"Details: {forecast['error_message']}")
+        st.info("💡 Forecast data will be available after the workflow runs for the first time (6:30 PM EST)")
+        return
+    
+    # Header
+    st.markdown(f"### Based on: {forecast['based_on_date']} close = {forecast['based_on_close']:,.2f}")
+    st.markdown(f"**Forecasting for:** {forecast['forecast_date']}")
+    
+    # Regime indicator
+    regime = forecast['regime']
+    vix_label = "VIX" if ticker_name == "S&P 500" else "VXN"
+    
+    if regime == "investible":
+        regime_color = "#28a745"
+        regime_icon = "🟢"
+    elif regime == "chop":
+        regime_color = "#ffc107"
+        regime_icon = "🟡"
+    else:
+        regime_color = "#dc3545"
+        regime_icon = "🔴"
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(f"{vix_label}", f"{forecast['vix']:.2f}")
+    with col2:
+        st.markdown(f"""
+            <div style="background-color: {regime_color}; padding: 10px; border-radius: 5px; text-align: center;">
+                <span style="color: white; font-weight: bold;">{regime_icon} {regime.upper()}</span>
+            </div>
+        """, unsafe_allow_html=True)
+    
+    st.divider()
+    
+    # Main forecast table
+    st.markdown("### 🎯 Forecast Levels")
+    
+    llr_label = 'Low (LLR 95)' if ticker_name == "S&P 500" else 'Low (LLR 97)'
+    llr_confidence = '90% coverage' if ticker_name == "S&P 500" else '93% coverage'
+    
+    forecast_data = {
+        'Level': ['High (TRR 80)', llr_label],
+        'Price': [f"{forecast['forecast_high']:,.2f}", f"{forecast['forecast_low']:,.2f}"],
+        'Distance': [f"{forecast['high_pct']:+.2f}%", f"{forecast['low_pct']:+.2f}%"],
+        'Confidence': ['80% coverage', llr_confidence]
+    }
+    
+    forecast_df = pd.DataFrame(forecast_data)
+    
+    # Style the dataframe
+    def color_distance(val):
+        try:
+            num = float(val.strip('%').strip('+'))
+            if num > 0:
+                return 'background-color: #d4edda; color: #155724'
+            else:
+                return 'background-color: #f8d7da; color: #721c24'
+        except:
+            return ''
+    
+    styled_forecast = forecast_df.style.map(color_distance, subset=['Distance'])
+    st.dataframe(styled_forecast, use_container_width=True, hide_index=True)
+    
+    # Range width
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric(
+            "Range Width (Points)",
+            f"{forecast['range_width']:.2f}"
+        )
+    with col2:
+        st.metric(
+            "Range Width (%)",
+            f"{(forecast['range_width']/forecast['based_on_close']*100):.2f}%"
+        )
+    
+    # Floor indicator
+    if forecast.get('floor_active'):
+        st.info("🛡️ **FLOOR ACTIVE** - Yesterday's range exceeded median, additional downside protection applied")
+    
+    st.divider()
+    
+    # Additional reference levels (collapsible)
+    with st.expander("📊 Additional Reference Levels"):
+        ref_levels = forecast['reference_levels']
+        
+        if ticker_name == "S&P 500":
+            col1, col2, col3 = st.columns(3)
+            with col1:
+                st.metric("TRR 50 (median high)", f"{ref_levels['trr_50']:,.2f}")
+            with col2:
+                st.metric("LLR 90", f"{ref_levels['llr_90']:,.2f}")
+            with col3:
+                st.metric("LLR 80", f"{ref_levels['llr_80']:,.2f}")
+        else:  # Nasdaq
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("TRR 50 (median high)", f"{ref_levels['trr_50']:,.2f}")
+            with col2:
+                st.metric("LLR 95", f"{ref_levels['llr_95']:,.2f}")
+            with col3:
+                st.metric("LLR 90", f"{ref_levels['llr_90']:,.2f}")
+            with col4:
+                st.metric("LLR 80", f"{ref_levels['llr_80']:,.2f}")
+    
+    # Key risks
+    if forecast.get('risks'):
+        with st.expander("⚠️ Key Risks to Monitor", expanded=True):
+            for risk in forecast['risks']:
+                st.warning(f"• {risk}")
+    else:
+        st.success("✅ No elevated risk factors detected")
+    
+    # Timestamp
+    st.caption(f"🔄 Forecast generated: {forecast['timestamp']}")
+    st.caption(f"🤖 Model version: {forecast['model_version']}")
 # ============================================================
 # TAB NAVIGATION
 # ============================================================
-tab1, tab2 = st.tabs(["📊 CRR Analysis", "💼 Portfolio Signals"])
+# Change from 2 tabs to 3 tabs
+tab1, tab2, tab3 = st.tabs(["📊 CRR Analysis", "💼 Portfolio Signals", "🎯 Risk Range"])
 
 # ============================================================
 # TAB 1: CRR ANALYSIS (EXISTING DASHBOARD)
@@ -838,3 +983,31 @@ with tab2:
     
     st.caption(f"🔄 Portfolio signals update daily at 7:05 PM EST | Dashboard cache refreshes hourly")
     st.caption("📊 Powered by GitHub Actions + Streamlit")
+
+# ============================================================
+# TAB 3: RISK RANGE FORECASTS (NEW)
+# ============================================================
+with tab3:
+    st.title("🎯 Daily Risk Range Forecasts")
+    st.caption("🤖 Automated updates daily at 6:30 PM EST")
+    
+    # Create sub-tabs for SPX and Nasdaq
+    spx_tab, nasdaq_tab = st.tabs(["📈 S&P 500", "💻 Nasdaq"])
+    
+    # SPX Tab
+    with spx_tab:
+        st.subheader("S&P 500 Risk Range Forecast")
+        spx_forecast = load_spx_forecast()
+        display_risk_range(spx_forecast, "S&P 500")
+    
+    # Nasdaq Tab
+    with nasdaq_tab:
+        st.subheader("Nasdaq Composite Risk Range Forecast")
+        nasdaq_forecast = load_nasdaq_forecast()
+        display_risk_range(nasdaq_forecast, "Nasdaq")
+    
+    # Footer
+    st.divider()
+    st.caption("📊 Risk Range forecasts use VIX/VXN regime-aware quantile regression models")
+    st.caption("🔄 Forecasts update daily at 6:30 PM EST via GitHub Actions")
+    st.caption("💡 Models trained on 5 years of data, calibrated on recent 126 days")
