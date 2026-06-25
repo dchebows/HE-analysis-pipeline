@@ -4,7 +4,12 @@ Called by GitHub Actions to generate SPX and Nasdaq forecasts
 """
 import json
 import os
+import sys
 from pathlib import Path
+
+# Add the risk_range directory to Python path
+sys.path.insert(0, str(Path(__file__).parent))
+
 from spx_forecast import generate_spx_forecast
 from nasdaq_forecast import generate_nasdaq_forecast
 
@@ -15,7 +20,7 @@ def main():
     print()
     
     # Ensure output directory exists
-    output_dir = Path("Risk_Range_Data/forecasts")
+    output_dir = Path(__file__).parent.parent.parent / "Risk_Range_Data" / "forecasts"
     output_dir.mkdir(parents=True, exist_ok=True)
     
     # Generate SPX forecast
