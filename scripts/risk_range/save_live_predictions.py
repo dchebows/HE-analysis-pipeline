@@ -1,6 +1,6 @@
 """
 Save daily predictions and backfill actuals
-Called after forecasts are generated
+Works with original column format: Date, vix_close, vix_regime, etc.
 """
 import pandas as pd
 from pathlib import Path
@@ -10,6 +10,7 @@ import yfinance as yf
 def save_and_backfill(forecast_json, ticker_symbol, csv_filename):
     """
     Save today's prediction and backfill yesterday's actuals
+    Works with original file format
     
     Args:
         forecast_json: Dict containing forecast data
@@ -21,48 +22,58 @@ def save_and_backfill(forecast_json, ticker_symbol, csv_filename):
     # Load existing predictions or create new DataFrame
     if csv_path.exists():
         live_preds = pd.read_csv(csv_path)
-        live_preds['date'] = pd.to_datetime(live_preds['date'])
+        # Handle original column name
+        if 'Date' in live_preds.columns:
+            live_preds['Date'] = pd.to_datetime(live_preds['Date'])
+        elif 'date' in live_preds.columns:
+            live_preds = live_preds.rename(columns={'date': 'Date'})
+            live_preds['Date'] = pd.to_datetime(live_preds['Date'])
     else:
+        # Create new file with original column structure
         live_preds = pd.DataFrame(columns=[
-            'date', 'close', 'vix', 'regime',
-            'high_pred_50', 'high_pred_80',
-            'low_pred_80', 'low_pred_90', 'low_pred_95',
-            'floor_active', 'model_version',
-            'next_high', 'next_low',
-            'high_error_80', 'low_error_95',
-            'high_contained_80', 'low_contained_95'
+            'Date', 'close', 'next_high', 'next_low', 
+            'trr_next', 'llr_next', 
+            'vix_close', 'vix_regime',
+            'trr_50_raw', 'trr_50', 'high_pred_50',
+            'trr_80_raw', 'trr_80', 'high_pred_80',
+            'llr_80_raw', 'llr_80', 'low_pred_80',
+            'llr_90_raw', 'llr_90', 'low_pred_90',
+            'llr_95_raw', 'llr_95', 'low_pred_95'
         ])
     
     # Add today's prediction if not already present
     forecast_date = pd.to_datetime(forecast_json['based_on_date'])
     
-    if forecast_date not in live_preds['date'].values:
+    if forecast_date not in live_preds['Date'].values:
         # Parse reference levels
         ref_levels = forecast_json['reference_levels']
         
+        # Map new JSON format → old CSV format
         new_pred = {
-            'date': forecast_date,
+            'Date': forecast_date,
             'close': forecast_json['based_on_close'],
-            'vix': forecast_json['vix'],
-            'regime': forecast_json['regime'],
-            'high_pred_50': ref_levels.get('trr_50'),
-            'high_pred_80': forecast_json['forecast_high'],
-            'low_pred_80': ref_levels.get('llr_80'),
-            'low_pred_90': ref_levels.get('llr_90'),
-            'low_pred_95': forecast_json['forecast_low'] if forecast_json.get('model_version') == 'v4' else ref_levels.get('llr_95'),
-            'floor_active': forecast_json.get('floor_active', False),
-            'model_version': forecast_json.get('model_version'),
             'next_high': None,
             'next_low': None,
-            'high_error_80': None,
-            'low_error_95': None,
-            'high_contained_80': None,
-            'low_contained_95': None
+            'trr_next': None,
+            'llr_next': None,
+            'vix_close': forecast_json['vix'],
+            'vix_regime': forecast_json['regime'],
+            'trr_50_raw': None,  # Not in new forecasts
+            'trr_50': None,
+            'high_pred_50': ref_levels.get('trr_50'),
+            'trr_80_raw': None,
+            'trr_80': None,
+            'high_pred_80': forecast_json['forecast_high'],
+            'llr_80_raw': None,
+            'llr_80': None,
+            'low_pred_80': ref_levels.get('llr_80'),
+            'llr_90_raw': None,
+            'llr_90': None,
+            'low_pred_90': ref_levels.get('llr_90'),
+            'llr_95_raw': None,
+            'llr_95': None,
+            'low_pred_95': forecast_json['forecast_low']
         }
-        
-        # For Nasdaq V5, add 97th percentile
-        if forecast_json.get('model_version') == 'v5':
-            new_pred['low_pred_97'] = forecast_json['forecast_low']
         
         live_preds = pd.concat([live_preds, pd.DataFrame([new_pred])], ignore_index=True)
         print(f"✅ Added prediction for {forecast_date.date()}")
@@ -73,7 +84,7 @@ def save_and_backfill(forecast_json, ticker_symbol, csv_filename):
     if len(missing_actuals) > 0:
         # Download recent market data
         end_date = (datetime.now() + timedelta(days=1)).strftime('%Y-%m-%d')
-        start_date = (missing_actuals['date'].min() - timedelta(days=5)).strftime('%Y-%m-%d')
+        start_date = (missing_actuals['Date'].min() - timedelta(days=5)).strftime('%Y-%m-%d')
         
         try:
             market_data = yf.download(ticker_symbol, start=start_date, end=end_date, progress=False)
@@ -85,7 +96,7 @@ def save_and_backfill(forecast_json, ticker_symbol, csv_filename):
             
             # Backfill actuals
             for idx, row in missing_actuals.iterrows():
-                pred_date = row['date']
+                pred_date = row['Date']
                 next_date = pred_date + timedelta(days=1)
                 
                 # Find next trading day
@@ -98,36 +109,37 @@ def save_and_backfill(forecast_json, ticker_symbol, csv_filename):
                     actual_high = market_data.loc[next_date, 'high']
                     actual_low = market_data.loc[next_date, 'low']
                     
-                    live_preds.loc[live_preds['date'] == pred_date, 'next_high'] = actual_high
-                    live_preds.loc[live_preds['date'] == pred_date, 'next_low'] = actual_low
+                    live_preds.loc[live_preds['Date'] == pred_date, 'next_high'] = actual_high
+                    live_preds.loc[live_preds['Date'] == pred_date, 'next_low'] = actual_low
                     
-                    # Calculate errors
-                    high_pred = row['high_pred_80']
-                    low_pred = row['low_pred_95']
-                    
-                    live_preds.loc[live_preds['date'] == pred_date, 'high_error_80'] = abs(high_pred - actual_high)
-                    live_preds.loc[live_preds['date'] == pred_date, 'low_error_95'] = abs(low_pred - actual_low)
-                    live_preds.loc[live_preds['date'] == pred_date, 'high_contained_80'] = float(actual_high <= high_pred)
-                    live_preds.loc[live_preds['date'] == pred_date, 'low_contained_95'] = float(actual_low >= low_pred)
+                    # Calculate trr_next and llr_next
+                    pred_close = row['close']
+                    live_preds.loc[live_preds['Date'] == pred_date, 'trr_next'] = (actual_high - pred_close) / pred_close
+                    live_preds.loc[live_preds['Date'] == pred_date, 'llr_next'] = (pred_close - actual_low) / pred_close
                     
                     print(f"✅ Backfilled actuals for {pred_date.date()}")
         
         except Exception as e:
             print(f"⚠️  Could not backfill actuals: {e}")
     
-    # Save updated CSV
-    live_preds = live_preds.sort_values('date', ascending=False)
+    # Save updated CSV (sort by date descending)
+    live_preds = live_preds.sort_values('Date', ascending=False)
     live_preds.to_csv(csv_path, index=False)
     print(f"💾 Saved to {csv_path}")
     
     # Print recent performance
     recent = live_preds.dropna(subset=['next_high', 'next_low']).head(20)
     if len(recent) > 0:
+        high_contained = (recent['next_high'] <= recent['high_pred_80']).mean() * 100
+        low_contained = (recent['next_low'] >= recent['low_pred_95']).mean() * 100
+        high_mae = (recent['high_pred_80'] - recent['next_high']).abs().mean()
+        low_mae = (recent['low_pred_95'] - recent['next_low']).abs().mean()
+        
         print(f"\n📊 Last {len(recent)} Days Performance:")
-        print(f"   High Coverage: {recent['high_contained_80'].mean()*100:.1f}%")
-        print(f"   Low Coverage:  {recent['low_contained_95'].mean()*100:.1f}%")
-        print(f"   High MAE: {recent['high_error_80'].mean():.1f} pts")
-        print(f"   Low MAE:  {recent['low_error_95'].mean():.1f} pts")
+        print(f"   High Coverage: {high_contained:.1f}%")
+        print(f"   Low Coverage:  {low_contained:.1f}%")
+        print(f"   High MAE: {high_mae:.1f} pts")
+        print(f"   Low MAE:  {low_mae:.1f} pts")
 
 def main():
     """Run live predictions tracking"""
