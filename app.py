@@ -299,7 +299,7 @@ def display_risk_range(forecast, ticker_name):
                                 f"{model_low_cov:.1f}%",
                                 len(merged)
                             ],
-                            'Hedgeye': [
+                            'HE Model': [
                                 f"{he_high_error:.1f}",
                                 f"{he_low_error:.1f}",
                                 f"{he_high_cov:.1f}%",
@@ -426,7 +426,7 @@ def create_comparison_chart(live_preds, hedgeye_data, days=60):
     import plotly.graph_objects as go
     
     # Get recent data
-    plot_data = live_preds.tail(days).copy()
+    plot_data = live_preds.head(days).copy()
     plot_data = plot_data.dropna(subset=['next_high', 'next_low'])
     
     # Merge with Hedgeye
@@ -443,7 +443,7 @@ def create_comparison_chart(live_preds, hedgeye_data, days=60):
     fig.add_trace(go.Scatter(
         x=plot_data['date'],
         y=plot_data['hedgeye_high'],
-        name='Hedgeye High',
+        name='HE TRR (80)',
         line=dict(color='blue', width=1, dash='dash'),
         mode='lines'
     ))
@@ -451,7 +451,7 @@ def create_comparison_chart(live_preds, hedgeye_data, days=60):
     fig.add_trace(go.Scatter(
         x=plot_data['date'],
         y=plot_data['hedgeye_low'],
-        name='Hedgeye Low',
+        name='HE LRR (95)',
         fill='tonexty',
         fillcolor='rgba(0, 0, 255, 0.1)',
         line=dict(color='blue', width=1, dash='dash'),
@@ -510,7 +510,7 @@ def create_error_chart(live_preds, hedgeye_data, days=60):
     """Create error comparison chart"""
     import plotly.graph_objects as go
     
-    plot_data = live_preds.tail(days).copy()
+    plot_data = live_preds.head(days).copy()
     plot_data = plot_data.dropna(subset=['high_error_80', 'low_error_95'])
     
     plot_data = plot_data.merge(
@@ -541,7 +541,7 @@ def create_error_chart(live_preds, hedgeye_data, days=60):
     fig.add_trace(go.Bar(
         x=plot_data['date'],
         y=plot_data['he_total_error'],
-        name='Hedgeye Total Error',
+        name='HE Total Error',
         marker_color='blue',
         opacity=0.6
     ))
