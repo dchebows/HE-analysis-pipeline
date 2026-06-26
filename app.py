@@ -360,16 +360,32 @@ def display_risk_range(forecast, ticker_name):
 
 @st.cache_data(ttl=3600)
 def load_live_predictions(ticker):
-    """Load live prediction track record"""
+    """Load live prediction track record with column name compatibility"""
     try:
         if ticker == "SPX":
             url = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/Risk_Range_Data/forecasts/spx_live_predictions_v4.csv"
         else:
             url = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/Risk_Range_Data/forecasts/nasdaq_live_predictions_v5.csv"
         
-        df = pd.read_csv(url, parse_dates=['date'])
+        df = pd.read_csv(url)
+        
+        # Handle old column format (Date, vix_close, vix_regime)
+        column_mapping = {
+            'Date': 'date',
+            'vix_close': 'vix',
+            'vix_regime': 'regime'
+        }
+        
+        # Apply mapping if old columns exist
+        df = df.rename(columns=column_mapping)
+        
+        # Ensure date column is datetime
+        if 'date' in df.columns:
+            df['date'] = pd.to_datetime(df['date'])
+        
         return df
     except Exception as e:
+        print(f"Error loading live predictions: {e}")  # For debugging
         return None
 
 @st.cache_data(ttl=3600)
