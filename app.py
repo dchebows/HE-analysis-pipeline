@@ -193,6 +193,8 @@ def display_risk_range(forecast, ticker_name):
     
     st.divider()
     
+    
+    
     # Historical Comparison Section
     st.markdown("### 📊 Historical Performance")
     
@@ -205,6 +207,12 @@ def display_risk_range(forecast, ticker_name):
         complete_preds = live_preds.dropna(subset=['next_high', 'next_low'])
         
         if len(complete_preds) > 0:
+            # Calculate containment and error metrics on the fly
+            complete_preds['high_contained_80'] = (complete_preds['next_high'] <= complete_preds['high_pred_80']).astype(float)
+            complete_preds['low_contained_95'] = (complete_preds['next_low'] >= complete_preds['low_pred_95']).astype(float)
+            complete_preds['high_error_80'] = (complete_preds['high_pred_80'] - complete_preds['next_high']).abs()
+            complete_preds['low_error_95'] = (complete_preds['low_pred_95'] - complete_preds['next_low']).abs()
+            
             # Performance metrics
             col1, col2, col3, col4 = st.columns(4)
             
@@ -258,6 +266,13 @@ def display_risk_range(forecast, ticker_name):
                     ).dropna(subset=['hedgeye_high'])
                     
                     if len(merged) > 0:
+                        # Ensure metrics are calculated
+                        if 'high_contained_80' not in merged.columns:
+                            merged['high_contained_80'] = (merged['next_high'] <= merged['high_pred_80']).astype(float)
+                            merged['low_contained_95'] = (merged['next_low'] >= merged['low_pred_95']).astype(float)
+                            merged['high_error_80'] = (merged['high_pred_80'] - merged['next_high']).abs()
+                            merged['low_error_95'] = (merged['low_pred_95'] - merged['next_low']).abs()
+                        
                         # Calculate metrics
                         model_high_mae = merged['high_error_80'].mean()
                         model_low_mae = merged['low_error_95'].mean()
@@ -354,6 +369,8 @@ def display_risk_range(forecast, ticker_name):
     # Timestamp
     st.caption(f"🔄 Forecast generated: {forecast['timestamp']}")
     st.caption(f"🤖 Model version: {forecast['model_version']}")
+
+
 # ============================================================
 # RISK RANGE ENHANCED FEATURES
 # ============================================================
