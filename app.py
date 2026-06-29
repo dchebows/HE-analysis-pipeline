@@ -79,7 +79,18 @@ def load_debt_data():
         return debt, series, None
     except Exception as e:
         return None, None, str(e)
+# ============================================================
+# CFTC COT LOADER
+# ============================================================
+CFTC_JSON_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/cftc.json"
 
+@st.cache_data(ttl=3600)
+def load_cftc_data():
+    try:
+        resp = requests.get(CFTC_JSON_URL)
+        return json.loads(resp.text), None
+    except Exception as e:
+        return None, str(e)
 
 # ============================================================
 # RISK RANGE HELPER FUNCTIONS
@@ -635,8 +646,9 @@ def generate_forecast_csv(forecast):
 # TAB NAVIGATION
 # ============================================================
 # Change from 2 tabs to 3 tabs
-tab1, tab2, tab3, tab4 = st.tabs([
-    "📊 CRR Analysis", "💼 Portfolio Signals", "🎯 SPX/NAS Range", "🏦 Debt Markets"
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    "📊 CRR Analysis", "💼 Portfolio Signals", "🎯 Risk Range",
+    "🏦 Debt Markets", "📊 CFTC Positioning"
 ])
 
 # ============================================================
@@ -1647,3 +1659,149 @@ with tab4:
 
     st.divider()
     st.caption("📊 Data: FRED (OAS, yields) + Yahoo (MOVE, HYG) | Updated daily via GitHub Actions")
+# ============================================================
+# TAB 5: CFTC NON-COMMERCIAL POSITIONING
+# ============================================================
+with tab5:
+    st.title("📊 CFTC Non-Commercial Net Long Positioning")
+    st.caption("🤖 Updated weekly (Sat) | Legacy / Futures-Only | Source: CFTC")
+
+    cftc, cftc_err = load_cftc_data()
+    if cftc_err:
+        st.error(f"❌ Error loading CFTC data: {cftc_err}")
+        st.info("💡 Data appears after the CFTC workflow runs.")
+        st.stop()
+
+    st.caption(f"📅 Report date: {cftc['report_date']} | 🔄 Generated {cftc['generated']}")
+
+    co = cftc.get('callouts', {})
+
+    # ============================================================
+    # TOP CALLOUT PANEL (the "what matters this week" summary)
+    # ============================================================
+    st.subheader("🎯 Positioning Highlights")
+
+    # Quick count cards
+    n_extreme = len(co.get('extremes', []))
+    n_long = sum(1 for e in co.get('extremes', []) if e['z'] > 0)
+    n_short = n_extreme - n_long
+    n_flips = len(co.get('flips', []))
+
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Crowded Extremes", f"{n_extreme}", help="Instruments with |Z-1Y| ≥ 2")
+    m2.metric("Long / Short", f"{n_long} 🟢 / {n_short} 🔴")
+    m3.metric("Positioning Flips", f"{n_flips}", help="Crossed net long↔short this week")
+
+    # Extreme positioning
+    st.markdown("#### 🚨 Extreme Positioning (|Z| ≥ 2)")
+    if co.get('extremes'):
+        for e in co['extremes']:
+            st.markdown(f"- {e['text']}")
+    else:
+        st.markdown("*No extremes this week — positioning broadly within normal ranges.*")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("#### ⚡ Biggest Weekly Shifts")
+        for s in co.get('shifts', []):
+            st.markdown(f"- {s['text']}")
+    with c2:
+        st.markdown("#### 🔄 Positioning Flips")
+        if co.get('flips'):
+            for f in co['flips']:
+                st.markdown(f"- {f['text']}")
+        else:
+            st.markdown("*— none this week —*")
+
+    st.markdown("#### 📊 Sector Tilt")
+    for sec in co.get('sector', []):
+        st.markdown(f"- {sec['text']}")
+
+    st.divider()
+
+    # ============================================================
+    # FULL POSITIONING TABLE
+    # ============================================================
+    st.subheader("📋 Full Positioning Table")
+
+    inst = pd.DataFrame(cftc['instruments'])
+
+    def fmt_int(x):
+        return f"{x:,.0f}" if pd.notna(x) else ""
+
+    disp = pd.DataFrame({
+        'Section': inst['section'],
+        'Metric':  inst['label'],
+        'Latest':  inst['latest'].map(fmt_int),
+        'W/W Chg': inst['wow'].map(fmt_int),
+        '3M Ave':  inst['ave_3m'].map(fmt_int),
+        '6M Ave':  inst['ave_6m'].map(fmt_int),
+        '1Y Ave':  inst['ave_1y'].map(fmt_int),
+        '3Y Max':  inst['max_3y'].map(fmt_int),
+        '3Y Min':  inst['min_3y'].map(fmt_int),
+        'Z-1Y':    inst['z_1y'],
+        'Z-3Y':    inst['z_3y'],
+    })
+
+    # Z-score heatmap: green (long) <-> red (short), intensity by |z|
+    def z_color(val):
+        if pd.isna(val):
+            return ''
+        a = min(abs(val) / 3.0, 1.0)
+        if val >= 0:
+            r = int(220 - a*120); g = int(245 - a*40); b = int(220 - a*120)
+            return f'background-color: rgb({r},{g},{b}); color: #0a3d0a'
+        else:
+            r = int(250 - a*0); g = int(225 - a*140); b = int(225 - a*140)
+            return f'background-color: rgb({r},{g},{b}); color: #5c0000'
+
+    def wow_color(val_str):
+        try:
+            v = float(str(val_str).replace(',', ''))
+        except:
+            return ''
+        if v > 0:
+            return 'color: #006100'
+        elif v < 0:
+            return 'color: #9c0006'
+        return ''
+
+    def fmt_z(x):
+        return f"{x:+.2f}" if pd.notna(x) else "n/a"
+
+    # Section filter
+    sections = ['ALL'] + list(inst['section'].unique())
+    pick = st.radio("Filter section", sections, horizontal=True)
+    view = disp if pick == 'ALL' else disp[disp['Section'] == pick]
+
+    styled = (view.style
+              .map(z_color, subset=['Z-1Y', 'Z-3Y'])
+              .map(wow_color, subset=['W/W Chg'])
+              .format({'Z-1Y': fmt_z, 'Z-3Y': fmt_z}))
+
+    st.dataframe(
+        styled,
+        use_container_width=True,
+        hide_index=True,
+        height=min(1000, 80 + len(view) * 35),
+        column_config={
+            "Section": st.column_config.TextColumn(width="small"),
+            "Metric":  st.column_config.TextColumn(width="medium", pinned=True),
+        },
+    )
+
+    with st.expander("📖 How to read this"):
+        st.markdown("""
+        - **Non-Commercial Net** = large speculators' Long minus Short positions (futures).
+        - **Positive** = net long (bullish positioning); **Negative** = net short (bearish).
+        - **W/W Chg** = change vs last week (green = added longs, red = added shorts).
+        - **Z-Score** = how stretched current positioning is vs its own history.
+          - **+2 or higher** = crowded long (potential reversal/squeeze risk).
+          - **−2 or lower** = crowded short.
+        - **Note on direction:** Bonds net-long = betting yields *fall*. Currencies are *vs USD*
+          (long EUR = bearish USD). VIX net-short = complacency.
+        - Contrarian signal: extreme positioning often precedes mean reversion.
+        """)
+
+    st.divider()
+    st.caption("📊 Source: CFTC Commitments of Traders (Legacy, Futures-Only) | Updated weekly")
