@@ -62,6 +62,25 @@ def load_portfolio_data():
         return portfolio_df, portfolio_txt, None
     except Exception as e:
         return None, None, str(e)
+
+# ============================================================
+# DEBT MARKET LOADERS
+# ============================================================
+DEBT_JSON_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/debt_market.json"
+DEBT_CSV_URL  = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/debt_series.csv"
+
+@st.cache_data(ttl=3600)
+def load_debt_data():
+    """Load debt market JSON (metrics/highlights) and CSV (time series)."""
+    try:
+        resp = requests.get(DEBT_JSON_URL)
+        debt = json.loads(resp.text)
+        series = pd.read_csv(DEBT_CSV_URL, parse_dates=['date'])
+        return debt, series, None
+    except Exception as e:
+        return None, None, str(e)
+
+
 # ============================================================
 # RISK RANGE HELPER FUNCTIONS
 # ============================================================
@@ -616,7 +635,9 @@ def generate_forecast_csv(forecast):
 # TAB NAVIGATION
 # ============================================================
 # Change from 2 tabs to 3 tabs
-tab1, tab2, tab3 = st.tabs(["📊 CRR Analysis", "💼 Portfolio Signals", "🎯 Risk Range"])
+tab1, tab2, tab3, tab4 = st.tabs([
+    "📊 CRR Analysis", "💼 Portfolio Signals", "🎯 SPX/NAS Range", "🏦 Debt Markets"
+])
 
 # ============================================================
 # TAB 1: CRR ANALYSIS (EXISTING DASHBOARD)
@@ -1417,3 +1438,212 @@ with tab3:
     st.caption("📊 Risk Range forecasts use VIX/VXN regime-aware quantile regression models")
     st.caption("🔄 Forecasts update daily at 6:30 PM EST via GitHub Actions")
     st.caption("💡 Models trained on 5 years of data, calibrated on recent 126 days")
+
+# ============================================================
+# TAB 4: DEBT MARKETS
+# ============================================================
+with tab4:
+    st.title("🏦 Debt Market Dashboard")
+    st.caption("🤖 Automated updates daily (~6:20 PM EST) | MOVE, Credit Spreads, Treasuries")
+
+    debt, series, debt_err = load_debt_data()
+
+    if debt_err:
+        st.error(f"❌ Error loading debt data: {debt_err}")
+        st.info("💡 Data appears after the Debt Market workflow runs.")
+        st.stop()
+
+    risk = debt['risk']
+    panels = debt['panels']
+    hl = debt['highlights']
+
+    # ---------- COMPOSITE RISK SCORE GAUGE ----------
+    st.subheader("Composite Risk Score")
+    score = risk['score']
+    regime = risk['regime']
+
+    gauge = go.Figure(go.Indicator(
+        mode="gauge+number",
+        value=score,
+        number={'suffix': "/100", 'font': {'size': 40}},
+        title={'text': f"<b>{regime}</b>", 'font': {'size': 22}},
+        gauge={
+            'axis': {'range': [0, 100], 'tickwidth': 1},
+            'bar': {'color': "rgba(0,0,0,0.7)", 'thickness': 0.25},
+            'steps': [
+                {'range': [0, 30],  'color': '#2e9e4f'},
+                {'range': [30, 45], 'color': '#e8d200'},
+                {'range': [45, 70], 'color': '#e07b00'},
+                {'range': [70, 100],'color': '#9c0006'},
+            ],
+            'threshold': {'line': {'color': "black", 'width': 4},
+                          'thickness': 0.85, 'value': score},
+        }
+    ))
+    gauge.update_layout(height=280, margin=dict(t=60, b=10, l=30, r=30))
+    st.plotly_chart(gauge, use_container_width=True)
+
+    # Component breakdown
+    cols = st.columns(len(risk['components']))
+    for col, (name, c) in zip(cols, risk['components'].items()):
+        short = name.split('(')[0].strip()
+        col.metric(short, f"{c['pct']:.0f}", help=f"0–100 stress · weight {c['weight']:.0%}")
+
+    st.caption(f"📅 As of {debt['as_of']} | 🔄 Generated {debt['generated']}")
+    st.divider()
+
+    # ---------- HIGHLIGHTS ----------
+    st.subheader("🎯 Market Highlights")
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("#### 🔴 Risk-Off Signals")
+        if hl['risk_off']:
+            for b in hl['risk_off']:
+                st.markdown(f"- {b}")
+        else:
+            st.markdown("*— none —*")
+    with c2:
+        st.markdown("#### 🟢 Risk-On / Stable")
+        if hl['risk_on']:
+            for b in hl['risk_on']:
+                st.markdown(f"- {b}")
+        else:
+            st.markdown("*— none —*")
+
+    st.markdown("#### 📊 Yield Curve")
+    for b in (hl['curve'] or ["*— none —*"]):
+        st.markdown(f"- {b}")
+
+    st.markdown("#### ⚠️ Trend Changes (sensitive)")
+    for b in (hl['trend'] or ["*— none —*"]):
+        st.markdown(f"- {b}")
+
+    with st.expander("📖 Glossary"):
+        st.markdown("""
+        - **OAS** = extra yield over Treasuries (the price of credit risk; **wider = more fear**)
+        - **HY** = high-yield "junk" bonds | **BBB** = lowest investment-grade
+        - Spreads **WIDEN** = risk-off; **TIGHTEN** = risk-on
+        - Curve **INVERTED** (2yr > 10yr) = classic recession warning
+        - **Risk Score**: 0 = calm, 100 = most stressed vs last 20 months
+        """)
+
+    st.divider()
+
+    # ---------- METRICS TABLE HELPER ----------
+    def fmt_delta_row(name, m, is_spread=False):
+        def cell(bps, pct):
+            return f"{bps:+.0f} bps ({pct:+.1f}%)"
+        return {
+            'Series': name,
+            'Last': f"{m['last']:.2f}",
+            '1D Ago': f"{m['d1']:.2f}",
+            '1W Ago': f"{m['w1']:.2f}",
+            '1M Ago': f"{m['m1']:.2f}",
+            'DoD': cell(*m['dod']),
+            'WoW': cell(*m['wow']),
+            'MoM': cell(*m['mom']),
+        }
+
+    def style_debt_table(df, spread_rows=()):
+        def color(v, is_spread):
+            try:
+                bps = float(v.split()[0])
+            except:
+                return ''
+            red = (bps < 0) if is_spread else (bps >= 0)
+            return ('background-color: #ffc7ce; color: #9c0006' if red
+                    else 'background-color: #c6efce; color: #006100')
+        def apply_row(row):
+            is_spread = row['Series'] in spread_rows
+            return ['', '', '', '', '',
+                    color(row['DoD'], is_spread),
+                    color(row['WoW'], is_spread),
+                    color(row['MoM'], is_spread)]
+        return df.style.apply(apply_row, axis=1)
+
+    # ---------- CHART HELPER ----------
+    def line_chart(title, traces, y_label, y2_label=None):
+        fig = go.Figure()
+        for tr in traces:
+            fig.add_trace(go.Scatter(
+                x=series['date'], y=series[tr['col']],
+                name=tr['name'], line=dict(color=tr['color'], width=1.3),
+                yaxis=tr.get('yaxis', 'y')
+            ))
+        layout = dict(
+            title=title, height=450, hovermode='x unified',
+            yaxis=dict(title=y_label),
+            legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+            margin=dict(t=60, b=40)
+        )
+        if y2_label:
+            layout['yaxis2'] = dict(title=y2_label, overlaying='y', side='right')
+        fig.update_layout(**layout)
+        return fig
+
+    # ---------- BOND VOLATILITY (MOVE) ----------
+    st.subheader("Bond Volatility (MOVE Index)")
+    st.plotly_chart(line_chart("MOVE Index",
+        [{'col': 'MOVE', 'name': 'MOVE', 'color': 'black'}],
+        "Volatility"), use_container_width=True)
+    tbl = pd.DataFrame([fmt_delta_row('MOVE', panels['MOVE']['metrics'])])
+    st.dataframe(style_debt_table(tbl), use_container_width=True, hide_index=True)
+    tc = panels['MOVE']['trend']
+    if tc['change']:
+        st.warning(f"⚠️ Trend change: **{tc['trend']}** [{tc['strength']}, {tc['score']}/100]")
+    st.divider()
+
+    # ---------- HIGH YIELD CREDIT ----------
+    st.subheader("High Yield Credit (OAS vs HYG)")
+    st.plotly_chart(line_chart("High Yield OAS vs HYG",
+        [{'col': 'HY_OAS', 'name': 'High Yield OAS', 'color': 'black'},
+         {'col': 'HYG', 'name': 'HYG (RHS)', 'color': '#1f9ed6', 'yaxis': 'y2'}],
+        "OAS (%)", "$HYG"), use_container_width=True)
+    tbl = pd.DataFrame([fmt_delta_row('HY OAS', panels['HY_OAS']['metrics'])])
+    st.dataframe(style_debt_table(tbl), use_container_width=True, hide_index=True)
+    tc = panels['HY_OAS']['trend']
+    if tc['change']:
+        st.warning(f"⚠️ Trend change: **{tc['trend']}** [{tc['strength']}, {tc['score']}/100]")
+    st.divider()
+
+    # ---------- US TREASURIES ----------
+    st.subheader("US Treasuries (2yr / 10yr / 2-10 Spread)")
+    st.plotly_chart(line_chart("US Treasuries",
+        [{'col': 'Y2', 'name': 'US 2yr Yield', 'color': 'black'},
+         {'col': 'Y10', 'name': 'US 10Y Yield', 'color': '#999999'},
+         {'col': 'SPREAD', 'name': '2-10 Spread (RHS)', 'color': '#1f9ed6', 'yaxis': 'y2'}],
+        "Yields (%)", "Spread"), use_container_width=True)
+    curve = panels['CURVE']
+    tbl = pd.DataFrame([
+        fmt_delta_row('2yr Yield', curve['m2']),
+        fmt_delta_row('10yr Yield', curve['m10']),
+        fmt_delta_row('2-10 Spread', curve['metrics'], is_spread=True),
+    ])
+    st.dataframe(style_debt_table(tbl, spread_rows=('2-10 Spread',)),
+                 use_container_width=True, hide_index=True)
+    # Steepener badge
+    badge_color = {'Bear Steepener':'#fff3cd','Bull Steepener':'#d4edda',
+                   'Bear Flattener':'#f8d7da','Bull Flattener':'#cce5ff'}.get(curve['regime'], '#eee')
+    st.markdown(f"""
+        <div style="background-color:{badge_color}; padding:12px; border-radius:6px; margin-top:8px;">
+        <b>Curve Regime (1Mo): {curve['regime']}</b> — {curve['interp']}
+        </div>
+    """, unsafe_allow_html=True)
+    tc = curve['trend']
+    if tc['change']:
+        st.warning(f"⚠️ Trend change: **{tc['trend']}** [{tc['strength']}, {tc['score']}/100]")
+    st.divider()
+
+    # ---------- INVESTMENT-GRADE (BBB) ----------
+    st.subheader("Investment-Grade Credit (BBB OAS)")
+    st.plotly_chart(line_chart("BBB - Treasury 10Y Spread",
+        [{'col': 'BBB_OAS', 'name': 'BBB OAS', 'color': 'black'}],
+        "Spread"), use_container_width=True)
+    tbl = pd.DataFrame([fmt_delta_row('BBB Spread', panels['BBB_OAS']['metrics'])])
+    st.dataframe(style_debt_table(tbl), use_container_width=True, hide_index=True)
+    tc = panels['BBB_OAS']['trend']
+    if tc['change']:
+        st.warning(f"⚠️ Trend change: **{tc['trend']}** [{tc['strength']}, {tc['score']}/100]")
+
+    st.divider()
+    st.caption("📊 Data: FRED (OAS, yields) + Yahoo (MOVE, HYG) | Updated daily via GitHub Actions")
