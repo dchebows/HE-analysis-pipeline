@@ -7,7 +7,7 @@ import pandas as pd
 import numpy as np
 import requests
 from io import StringIO
-from datetime import datetime
+from datetime import datetime, timezone
 
 BASE = "https://publicreporting.cftc.gov/resource/6dca-aqww.csv"
 
@@ -286,7 +286,7 @@ if results:
     report_date = max(r['report_date'] for r in results)
     payload = dict(
         report_date=report_date,
-        generated=datetime.now(datetime.UTC).strftime('%Y-%m-%d %H:%M UTC'),
+        generated=datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
         instruments=results,
         callouts=build_callouts(results, z_threshold=2.0),
     )
