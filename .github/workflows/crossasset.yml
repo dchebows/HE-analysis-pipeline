@@ -1,0 +1,29 @@
+name: Cross-Asset Update
+
+on:
+  schedule:
+    - cron: '40 23 * * 1-5'   # 23:40 UTC weekdays (~6:40 PM EST)
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install yfinance pandas numpy
+      - name: Run cross-asset script
+        run: python scripts/crossasset.py
+      - name: Commit results
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add crossasset.json crossasset_series.csv
+          git commit -m "Cross-asset update $(date -u '+%Y-%m-%d %H:%M UTC')" || echo "No changes to commit"
+          git push
