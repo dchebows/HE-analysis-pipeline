@@ -2271,3 +2271,374 @@ with tab7:
 
     st.divider()
     st.caption("📊 Source: Yahoo Finance | VIX/VXN/GVZ/OVX + DXY correlations | Updated daily")
+
+# ============================================================
+# TAB 0: DAILY BRIEFING (LANDING PAGE)
+# ============================================================
+with tab0:
+    st.title("📋 Daily Macro Briefing")
+    st.caption("🤖 Aggregated from all dashboard signals · reads latest available data")
+
+    # ---- Load all sources defensively (graceful degradation) ----
+    sm_df, sm_gamma, _, sm_err = load_data()
+    sm_port, _, sm_port_err = load_portfolio_data()
+    sm_debt, _, sm_debt_err = load_debt_data()
+    sm_cftc, sm_cftc_err = load_cftc_data()
+    sm_sect, _, sm_sect_err = load_sectors_data()
+    sm_ca, _, sm_ca_err = load_crossasset_data()
+
+    # ---------- Helper: VIX -> stress 0-100 ----------
+    def vix_to_stress(vix):
+        # ~12 = calm (0), ~40 = max stress (100); clamp
+        return float(max(0, min(100, (vix - 12) / (40 - 12) * 100)))
+
+    # ---------- Gather component stress readings ----------
+    # MACRO STRESS WEIGHTS (tunable — see expander for rationale)
+    MACRO_WEIGHTS = {
+        'debt':       0.30,   # credit leads; most forward-looking
+        'equity_vol': 0.25,   # VIX — immediate fear gauge
+        'cross_vol':  0.25,   # breadth of fear across assets
+        'cftc':       0.20,   # positioning fragility (slow-moving)
+    }
+
+    components = {}   # name -> (stress_value_0_100, label_text)
+
+    # Debt component
+    if sm_debt and not sm_debt_err:
+        try:
+            ds = sm_debt['risk']['score']
+            components['debt'] = (float(ds), f"Debt Risk {ds:.0f}/100")
+        except Exception:
+            pass
+
+    # Equity vol component (VIX from CRR data)
+    vix_val = None
+    if sm_df is not None and not sm_err:
+        try:
+            vix_row = sm_df[sm_df['Ticker'] == '^VIX']
+            if not vix_row.empty:
+                vix_val = float(vix_row['Close'].values[0])
+                components['equity_vol'] = (vix_to_stress(vix_val), f"VIX {vix_val:.1f}")
+        except Exception:
+            pass
+
+    # Cross-asset vol component (breadth -> stress)
+    if sm_ca and not sm_ca_err:
+        try:
+            br = sm_ca['callouts']['vol_breadth']
+            # more rising = more stress
+            cv = (br['rising'] / br['total']) * 100 if br['total'] else 0
+            components['cross_vol'] = (float(cv), f"Vol breadth {br['rising']}/{br['total']}")
+        except Exception:
+            pass
+
+    # CFTC crowding component (# extremes -> stress, capped)
+    if sm_cftc and not sm_cftc_err:
+        try:
+            n_ext = len(sm_cftc.get('callouts', {}).get('extremes', []))
+            # 0 extremes = 0 stress; ~10+ extremes = high. Scale.
+            cc = min(100, n_ext / 10 * 100)
+            components['cftc'] = (float(cc), f"{n_ext} crowded extremes")
+        except Exception:
+            pass
+
+    # ---------- Composite (re-weight over available components) ----------
+    avail = {k: v for k, v in components.items() if k in MACRO_WEIGHTS}
+    if avail:
+        total_w = sum(MACRO_WEIGHTS[k] for k in avail)
+        macro_score = sum(avail[k][0] * MACRO_WEIGHTS[k] for k in avail) / total_w
+        macro_score = round(macro_score)
+        n_used = len(avail)
+        if macro_score >= 70:   macro_regime, mc_color = "HIGH STRESS", "#9c0006"
+        elif macro_score >= 45: macro_regime, mc_color = "ELEVATED", "#e07b00"
+        elif macro_score >= 30: macro_regime, mc_color = "NEUTRAL", "#b5a000"
+        else:                   macro_regime, mc_color = "CALM", "#2e9e4f"
+    else:
+        macro_score, macro_regime, mc_color, n_used = None, "n/a", "#888", 0
+
+    # ============================================================
+    # MACRO STRESS GAUGE
+    # ============================================================
+    st.subheader("🌡️ Macro Stress Composite")
+    if macro_score is not None:
+        mg = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=macro_score,
+            number={'suffix': "/100", 'font': {'size': 42}},
+            title={'text': f"<b>{macro_regime}</b>", 'font': {'size': 22}},
+            gauge={
+                'axis': {'range': [0, 100], 'tickwidth': 1},
+                'bar': {'color': "rgba(0,0,0,0.7)", 'thickness': 0.25},
+                'steps': [
+                    {'range': [0, 30],  'color': '#2e9e4f'},
+                    {'range': [30, 45], 'color': '#e8d200'},
+                    {'range': [45, 70], 'color': '#e07b00'},
+                    {'range': [70, 100],'color': '#9c0006'},
+                ],
+                'threshold': {'line': {'color': "black", 'width': 4},
+                              'thickness': 0.85, 'value': macro_score},
+            }
+        ))
+        mg.update_layout(height=260, margin=dict(t=50, b=10, l=30, r=30))
+        st.plotly_chart(mg, use_container_width=True)
+        if n_used < len(MACRO_WEIGHTS):
+            st.caption(f"⚠️ Based on {n_used} of {len(MACRO_WEIGHTS)} components "
+                       f"(some feeds unavailable — re-weighted proportionally).")
+
+        # Component contributions
+        comp_cols = st.columns(len(MACRO_WEIGHTS))
+        labels = {'debt': '🏦 Debt', 'equity_vol': '📊 Equity Vol',
+                  'cross_vol': '🌐 Cross Vol', 'cftc': '📊 CFTC'}
+        for col, key in zip(comp_cols, MACRO_WEIGHTS):
+            if key in avail:
+                col.metric(labels[key], f"{avail[key][0]:.0f}",
+                           help=f"{avail[key][1]} · weight {MACRO_WEIGHTS[key]:.0%}")
+            else:
+                col.metric(labels[key], "n/a", help="feed unavailable")
+    else:
+        st.warning("Macro Stress unavailable — no component feeds loaded yet.")
+
+    with st.expander("📖 How the Macro Stress score works (and its limits)"):
+        st.markdown("""
+        A single 0–100 blend of cross-asset stress signals (**0 = calm, 100 = max stress**).
+
+        | Component | Weight | Why |
+        |---|---|---|
+        | 🏦 **Debt Risk** | 30% | Credit leads — stress shows in bonds *before* equities |
+        | 📊 **Equity Vol (VIX)** | 25% | Real-time fear gauge, but *reactive* |
+        | 🌐 **Cross-Asset Vol** | 25% | Breadth — fear across oil/gold/equities = systemic |
+        | 📊 **CFTC Crowding** | 20% | Positioning *fragility* (slow-moving) |
+
+        ⚠️ **Important caveats:**
+        - These weights are **educated judgment, not backtested** — there's no way to validate
+          them here. Someone rates-focused might weight debt 50%.
+        - **Watch the TREND, not the absolute number.** "Jumped 35→60 this week" is the signal,
+          not whether 60 is objectively "right."
+        - It's a **conversation starter** ("why did this move?"), not a trade signal.
+        - If a feed is down, the score re-weights over available components.
+        """)
+
+    st.divider()
+
+    # ============================================================
+    # AT-A-GLANCE SCORECARD
+    # ============================================================
+    st.subheader("📊 At a Glance")
+    sc1, sc2, sc3 = st.columns(3)
+
+    # Equity regime (VIX status + Machine)
+    with sc1:
+        if vix_val is not None:
+            if vix_val <= 19: vstat = "INVESTABLE"
+            elif vix_val <= 30: vstat = "CHOP"
+            else: vstat = "F-BUCKET"
+            st.metric("📊 Equity Regime", vstat, help=f"VIX {vix_val:.1f}")
+        else:
+            st.metric("📊 Equity Regime", "n/a")
+
+    # Debt risk
+    with sc2:
+        if 'debt' in avail:
+            try:
+                st.metric("🏦 Debt Risk", f"{sm_debt['risk']['score']:.0f}/100",
+                          help=sm_debt['risk']['regime'])
+            except Exception:
+                st.metric("🏦 Debt Risk", "n/a")
+        else:
+            st.metric("🏦 Debt Risk", "n/a")
+
+    # Cross-asset vol
+    with sc3:
+        if sm_ca and not sm_ca_err:
+            try:
+                br = sm_ca['callouts']['vol_breadth']
+                tone = ("Risk-off" if br['rising'] >= br['total']*0.75
+                        else "Calm" if br['rising'] <= 1 else "Mixed")
+                st.metric("🌐 Cross-Asset Vol", tone,
+                          help=f"{br['rising']}/{br['total']} rising WoW")
+            except Exception:
+                st.metric("🌐 Cross-Asset Vol", "n/a")
+        else:
+            st.metric("🌐 Cross-Asset Vol", "n/a")
+
+    sc4, sc5, sc6 = st.columns(3)
+
+    # Sector leaders
+    with sc4:
+        if sm_sect and not sm_sect_err:
+            try:
+                leaders = sm_sect['callouts']['leaders']
+                st.metric("🔄 Sector Leaders",
+                          ", ".join(leaders[:3]) if leaders else "none",
+                          help="Leading quadrant (RRG)")
+            except Exception:
+                st.metric("🔄 Sector Leaders", "n/a")
+        else:
+            st.metric("🔄 Sector Leaders", "n/a")
+
+    # CFTC extremes
+    with sc5:
+        if sm_cftc and not sm_cftc_err:
+            try:
+                n_ext = len(sm_cftc.get('callouts', {}).get('extremes', []))
+                st.metric("📊 CFTC Extremes", f"{n_ext}",
+                          help="Crowded positions (|Z|≥2)")
+            except Exception:
+                st.metric("📊 CFTC Extremes", "n/a")
+        else:
+            st.metric("📊 CFTC Extremes", "n/a")
+
+    # Portfolio actions
+    with sc6:
+        if sm_port is not None and not sm_port_err:
+            try:
+                buys = int(sm_port['Action'].str.contains('BUY').sum())
+                sells = int(sm_port['Action'].str.contains('SELL').sum())
+                st.metric("💼 Portfolio", f"{buys} Buy / {sells} Sell")
+            except Exception:
+                st.metric("💼 Portfolio", "n/a")
+        else:
+            st.metric("💼 Portfolio", "n/a")
+
+    st.divider()
+
+    # ============================================================
+    # KEY SIGNALS TODAY
+    # ============================================================
+    st.subheader("🔑 Key Signals Today")
+    key_signals = []
+
+    # Top debt highlight (first risk-off, else first risk-on)
+    if sm_debt and not sm_debt_err:
+        try:
+            hloff = sm_debt['highlights']['risk_off']
+            hlon = sm_debt['highlights']['risk_on']
+            if hloff:
+                key_signals.append(f"🏦 {hloff[0]}")
+            elif hlon:
+                key_signals.append(f"🏦 {hlon[0]}")
+        except Exception:
+            pass
+
+    # Top sector rotation
+    if sm_sect and not sm_sect_err:
+        try:
+            rots = sm_sect['callouts']['rotations']
+            if rots:
+                key_signals.append(f"🔄 {rots[0]['text']}")
+        except Exception:
+            pass
+
+    # Top CFTC extreme
+    if sm_cftc and not sm_cftc_err:
+        try:
+            exts = sm_cftc.get('callouts', {}).get('extremes', [])
+            if exts:
+                key_signals.append(f"📊 CFTC: {exts[0]['text']}")
+        except Exception:
+            pass
+
+    # Cross-asset vol read
+    if sm_ca and not sm_ca_err:
+        try:
+            volc = sm_ca['callouts']['vol']
+            if volc:
+                key_signals.append(f"🌐 {volc[0]}")
+        except Exception:
+            pass
+
+    # Gold-USD correlation note
+    if sm_ca and not sm_ca_err:
+        try:
+            g30 = sm_ca['correlations'].get('GOLD', {}).get('30d')
+            if g30 is not None:
+                key_signals.append(
+                    f"💵 Gold–USD correlation at {g30:+.2f} (30D) — "
+                    f"{'strong inverse intact' if g30 < -0.4 else 'watch for shift'}")
+        except Exception:
+            pass
+
+    if key_signals:
+        for s in key_signals:
+            st.markdown(f"- {s}")
+    else:
+        st.markdown("*No signals loaded — check that workflows have run.*")
+
+    st.divider()
+
+    # ============================================================
+    # WHAT CHANGED (trend changes / rotations / flips)
+    # ============================================================
+    st.subheader("⚠️ What Changed")
+    changes = []
+
+    # Debt trend changes
+    if sm_debt and not sm_debt_err:
+        try:
+            for panel_key, panel in sm_debt['panels'].items():
+                tc = panel.get('trend', {})
+                if tc.get('change'):
+                    nm = panel.get('name', panel_key)
+                    changes.append(
+                        f"🏦 **{nm}** trend change: {tc['trend']} "
+                        f"[{tc['strength']}, {tc['score']}/100]")
+        except Exception:
+            pass
+
+    # Sector rotations (all this week)
+    if sm_sect and not sm_sect_err:
+        try:
+            for r in sm_sect['callouts']['rotations']:
+                changes.append(f"🔄 {r['text']}")
+        except Exception:
+            pass
+
+    # CFTC positioning flips
+    if sm_cftc and not sm_cftc_err:
+        try:
+            for f in sm_cftc.get('callouts', {}).get('flips', []):
+                changes.append(f"📊 CFTC: {f['text']}")
+        except Exception:
+            pass
+
+    # USD correlation flips
+    if sm_ca and not sm_ca_err:
+        try:
+            for a, row in sm_ca['correlations'].items():
+                if row.get('flipped'):
+                    c30 = row.get('30d')
+                    changes.append(
+                        f"💵 **{a}–USD correlation flipped** (30D {c30:+.2f}) — possible regime shift")
+        except Exception:
+            pass
+
+    if changes:
+        for c in changes:
+            st.markdown(f"- {c}")
+    else:
+        st.markdown("*No notable changes detected — conditions stable.*")
+
+    st.divider()
+
+    # ============================================================
+    # DATA FRESHNESS
+    # ============================================================
+    st.subheader("🕐 Data Freshness")
+    freshness = []
+    if sm_debt and not sm_debt_err:
+        freshness.append(("Debt Markets", sm_debt.get('as_of', '?')))
+    if sm_cftc and not sm_cftc_err:
+        freshness.append(("CFTC", sm_cftc.get('report_date', '?')))
+    if sm_sect and not sm_sect_err:
+        freshness.append(("Sector RRG", sm_sect.get('as_of', '?')))
+    if sm_ca and not sm_ca_err:
+        freshness.append(("Cross-Asset", sm_ca.get('as_of', '?')))
+
+    if freshness:
+        fcols = st.columns(len(freshness))
+        for col, (name, date) in zip(fcols, freshness):
+            col.metric(name, date)
+
+    st.caption("📋 Daily Briefing aggregates all dashboard tabs. "
+               "Click any tab above for full detail.")
+    st.caption("⚠️ Macro Stress is a heuristic, not a validated model — watch the trend.")
