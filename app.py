@@ -675,7 +675,8 @@ def generate_forecast_csv(forecast):
 # ============================================================
 # TAB NAVIGATION
 # ============================================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    "📋 Daily Briefing",
     "📊 CRR Analysis", "💼 Portfolio Signals", "🎯 Risk Range",
     "🏦 Debt Markets", "📊 CFTC Positioning", "🔄 Sector RRG",
     "🌐 Cross-Asset"
