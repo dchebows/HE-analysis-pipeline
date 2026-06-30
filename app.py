@@ -2053,7 +2053,7 @@ with tab6:
         return ('background-color: #1a7d3c; color: white' if v >= 0
                 else 'background-color: #c0392b; color: white')
 
-    tyled = (disp.style
+    styled = (disp.style
               .map(color_pct, subset=['1-Day %', 'MTD %', 'QTD %', 'YTD %'])
               .format({'1-Day %': '{:+.2f}%', 'MTD %': '{:+.2f}%',
                        'QTD %': '{:+.2f}%', 'YTD %': '{:+.2f}%'}))
