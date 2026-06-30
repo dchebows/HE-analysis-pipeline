@@ -3,7 +3,6 @@
 # Free from Yahoo Finance
 # Writes: crossasset.json (metrics/correlations/callouts) + crossasset_series.csv (vol history)
 # ============================================================
-!pip install yfinance --quiet   # <-- remove this line in the GitHub version
 
 import yfinance as yf
 import pandas as pd
