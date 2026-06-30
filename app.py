@@ -2365,8 +2365,10 @@ with tab0:
         mg = go.Figure(go.Indicator(
             mode="gauge+number",
             value=macro_score,
-            number={'suffix': "/100", 'font': {'size': 42}},
+            number={'suffix': "/100", 'font': {'size': 44},
+                    'valueformat': '.0f'},
             title={'text': f"<b>{macro_regime}</b>", 'font': {'size': 22}},
+            domain={'x': [0, 1], 'y': [0, 0.85]},   # leave room at bottom for number
             gauge={
                 'axis': {'range': [0, 100], 'tickwidth': 1},
                 'bar': {'color': "rgba(0,0,0,0.7)", 'thickness': 0.25},
@@ -2380,7 +2382,7 @@ with tab0:
                               'thickness': 0.85, 'value': macro_score},
             }
         ))
-        mg.update_layout(height=260, margin=dict(t=50, b=10, l=30, r=30))
+        mg.update_layout(height=300, margin=dict(t=60, b=20, l=30, r=30))
         st.plotly_chart(mg, use_container_width=True)
         if n_used < len(MACRO_WEIGHTS):
             st.caption(f"⚠️ Based on {n_used} of {len(MACRO_WEIGHTS)} components "
