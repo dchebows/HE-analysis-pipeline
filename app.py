@@ -2635,10 +2635,14 @@ with tab0:
     if sm_ca and not sm_ca_err:
         freshness.append(("Cross-Asset", sm_ca.get('as_of', '?')))
 
-    if freshness:
+    iif freshness:
         fcols = st.columns(len(freshness))
         for col, (name, date) in zip(fcols, freshness):
-            col.metric(name, date)
+            col.markdown(
+                f"<div style='font-size:13px; color:#666; font-weight:600;'>{name}</div>"
+                f"<div style='font-size:18px; color:#262730;'>{date}</div>",
+                unsafe_allow_html=True
+            )
 
     st.caption("📋 Daily Briefing aggregates all dashboard tabs. "
                "Click any tab above for full detail.")
