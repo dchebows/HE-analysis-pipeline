@@ -4,7 +4,6 @@
 # Writes: sectors.json (perf table) + sectors_prices.csv (price history)
 # (Run in Colab first to validate, then commit to GitHub)
 # ============================================================
-!pip install yfinance --quiet   # <-- remove this line in the GitHub version
 
 import yfinance as yf
 import pandas as pd
