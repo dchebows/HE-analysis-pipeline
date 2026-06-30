@@ -2635,7 +2635,7 @@ with tab0:
     if sm_ca and not sm_ca_err:
         freshness.append(("Cross-Asset", sm_ca.get('as_of', '?')))
 
-    iif freshness:
+    if freshness:
         fcols = st.columns(len(freshness))
         for col, (name, date) in zip(fcols, freshness):
             col.markdown(
