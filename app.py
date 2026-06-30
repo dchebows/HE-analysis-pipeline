@@ -1034,41 +1034,9 @@ with tab1:
     st.divider()
 
     # ============================================================
-    # FILTERS (OPTIONAL - IN SIDEBAR)
+    # (Filters removed — table shows all rows)
     # ============================================================
-    st.sidebar.header("🔍 Filters")
-
-    # Filter by Trade signal
-    trade_filter = st.sidebar.multiselect(
-        "Trade Signal",
-        options=df['Trade'].unique(),
-        default=df['Trade'].unique()
-    )
-
-    # Filter by Trend signal
-    trend_filter = st.sidebar.multiselect(
-        "Trend Signal",
-        options=df['Trend'].unique(),
-        default=df['Trend'].unique()
-    )
-
-    # Filter by Warning Level
-    warning_filter = st.sidebar.slider(
-        "Max Warning Level",
-        min_value=0,
-        max_value=3,
-        value=3
-    )
-
-    # Apply filters
-    filtered_df = df[
-        (df['Trade'].isin(trade_filter)) &
-        (df['Trend'].isin(trend_filter)) &
-        (df['Warn_Lvl'] <= warning_filter)
-    ]
-
-    st.sidebar.divider()
-    st.sidebar.metric("Filtered Results", len(filtered_df))
+    filtered_df = df.copy()
 
     # ============================================================
     # FULL DATA TABLE WITH COLOR STYLING
@@ -1260,8 +1228,7 @@ with tab1:
     # ============================================================
     # DOWNLOAD BUTTON
     # ============================================================
-    st.sidebar.divider()
-    st.sidebar.download_button(
+    st.download_button(
         label="📥 Download CSV",
         data=df.to_csv(index=False),
         file_name=f"stock_analysis_{datetime.now().strftime('%Y%m%d')}.csv",
