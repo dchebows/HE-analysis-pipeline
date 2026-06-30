@@ -105,6 +105,21 @@ def load_sectors_data():
         return meta, prices, None
     except Exception as e:
         return None, None, str(e)
+# ============================================================
+# CROSS-ASSET LOADERS
+# ============================================================
+CROSSASSET_JSON_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/crossasset.json"
+CROSSASSET_CSV_URL  = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/crossasset_series.csv"
+
+@st.cache_data(ttl=3600)
+def load_crossasset_data():
+    try:
+        meta = json.loads(requests.get(CROSSASSET_JSON_URL).text)
+        series = pd.read_csv(CROSSASSET_CSV_URL, parse_dates=['date'], index_col='date')
+        return meta, series, None
+    except Exception as e:
+        return None, None, str(e)
+
 
 
 # ============================================================
@@ -660,9 +675,10 @@ def generate_forecast_csv(forecast):
 # ============================================================
 # TAB NAVIGATION
 # ============================================================
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
     "📊 CRR Analysis", "💼 Portfolio Signals", "🎯 Risk Range",
-    "🏦 Debt Markets", "📊 CFTC Positioning", "🔄 Sector RRG"
+    "🏦 Debt Markets", "📊 CFTC Positioning", "🔄 Sector RRG",
+    "🌐 Cross-Asset"
 ])
 
 # ============================================================
@@ -2071,3 +2087,187 @@ with tab6:
 
     st.divider()
     st.caption("📊 Source: Yahoo Finance | RRG computed vs SPY | Updated daily via GitHub Actions")
+
+# ============================================================
+# TAB 7: CROSS-ASSET VOLATILITY + USD CORRELATIONS
+# ============================================================
+with tab7:
+    st.title("🌐 Cross-Asset Volatility & Flows")
+    st.caption("🤖 Updated daily | Vol across equities/commodities + $USD correlations")
+
+    ca_meta, ca_series, ca_err = load_crossasset_data()
+    if ca_err:
+        st.error(f"❌ Error loading cross-asset data: {ca_err}")
+        st.info("💡 Data appears after the Cross-Asset workflow runs.")
+        st.stop()
+
+    st.caption(f"📅 As of {ca_meta['as_of']} | 🔄 Generated {ca_meta['generated']}")
+
+    ca_co = ca_meta['callouts']
+    ca_vol = ca_meta['vol_metrics']
+    ca_corr = ca_meta['correlations']
+
+    # ============================================================
+    # SUMMARY CARDS
+    # ============================================================
+    breadth = ca_co['vol_breadth']
+    ca_m1, ca_m2, ca_m3 = st.columns(3)
+    ca_m1.metric("Vol Breadth (rising WoW)",
+                 f"{breadth['rising']}/{breadth['total']}",
+                 help="How many vol indices rose this week")
+    gold_30 = ca_corr.get('GOLD', {}).get('30d')
+    ca_m2.metric("Gold–USD Corr (30D)",
+                 f"{gold_30:+.2f}" if gold_30 is not None else "n/a",
+                 help="The classic dollar barometer (negative = inverse)")
+    spx_30 = ca_corr.get('SPX', {}).get('30d')
+    ca_m3.metric("SPX–USD Corr (30D)",
+                 f"{spx_30:+.2f}" if spx_30 is not None else "n/a",
+                 help="Risk-on usually = weak dollar (negative)")
+
+    # ============================================================
+    # CALLOUTS
+    # ============================================================
+    st.subheader("🎯 Cross-Asset Highlights")
+    st.markdown("#### 🌪️ Volatility")
+    for c in ca_co['vol']:
+        st.markdown(f"- {c}")
+    st.markdown("#### 💵 $USD Correlations")
+    for c in ca_co['corr']:
+        st.markdown(f"- {c}")
+
+    with st.expander("📖 What am I looking at? (cross-asset vol & 'the flows')"):
+        st.markdown("""
+        **Why watch volatility across asset classes?**
+        Volatility is the market's "fear gauge" — and it shows up everywhere, not just stocks.
+        Monitoring it across assets tells you whether stress is **broad** or **localized**:
+        - **VIX** = S&P 500 volatility (equity fear)
+        - **VXN** = Nasdaq volatility (tech fear — usually higher than VIX)
+        - **GVZ** = Gold volatility
+        - **OVX** = Oil volatility (usually the highest — oil is jumpy)
+
+        When **all** of these rise together → broad, systemic risk-off (more meaningful).
+        When they **diverge** (e.g., equity vol up but oil vol down) → stress is concentrated,
+        not a market-wide panic. The **breadth** reading (how many are rising) is the quick tell.
+
+        ---
+        **What are "the flows" and why does the dollar matter?**
+        The US Dollar is the world's funding currency, so it sits at the center of "flows" —
+        how money moves between asset classes. The **rolling correlation** of each asset to the
+        dollar reveals the current regime:
+        - **Gold –0.5 to –0.9** = classic inverse (strong dollar pressures gold). This is the
+          single most-watched "dollar barometer."
+        - **SPX negative** = risk-on means money flows *out* of the safe-haven dollar *into* stocks.
+        - **Oil's relationship flips** depending on whether it's a growth story or a supply story.
+
+        **The key signal: when a long-standing correlation FLIPS SIGN**, the regime is changing.
+        E.g., if Gold suddenly turns *positive* to the dollar, the usual playbook is breaking down —
+        worth paying attention to.
+
+        ---
+        **"Flows" (volume)** — Hedgeye also watches *volume* as confirmation: a rally on light
+        volume = weak conviction; a selloff on heavy volume = real distribution. *(Volume/flows
+        analysis is planned as a Tier-2 addition.)*
+        """)
+
+    st.divider()
+
+    # ============================================================
+    # CROSS-ASSET VOLATILITY CHART (OVX on right axis)
+    # ============================================================
+    st.subheader("📈 Cross-Asset Volatility")
+
+    ca_fig = go.Figure()
+    left_axis = {'VIX': 'black', 'VXN': '#666666', 'GVZ': '#d99000'}
+    for col, color in left_axis.items():
+        if col in ca_series.columns:
+            ca_fig.add_trace(go.Scatter(
+                x=ca_series.index, y=ca_series[col], name=col,
+                line=dict(color=color, width=1.2), yaxis='y'))
+    if 'OVX' in ca_series.columns:
+        ca_fig.add_trace(go.Scatter(
+            x=ca_series.index, y=ca_series['OVX'], name='OVX (RHS)',
+            line=dict(color='#1f9ed6', width=1.2), yaxis='y2'))
+
+    ca_fig.update_layout(
+        height=480, hovermode='x unified',
+        yaxis=dict(title='Volatility (VIX/VXN/GVZ)'),
+        yaxis2=dict(title='OVX (Oil)', overlaying='y', side='right',
+                    color='#1f9ed6'),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        margin=dict(t=50, b=40)
+    )
+    st.plotly_chart(ca_fig, use_container_width=True)
+
+    # ---- Vol metrics table ----
+    def ca_fmt_vol_row(tk, m):
+        def cell(diff, pct):
+            return f"{diff:+.2f} ({pct:+.1f}%)" if pct is not None else f"{diff:+.2f}"
+        return {
+            'Series': m['name'],
+            'Last': f"{m['last']:.2f}",
+            '1D Ago': f"{m['d1']:.2f}",
+            '1W Ago': f"{m['w1']:.2f}",
+            '1M Ago': f"{m['m1']:.2f}",
+            'DoD': cell(*m['dod']),
+            'WoW': cell(*m['wow']),
+            'MoM': cell(*m['mom']),
+        }
+
+    ca_vol_tbl = pd.DataFrame([ca_fmt_vol_row(tk, m) for tk, m in ca_vol.items()])
+
+    def ca_vol_color(val_str):
+        # rising vol = red (risk-off), falling = green
+        try:
+            pct = float(val_str.split('(')[1].split('%')[0])
+        except:
+            return ''
+        return ('background-color: #ffc7ce; color: #9c0006' if pct >= 0
+                else 'background-color: #c6efce; color: #006100')
+
+    ca_vol_styled = ca_vol_tbl.style.map(ca_vol_color, subset=['DoD', 'WoW', 'MoM'])
+    st.dataframe(ca_vol_styled, use_container_width=True, hide_index=True)
+    st.caption("🌪️ Rising vol = red (risk-off) · Falling vol = green (risk-on)")
+
+    st.divider()
+
+    # ============================================================
+    # USD CORRELATION TABLE
+    # ============================================================
+    st.subheader("💵 Key $USD Correlations")
+    st.caption("Rolling correlation of each asset vs the US Dollar Index (DXY). "
+               "Negative = inverse to USD.")
+
+    windows = ca_meta['corr_windows']
+    corr_rows = []
+    for a, row in ca_corr.items():
+        d = {'Asset': a}
+        for w in windows:
+            d[f'{w}D'] = row.get(f'{w}d')
+        d['52w Hi'] = row.get('hi_52w')
+        d['52w Lo'] = row.get('lo_52w')
+        d['% Pos'] = f"{row.get('pct_pos', 0)}%"
+        d['% Neg'] = f"{row.get('pct_neg', 0)}%"
+        corr_rows.append(d)
+    ca_corr_df = pd.DataFrame(corr_rows)
+
+    def corr_color(v):
+        if pd.isna(v) or not isinstance(v, (int, float)):
+            return ''
+        a = min(abs(v), 1.0)
+        if v < 0:  # inverse to USD -> red gradient (the "expected" strong inverse)
+            r = int(255); g = int(230 - a*140); b = int(230 - a*140)
+            return f'background-color: rgb({r},{g},{b}); color: #5c0000'
+        else:      # positive corr -> green
+            r = int(230 - a*120); g = int(245 - a*40); b = int(230 - a*120)
+            return f'background-color: rgb({r},{g},{b}); color: #0a3d0a'
+
+    corr_num_cols = [f'{w}D' for w in windows] + ['52w Hi', '52w Lo']
+    ca_corr_styled = (ca_corr_df.style
+                      .map(corr_color, subset=corr_num_cols)
+                      .format({c: '{:+.2f}' for c in corr_num_cols}, na_rep='n/a'))
+    st.dataframe(ca_corr_styled, use_container_width=True, hide_index=True)
+    st.caption("🔴 Negative (inverse to USD) · 🟢 Positive (moves with USD) · "
+               "Sign flips = regime change")
+
+    st.divider()
+    st.caption("📊 Source: Yahoo Finance | VIX/VXN/GVZ/OVX + DXY correlations | Updated daily")
