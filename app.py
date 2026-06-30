@@ -91,6 +91,21 @@ def load_cftc_data():
         return json.loads(resp.text), None
     except Exception as e:
         return None, str(e)
+# ============================================================
+# SECTOR RRG LOADERS
+# ============================================================
+SECTORS_JSON_URL   = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/sectors.json"
+SECTORS_PRICES_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/sectors_prices.csv"
+
+@st.cache_data(ttl=3600)
+def load_sectors_data():
+    try:
+        meta = json.loads(requests.get(SECTORS_JSON_URL).text)
+        prices = pd.read_csv(SECTORS_PRICES_URL, parse_dates=['date'], index_col='date')
+        return meta, prices, None
+    except Exception as e:
+        return None, None, str(e)
+
 
 # ============================================================
 # RISK RANGE HELPER FUNCTIONS
@@ -645,10 +660,9 @@ def generate_forecast_csv(forecast):
 # ============================================================
 # TAB NAVIGATION
 # ============================================================
-# Change from 2 tabs to 3 tabs
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
     "📊 CRR Analysis", "💼 Portfolio Signals", "🎯 Risk Range",
-    "🏦 Debt Markets", "📊 CFTC Positioning"
+    "🏦 Debt Markets", "📊 CFTC Positioning", "🔄 Sector RRG"
 ])
 
 # ============================================================
@@ -1805,3 +1819,255 @@ with tab5:
 
     st.divider()
     st.caption("📊 Source: CFTC Commitments of Traders (Legacy, Futures-Only) | Updated weekly")
+
+# ============================================================
+# TAB 6: SECTOR ROTATION (RRG)
+# ============================================================
+with tab6:
+    st.title("🔄 Sector Rotation (RRG)")
+    st.caption("🤖 Updated daily | 11 SPDR sectors vs SPY benchmark")
+
+    smeta, sprices, serr = load_sectors_data()
+    if serr:
+        st.error(f"❌ Error loading sector data: {serr}")
+        st.info("💡 Data appears after the Sector RRG workflow runs.")
+        st.stop()
+
+    st.caption(f"📅 As of {smeta['as_of']} | 🔄 Generated {smeta['generated']}")
+
+    co = smeta['callouts']
+    SECTOR_NAMES = {r['ticker']: r['sector'] for r in smeta['performance']}
+
+    # ============================================================
+    # SUMMARY CARDS
+    # ============================================================
+    qc = co['quad_counts']
+    n_rotating = len(co['rotations'])
+    m1, m2, m3 = st.columns(3)
+    m1.metric("🟢 Leading", qc['Leading'], help="Strong + gaining momentum")
+    m2.metric("🔴 Lagging", qc['Lagging'], help="Weak + losing momentum")
+    m3.metric("🔄 Rotating", n_rotating, help="Crossed a quadrant this week")
+
+    st.info("📌 Summary callouts below use **fixed weekly** data. The chart further down is interactive (Daily/Weekly/Monthly).")
+
+    # ============================================================
+    # CALLOUTS
+    # ============================================================
+    st.subheader("🎯 Rotation Highlights")
+
+    st.markdown("#### 🔄 Rotation Alerts (this week)")
+    if co['rotations']:
+        for r in co['rotations']:
+            st.markdown(f"- {r['text']}")
+    else:
+        st.markdown("*No quadrant crossings this week — positioning stable.*")
+
+    c1, c2 = st.columns(2)
+    with c1:
+        st.markdown("#### 💪 Leaders")
+        if co['leaders']:
+            for tk in co['leaders']:
+                st.markdown(f"- 🟢 **{tk}** — {SECTOR_NAMES.get(tk, tk)}")
+        else:
+            st.markdown("*— none —*")
+    with c2:
+        st.markdown("#### 🐌 Laggards")
+        if co['laggards']:
+            for tk in co['laggards']:
+                st.markdown(f"- 🔴 **{tk}** — {SECTOR_NAMES.get(tk, tk)}")
+        else:
+            st.markdown("*— none —*")
+
+    c3, c4 = st.columns(2)
+    with c3:
+        st.markdown("#### ⚡ Momentum Accelerating")
+        for a in co['accel']:
+            st.markdown(f"- **{a['ticker']}**  (+{a['delta']:.2f})")
+    with c4:
+        st.markdown("#### 📉 Momentum Decelerating")
+        for d in co['decel']:
+            st.markdown(f"- **{d['ticker']}**  ({d['delta']:+.2f})")
+
+    ps = co['perf_snapshot']
+    st.markdown("#### 📊 Performance Snapshot")
+    st.markdown(
+        f"- 🏆 **Best YTD:** {ps['best_ytd']['ticker']} ({ps['best_ytd']['val']:+.1f}%)  |  "
+        f"🔻 **Worst YTD:** {ps['worst_ytd']['ticker']} ({ps['worst_ytd']['val']:+.1f}%)  |  "
+        f"📈 **Today's leader:** {ps['best_1d']['ticker']} ({ps['best_1d']['val']:+.1f}%)"
+    )
+
+    with st.expander("📖 How to read the RRG (quadrant playbook)"):
+        st.markdown("""
+        Each sector is plotted vs the SPY benchmark. Sectors rotate **clockwise**:
+        Improving → Leading → Weakening → Lagging → Improving.
+
+        | Quadrant | Meaning | Typical Action |
+        |---|---|---|
+        | 🟢 **Leading** (top-right) | Strong & gaining momentum | **Overweight** — riding strength |
+        | 🟡 **Weakening** (bottom-right) | Strong but momentum fading | **Trim / take profits** |
+        | 🔴 **Lagging** (bottom-left) | Weak & losing momentum | **Underweight / avoid** |
+        | 🔵 **Improving** (top-left) | Weak but gaining momentum | **Accumulate / watch** |
+
+        - **RS-Ratio** (x-axis) = relative strength vs benchmark (>100 = outperforming).
+        - **RS-Momentum** (y-axis) = rate of change of relative strength.
+        - **Tails** show the path over recent periods — direction matters more than position.
+        """)
+
+    st.divider()
+
+    # ============================================================
+    # INTERACTIVE RRG CHART
+    # ============================================================
+    st.subheader("📈 Relative Rotation Graph")
+
+    ctrl1, ctrl2 = st.columns([1, 2])
+    with ctrl1:
+        freq_label = st.radio("Timeframe", ['Daily', 'Weekly', 'Monthly'],
+                              index=1, horizontal=True)
+    with ctrl2:
+        tail = st.slider("Tail length (periods)", 4, 20, 12)
+
+    FREQ_MAP = {'Daily': ('D', 8), 'Weekly': ('W', 4), 'Monthly': ('ME', 2)}
+    freq_code, smooth = FREQ_MAP[freq_label]
+
+    # --- compute_rrg (same logic as the script, frequency-aware smoothing) ---
+    def compute_rrg(prices, benchmark, tickers, freq='W',
+                    rs_win=12, mom_win=10, smooth=4):
+        if freq != 'D':
+            px = prices.resample(freq).last().dropna(how='all')
+        else:
+            px = prices.copy()
+        bench = px[benchmark]
+        out = {}
+        for tk in tickers:
+            rs = (px[tk] / bench) * 100
+            rs_mean = rs.rolling(rs_win).mean()
+            rs_std  = rs.rolling(rs_win).std()
+            rs_ratio = 100 + ((rs - rs_mean) / rs_std)
+            rs_ratio = rs_ratio.rolling(smooth).mean()
+            roc = (rs_ratio / rs_ratio.shift(mom_win) - 1) * 100
+            roc = roc.rolling(smooth).mean()
+            mom_mean = roc.rolling(rs_win).mean()
+            mom_std  = roc.rolling(rs_win).std()
+            rs_mom = 100 + ((roc - mom_mean) / mom_std)
+            rs_mom = rs_mom.rolling(smooth).mean()
+            out[tk] = pd.DataFrame({'rs_ratio': rs_ratio,
+                                    'rs_momentum': rs_mom}).dropna()
+        return out
+
+    SECTOR_TICKERS = [r['ticker'] for r in smeta['performance'] if r['ticker'] != 'SPY']
+    rrg = compute_rrg(sprices, 'SPY', SECTOR_TICKERS, freq=freq_code, smooth=smooth)
+
+    # --- determine plot bounds ---
+    all_r, all_m = [], []
+    for df in rrg.values():
+        t = df.tail(tail)
+        all_r += t['rs_ratio'].tolist()
+        all_m += t['rs_momentum'].tolist()
+    if all_r:
+        pad = 0.5
+        xmin, xmax = min(all_r)-pad, max(all_r)+pad
+        ymin, ymax = min(all_m)-pad, max(all_m)+pad
+    else:
+        xmin, xmax, ymin, ymax = 97, 103, 97, 103
+
+    fig = go.Figure()
+
+    # Quadrant background shading
+    fig.add_shape(type="rect", x0=100, y0=100, x1=xmax, y1=ymax,
+                  fillcolor="green", opacity=0.06, line_width=0, layer="below")
+    fig.add_shape(type="rect", x0=100, y0=ymin, x1=xmax, y1=100,
+                  fillcolor="gold", opacity=0.06, line_width=0, layer="below")
+    fig.add_shape(type="rect", x0=xmin, y0=ymin, x1=100, y1=100,
+                  fillcolor="red", opacity=0.06, line_width=0, layer="below")
+    fig.add_shape(type="rect", x0=xmin, y0=100, x1=100, y1=ymax,
+                  fillcolor="blue", opacity=0.06, line_width=0, layer="below")
+    fig.add_hline(y=100, line_width=1, line_color="black")
+    fig.add_vline(x=100, line_width=1, line_color="black")
+
+    # Per-sector tails
+    palette = ['#1f77b4','#ff7f0e','#2ca02c','#d62728','#9467bd','#8c564b',
+               '#e377c2','#7f7f7f','#bcbd22','#17becf','#aec7e8']
+    for i, tk in enumerate(SECTOR_TICKERS):
+        df = rrg.get(tk)
+        if df is None or len(df) < 2:
+            continue
+        t = df.tail(tail)
+        color = palette[i % len(palette)]
+        # tail line
+        fig.add_trace(go.Scatter(
+            x=t['rs_ratio'], y=t['rs_momentum'], mode='lines',
+            line=dict(color=color, width=1.5), opacity=0.6,
+            name=tk, legendgroup=tk, showlegend=False, hoverinfo='skip'))
+        # head marker
+        fig.add_trace(go.Scatter(
+            x=[t['rs_ratio'].iloc[-1]], y=[t['rs_momentum'].iloc[-1]],
+            mode='markers+text', marker=dict(color=color, size=12,
+                                             line=dict(color='black', width=1)),
+            text=[tk], textposition='top center', textfont=dict(size=10),
+            name=tk, legendgroup=tk,
+            hovertemplate=f"<b>{tk}</b> — {SECTOR_NAMES.get(tk, '')}<br>"
+                          f"RS-Ratio: %{{x:.2f}}<br>RS-Mom: %{{y:.2f}}<extra></extra>"))
+
+    # Quadrant labels
+    fig.add_annotation(x=xmax, y=ymax, text="Leading", showarrow=False,
+                       xanchor="right", yanchor="top", font=dict(color="green", size=14))
+    fig.add_annotation(x=xmax, y=ymin, text="Weakening", showarrow=False,
+                       xanchor="right", yanchor="bottom", font=dict(color="goldenrod", size=14))
+    fig.add_annotation(x=xmin, y=ymin, text="Lagging", showarrow=False,
+                       xanchor="left", yanchor="bottom", font=dict(color="red", size=14))
+    fig.add_annotation(x=xmin, y=ymax, text="Improving", showarrow=False,
+                       xanchor="left", yanchor="top", font=dict(color="blue", size=14))
+
+    fig.update_layout(
+        height=650,
+        xaxis=dict(title="JdK RS-Ratio", range=[xmin, xmax]),
+        yaxis=dict(title="JdK RS-Momentum", range=[ymin, ymax]),
+        showlegend=False, hovermode='closest',
+        margin=dict(t=30, b=40),
+        title=f"{freq_label} · {tail}-period tail"
+    )
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.divider()
+
+    # ============================================================
+    # PERFORMANCE TABLE
+    # ============================================================
+    st.subheader("📋 Sector Performance")
+
+    perf_df = pd.DataFrame(smeta['performance'])
+    disp = pd.DataFrame({
+        'Sector': perf_df['sector'],
+        'Ticker': perf_df['ticker'],
+        'Price':  perf_df['price'].map(lambda x: f"${x:,.2f}"),
+        '1-Day %': perf_df['d1'],
+        'MTD %':   perf_df['mtd'],
+        'QTD %':   perf_df['qtd'],
+        'YTD %':   perf_df['ytd'],
+    })
+
+    def color_pct(v):
+        if pd.isna(v):
+            return ''
+        return ('background-color: #1a7d3c; color: white' if v >= 0
+                else 'background-color: #c0392b; color: white')
+
+    tyled = (disp.style
+              .map(color_pct, subset=['1-Day %', 'MTD %', 'QTD %', 'YTD %'])
+              .format({'1-Day %': '{:+.2f}%', 'MTD %': '{:+.2f}%',
+                       'QTD %': '{:+.2f}%', 'YTD %': '{:+.2f}%'}))
+
+    st.dataframe(
+        styled,
+        use_container_width=True,
+        hide_index=True,
+        height=min(600, 80 + len(disp) * 35),
+        column_config={
+            "Sector": st.column_config.TextColumn(width="large"),
+            "Ticker": st.column_config.TextColumn(width="small", pinned=True),
+        },
+    )
+
+    st.divider()
+    st.caption("📊 Source: Yahoo Finance | RRG computed vs SPY | Updated daily via GitHub Actions")
