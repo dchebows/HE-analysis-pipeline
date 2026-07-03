@@ -2,26 +2,26 @@
   "ticker": "^IXIC",
   "forecast_date": "2026-07-03",
   "based_on_date": "2026-07-02",
-  "based_on_close": 25832.671875,
+  "based_on_close": 25832.669921875,
   "vix": 27.979999542236328,
   "regime": "chop",
-  "forecast_high": 26178.436284278254,
-  "forecast_low": 25191.317525199756,
-  "high_pct": 1.3384771461169418,
-  "low_pct": -2.4827255690145043,
-  "range_width": 987.1187590784975,
+  "forecast_high": 26178.434305011124,
+  "forecast_low": 25191.315620565492,
+  "high_pct": 1.3384771461169482,
+  "low_pct": -2.4827255690144963,
+  "range_width": 987.1186844456315,
   "floor_active": false,
   "reference_levels": {
-    "trr_50": 26033.686306662144,
-    "llr_95": 25155.790196399288,
-    "llr_90": 25358.431710262972,
-    "llr_80": 25366.536893245928
+    "trr_50": 26033.68433833909,
+    "llr_95": 25155.78829445113,
+    "llr_90": 25358.429792993742,
+    "llr_80": 25366.53497536389
   },
   "risks": [
     "VXN at 28.0, approaching get_out threshold (30)",
     "Predicted range (3.82%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-07-02 19:36:25 EST",
+  "timestamp": "2026-07-03 19:34:46 EST",
   "model_version": "v5",
   "status": "success"
 }
