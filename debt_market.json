@@ -1,20 +1,20 @@
 {
   "as_of": "2026-07-02",
-  "generated": "2026-07-03 01:05 UTC",
+  "generated": "2026-07-04 01:02 UTC",
   "risk": {
-    "score": 31,
+    "score": 32,
     "regime": "NEUTRAL",
     "components": {
       "Rate Vol (MOVE)": {
-        "pct": 10.024449877750612,
+        "pct": 12.254901960784313,
         "weight": 0.25
       },
       "HY Credit": {
-        "pct": 21.839080459770116,
+        "pct": 24.08256880733945,
         "weight": 0.3
       },
       "IG Credit (BBB)": {
-        "pct": 10.114942528735632,
+        "pct": 10.321100917431194,
         "weight": 0.2
       },
       "Yield Curve (2-10)": {
@@ -26,60 +26,60 @@
   "panels": {
     "MOVE": {
       "metrics": {
-        "last": 65.39749908447266,
-        "d1": 66.79000091552734,
-        "w1": 67.0999984741211,
-        "m1": 73.43000030517578,
-        "last_dt": "2026-07-02",
+        "last": 66.79000091552734,
+        "d1": 67.0999984741211,
+        "w1": 65.38999938964844,
+        "m1": 70.9000015258789,
+        "last_dt": "2026-06-26",
         "dod": [
-          -139.25018310546875,
-          -2.084895660977537
+          -30.999755859375,
+          -0.4619933914205787
         ],
         "wow": [
-          -170.24993896484375,
-          -2.537256972226387
+          140.00015258789062,
+          2.141002506417733
         ],
         "mom": [
-          -803.2501220703125,
-          -10.938991130763952
+          -411.00006103515625,
+          -5.796897774186071
         ]
       },
       "trend": {
         "trend": "Falling",
-        "change": false,
-        "score": 0,
-        "strength": "-",
-        "z": -1.3773495387382788
+        "change": true,
+        "score": 40,
+        "strength": "Moderate",
+        "z": -1.1088751474133847
       },
       "kind": "vol",
       "name": "MOVE"
     },
     "HY_OAS": {
       "metrics": {
-        "last": 2.74,
-        "d1": 2.75,
-        "w1": 2.76,
-        "m1": 2.72,
-        "last_dt": "2026-07-01",
+        "last": 2.75,
+        "d1": 2.74,
+        "w1": 2.78,
+        "m1": 2.71,
+        "last_dt": "2026-07-02",
         "dod": [
-          -0.9999999999999787,
-          -0.3636363636363549
+          0.9999999999999787,
+          0.36496350364962904
         ],
         "wow": [
-          -1.9999999999999574,
-          -0.7246376811594013
+          -2.9999999999999805,
+          -1.0791366906474753
         ],
         "mom": [
-          2.0000000000000018,
-          0.7352941176470562
+          4.0000000000000036,
+          1.4760147601476037
         ]
       },
       "trend": {
-        "trend": "Falling",
-        "change": true,
-        "score": 35,
-        "strength": "Weak",
-        "z": -0.5836881761961908
+        "trend": "Rising",
+        "change": false,
+        "score": 0,
+        "strength": "-",
+        "z": -0.407621933569066
       },
       "kind": "credit",
       "name": "HY OAS"
@@ -87,17 +87,17 @@
     "BBB_OAS": {
       "metrics": {
         "last": 0.94,
-        "d1": 0.95,
-        "w1": 0.94,
+        "d1": 0.94,
+        "w1": 0.95,
         "m1": 0.92,
-        "last_dt": "2026-07-01",
+        "last_dt": "2026-07-02",
         "dod": [
-          -1.0000000000000009,
-          -1.0526315789473717
-        ],
-        "wow": [
           0.0,
           0.0
+        ],
+        "wow": [
+          -1.0000000000000009,
+          -1.0526315789473717
         ],
         "mom": [
           1.9999999999999907,
@@ -109,7 +109,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": -0.60266374892895
+        "z": -0.5785151335405387
       },
       "kind": "credit",
       "name": "BBB OAS"
@@ -194,7 +194,7 @@
       "Regime: Bear Flattener \u2014 short rates rising faster \u2014 Fed staying higher. \u2192 Squeezes bank margins."
     ],
     "trend": [
-      "HY OAS: possible reversal \u2014 spreads turning TIGHTER (risk easing) [early/low-conviction, 35/100]",
+      "MOVE: possible reversal \u2014 volatility turning DOWN (calming) [moderate, 40/100]",
       "2-10 Spread: possible reversal \u2014 curve flattening (watch for inversion) [early/low-conviction, 14/100]"
     ]
   }
