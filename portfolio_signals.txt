@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-07-03 23:18:02
+  Generated: 2026-07-06 13:24:18
 ================================================================================
 
 SUMMARY TABLE:
@@ -63,7 +63,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   GOLD FUTURES (GOLD)
-  Data from: 2026-07-03 00:00:00
+  Data from: 2026-07-06 00:00:00
 ================================================================================
 
   ACTION:   HOLD
@@ -81,13 +81,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -1.249       20
+  V5B Score                      -1.248       20
   Score Velocity                  0.001        0
   TREND                         BEARISH       15
   TRADE                         BEARISH       15
   ^GVZ Level                        nan        0
   ^GVZ Accel                       nan%        0
-  Mkt Drawdown                   -21.4%       10
+  Mkt Drawdown                   -21.8%       10
   ────────────────────────────────────────────────────
   TOTAL DANGER                                60
 
@@ -98,7 +98,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Sharpe                       1.03
   CAGR                        13.1%
   Max Drawdown                -8.9%
-  Avg Exposure                  53%
+  Avg Exposure                  52%
 
 
 ================================================================================
@@ -183,7 +183,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   US DOLLAR INDEX (USD)
-  Data from: 2026-07-03 00:00:00
+  Data from: 2026-07-06 00:00:00
 ================================================================================
 
   ACTION:   HOLD
@@ -201,13 +201,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -0.195       15
-  Score Velocity                 -0.094        2
+  V5B Score                      -0.184       15
+  Score Velocity                 -0.083        2
   TREND                         BEARISH       15
   TRADE                         NEUTRAL        3
-  ^VIX Level                       15.8        0
-  ^VIX Accel                     -14.1%        0
-  Mkt Drawdown                    -0.8%        0
+  ^VIX Level                       16.4        0
+  ^VIX Accel                     -10.8%        0
+  Mkt Drawdown                    -0.5%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                35
 
