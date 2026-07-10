@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-07-10 13:40:59
+  Generated: 2026-07-10 15:29:24
 ================================================================================
 
 SUMMARY TABLE:
@@ -8,9 +8,9 @@ SUMMARY TABLE:
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 SPX      │ ⏸️ HOLD      │        — │ 100% │    0 │  1.09 │  10.0% │  -9.8% │ BULLISH
-GOLD     │ 🟢 BUY        │      +7% │  44% │   60 │  1.03 │  13.0% │  -8.9% │ BEARISH
-COMPQ    │ 🟢 BUY        │      +7% │  84% │   36 │  1.02 │  11.8% │ -11.6% │ BEARISH
-RUT      │ ⏸️ HOLD      │        — │ 100% │   25 │  0.86 │   8.2% │  -8.4% │ NEUTRAL
+GOLD     │ 🔴 SELL       │      -7% │  37% │   64 │  1.03 │  13.0% │  -8.9% │ BEARISH
+COMPQ    │ ⏸️ HOLD      │        — │  84% │   36 │  1.02 │  11.8% │ -11.6% │ BEARISH
+RUT      │ ⏸️ HOLD      │        — │ 100% │   13 │  0.86 │   8.2% │  -8.4% │ BULLISH
 USD      │ ⏸️ HOLD      │        — │  66% │   47 │ -0.27 │   0.8% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
@@ -41,13 +41,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.838        0
-  Score Velocity                  0.062        0
+  V5B Score                       0.841        0
+  Score Velocity                  0.065        0
   TREND                         BULLISH        0
   TRADE                         BULLISH        0
-  ^VIX Level                       15.7        0
-  ^VIX Accel                      -2.6%        0
-  Mkt Drawdown                    -0.8%        0
+  ^VIX Level                       15.6        0
+  ^VIX Accel                      -3.3%        0
+  Mkt Drawdown                    -0.7%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                 0
 
@@ -66,30 +66,30 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-07-10 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   44%  (was 37%, change: +7.0pp)
-  ΔDay:     +7% from previous backtest day
+  ACTION:   SELL
+  TARGET:   37%  (was 44%, change: -7.0pp)
+  ΔDay:     -7% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    43,750  (44%)
-    Cash:      $    56,250  (56%)
-    → BUY  $     7,000 of GC=F
+    Invested:  $    36,750  (37%)
+    Cash:      $    63,250  (63%)
+    → SELL $     7,000 of GC=F
 
-  ZONE: RISK  |  Danger: 60/100
+  ZONE: RISK  |  Danger: 64/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -1.240       20
-  Score Velocity                  0.003        0
+  V5B Score                      -1.236       20
+  Score Velocity                  0.008        0
   TREND                         BEARISH       15
   TRADE                         BEARISH       15
-  ^GVZ Level                        nan        0
-  ^GVZ Accel                       nan%        0
-  Mkt Drawdown                   -23.0%       10
+  ^GVZ Level                       24.9        4
+  ^GVZ Accel                      -4.3%        0
+  Mkt Drawdown                   -22.8%       10
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                60
+  TOTAL DANGER                                64
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
@@ -106,14 +106,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-07-10 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   84%  (was 76%, change: +7.5pp)
-  ΔDay:     +7% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   84%  (was 84%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    83,500  (84%)
     Cash:      $    16,500  (17%)
-    → BUY  $     7,500 of ^IXIC
+    → No trade needed
 
   ZONE: WATCH  |  Danger: 36/100
 
@@ -121,13 +121,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.010        5
-  Score Velocity                  0.035        0
+  V5B Score                       0.020        5
+  Score Velocity                  0.046        0
   TREND                         BEARISH       15
   TRADE                         BEARISH       15
-  ^VIX Level                       15.7        0
-  ^VIX Accel                      -2.6%        0
-  Mkt Drawdown                    -3.4%        1
+  ^VIX Level                       15.6        0
+  ^VIX Accel                      -3.3%        0
+  Mkt Drawdown                    -3.2%        1
   ────────────────────────────────────────────────────
   TOTAL DANGER                                36
 
@@ -143,7 +143,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   RUSSELL 2000 (RUT)
-  Data from: 2026-07-09 00:00:00
+  Data from: 2026-07-10 00:00:00
 ================================================================================
 
   ACTION:   HOLD
@@ -155,21 +155,21 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
     Cash:      $         0  (0%)
     → No trade needed
 
-  ZONE: SAFE  |  Danger: 25/100
+  ZONE: SAFE  |  Danger: 13/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.799        0
-  Score Velocity                 -0.182        5
-  TREND                         NEUTRAL        5
-  TRADE                         BEARISH       15
-  ^VIX Level                       15.8        0
-  ^VIX Accel                      -4.5%        0
-  Mkt Drawdown                    -1.1%        0
+  V5B Score                       0.745        0
+  Score Velocity                 -0.203       10
+  TREND                         BULLISH        0
+  TRADE                         NEUTRAL        3
+  ^VIX Level                       15.6        0
+  ^VIX Accel                      -3.3%        0
+  Mkt Drawdown                    -1.8%        0
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                25
+  TOTAL DANGER                                13
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
@@ -201,13 +201,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -0.266       15
-  Score Velocity                 -0.097        2
+  V5B Score                      -0.268       15
+  Score Velocity                 -0.099        2
   TREND                         BEARISH       15
   TRADE                         BEARISH       15
-  ^VIX Level                       15.7        0
-  ^VIX Accel                      -2.6%        0
-  Mkt Drawdown                    -0.7%        0
+  ^VIX Level                       15.6        0
+  ^VIX Accel                      -3.3%        0
+  Mkt Drawdown                    -0.8%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                47
 
