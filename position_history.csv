@@ -98,3 +98,5 @@ date,asset,close,trend,trade,v5b_score,danger_score,target_weight,action,data_so
 2026-07-15,RUT,2976.26,BULLISH,BEARISH,0.6803,20,1.0,HOLD,hedgeye_actual
 2026-07-15,SPX,7572.4,BULLISH,BULLISH,0.8758,0,1.0,HOLD,hedgeye_actual
 2026-07-15,USD,100.5,BEARISH,BEARISH,-0.2695,45,0.7,HOLD,hedgeye_actual
+2026-07-16,GOLD,4000.0,BEARISH,BEARISH,-1.2521,60,0.4375,BUY,hedgeye_actual
+2026-07-16,USD,100.65,BEARISH,BEARISH,-0.2545,45,0.7,HOLD,hedgeye_actual
