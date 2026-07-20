@@ -1,13 +1,13 @@
 {
-  "spx_gamma": -23.27,
-  "spx_spot": 7457.69,
-  "spx_flip": 7508.25,
-  "timestamp": "2026-07-17 22:45:46",
+  "spx_gamma": -22.3,
+  "spx_spot": 7443.28,
+  "spx_flip": 7488.68,
+  "timestamp": "2026-07-20 22:57:48",
   "symbol": "_SPX",
-  "gamma_throttle": -19.49,
-  "rv_10day": 10.36,
-  "vix": 18.77,
-  "dist_to_flip_pct": -0.68,
+  "gamma_throttle": -18.55,
+  "rv_10day": 9.47,
+  "vix": 18.65,
+  "dist_to_flip_pct": -0.61,
   "regime": "NEGATIVE GAMMA",
   "regime_description": "Dealers short gamma. Moves amplified. Trending market.",
   "risk_level": "HIGH",
@@ -15,9 +15,9 @@
   "vol_signal": "BUY VOLATILITY / TREND FOLLOW",
   "dir_signal": "FOLLOW THE TREND",
   "key_levels": {
-    "gamma_flip": 7508.0,
-    "put_wall": 7283.0,
-    "call_wall": 7681.0,
-    "danger_zone": 7133.0
+    "gamma_flip": 7489.0,
+    "put_wall": 7264.0,
+    "call_wall": 7667.0,
+    "danger_zone": 7114.0
   }
 }
