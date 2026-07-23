@@ -1,13 +1,13 @@
 {
-  "spx_gamma": 2.99,
+  "spx_gamma": 1.96,
   "spx_spot": 7498.96,
-  "spx_flip": 7494.74,
-  "timestamp": "2026-07-22 22:58:47",
+  "spx_flip": 7496.35,
+  "timestamp": "2026-07-23 01:27:55",
   "symbol": "_SPX",
-  "gamma_throttle": 1.46,
+  "gamma_throttle": 0.95,
   "rv_10day": 10.42,
   "vix": 16.64,
-  "dist_to_flip_pct": 0.06,
+  "dist_to_flip_pct": 0.03,
   "regime": "WEAK POSITIVE GAMMA",
   "regime_description": "Mild positive gamma. Some suppression but fragile.",
   "risk_level": "MODERATE",
@@ -15,9 +15,9 @@
   "vol_signal": "CAUTION - REDUCE EXPOSURE",
   "dir_signal": "NO CLEAR DIRECTION",
   "key_levels": {
-    "gamma_flip": 7495.0,
-    "put_wall": 7270.0,
+    "gamma_flip": 7496.0,
+    "put_wall": 7271.0,
     "call_wall": 7724.0,
-    "danger_zone": 7120.0
+    "danger_zone": 7122.0
   }
 }
