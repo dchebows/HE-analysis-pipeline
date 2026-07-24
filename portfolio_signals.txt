@@ -1,14 +1,14 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-07-24 14:50:37
+  Generated: 2026-07-24 22:59:33
 ================================================================================
 
 SUMMARY TABLE:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-SPX      │ 🔴 SELL       │      -7% │  92% │   30 │  1.08 │  10.0% │  -9.8% │ BULLISH
-GOLD     │ 🟢 BUY        │      +3% │  37% │   64 │  1.02 │  13.0% │  -8.9% │ BEARISH
+SPX      │ ⏸️ HOLD      │        — │  92% │   30 │  1.08 │  10.0% │  -9.8% │ BULLISH
+GOLD     │ ⏸️ HOLD      │        — │  37% │   64 │  1.02 │  13.0% │  -8.9% │ BEARISH
 COMPQ    │ ⏸️ HOLD      │        — │  30% │   69 │  1.01 │  11.8% │ -10.4% │ BEARISH
 RUT      │ ⏸️ HOLD      │        — │ 100% │   15 │  0.86 │   8.4% │  -9.3% │ BULLISH
 USD      │ ⏸️ HOLD      │        — │  70% │   45 │ -0.26 │   0.9% │  -7.6% │ BEARISH
@@ -26,14 +26,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-07-24 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   92%  (was 100%, change: -7.5pp)
-  ΔDay:     -7% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   92%  (was 92%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    92,500  (92%)
     Cash:      $     7,500  (7%)
-    → SELL $     7,500 of ^GSPC
+    → No trade needed
 
   ZONE: WATCH  |  Danger: 30/100
 
@@ -66,14 +66,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-07-24 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   37%  (was 34%, change: +3.1pp)
-  ΔDay:     +3% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   37%  (was 37%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    36,750  (37%)
     Cash:      $    63,250  (63%)
-    → BUY  $     3,080 of GC=F
+    → No trade needed
 
   ZONE: RISK  |  Danger: 64/100
 
