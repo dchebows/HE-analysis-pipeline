@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-07-31 15:15:43
+  Generated: 2026-07-31 22:58:22
 ================================================================================
 
 SUMMARY TABLE:
@@ -8,8 +8,8 @@ SUMMARY TABLE:
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 SPX      │ ⏸️ HOLD      │        — │ 100% │   10 │  1.05 │   9.7% │  -9.8% │ BULLISH
-GOLD     │ 🔴 SELL       │      -7% │  37% │   64 │  1.03 │  13.0% │  -8.9% │ BEARISH
-COMPQ    │ 🔴 SELL       │      -7% │  30% │   69 │  1.01 │  11.7% │ -11.6% │ BEARISH
+GOLD     │ ⏸️ HOLD      │        — │  37% │   64 │  1.03 │  13.0% │  -8.9% │ BEARISH
+COMPQ    │ ⏸️ HOLD      │        — │  30% │   69 │  1.01 │  11.7% │ -11.6% │ BEARISH
 RUT      │ ⏸️ HOLD      │        — │ 100% │   17 │  0.86 │   8.2% │  -8.4% │ BULLISH
 USD      │ ⏸️ HOLD      │        — │  70% │   45 │ -0.28 │   0.8% │  -7.6% │ BEARISH
 
@@ -66,14 +66,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-07-31 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   37%  (was 44%, change: -7.0pp)
-  ΔDay:     -7% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   37%  (was 37%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    36,750  (37%)
     Cash:      $    63,250  (63%)
-    → SELL $     7,000 of GC=F
+    → No trade needed
 
   ZONE: RISK  |  Danger: 64/100
 
@@ -106,14 +106,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-07-31 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   30%  (was 37%, change: -7.1pp)
-  ΔDay:     -7% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   30%  (was 30%, change: -0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    29,667  (30%)
     Cash:      $    70,333  (70%)
-    → SELL $     7,083 of ^IXIC
+    → No trade needed
 
   ZONE: DANGER  |  Danger: 69/100
 
