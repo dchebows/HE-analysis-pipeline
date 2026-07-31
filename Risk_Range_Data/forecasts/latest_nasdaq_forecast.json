@@ -1,28 +1,29 @@
 {
   "ticker": "^IXIC",
-  "forecast_date": "2026-07-31",
-  "based_on_date": "2026-07-30",
-  "based_on_close": 25122.177734375,
-  "vix": 27.549999237060547,
+  "forecast_date": "2026-08-03",
+  "based_on_date": "2026-07-31",
+  "based_on_close": 25373.853515625,
+  "vix": 26.0,
   "regime": "chop",
-  "forecast_high": 25571.182692812596,
-  "forecast_low": 24423.252226075554,
-  "high_pct": 1.7872851756128465,
-  "low_pct": -2.7821055789407025,
-  "range_width": 1147.9304667370416,
+  "forecast_high": 25633.88041943569,
+  "forecast_low": 24652.726589938764,
+  "high_pct": 1.0247828681227573,
+  "low_pct": -2.8420079167012307,
+  "range_width": 981.153829496925,
   "floor_active": true,
   "reference_levels": {
-    "trr_50": 25426.088782768937,
-    "llr_95": 24547.311582220656,
-    "llr_90": 24588.819593253247,
-    "llr_80": 24695.626195096822
+    "trr_50": 25498.170930712637,
+    "llr_95": 24777.413951632232,
+    "llr_90": 24896.249378740496,
+    "llr_80": 24840.95008566402
   },
   "risks": [
-    "Range persistence detected (1.00x median) \u2014 floor applied",
-    "VXN at 27.5, approaching get_out threshold (30)",
-    "Predicted range (4.57%) above 90th percentile for regime"
+    "Range persistence detected (1.56x median) \u2014 floor applied",
+    "High VXN velocity (15.7%) \u2014 elevated tail risk",
+    "VXN at 26.0, approaching get_out threshold (30)",
+    "Predicted range (3.87%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-07-30 19:32:20 EST",
+  "timestamp": "2026-07-31 19:30:28 EST",
   "model_version": "v5",
   "status": "success"
 }
