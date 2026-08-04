@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-08-04 15:22:22
+  Generated: 2026-08-04 23:01:15
 ================================================================================
 
 SUMMARY TABLE:
@@ -8,8 +8,8 @@ SUMMARY TABLE:
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 SPX      │ ⏸️ HOLD      │        — │ 100% │    0 │  1.10 │  10.1% │  -9.8% │ BULLISH
-GOLD     │ 🔴 SELL       │      -7% │  37% │   64 │  1.03 │  13.0% │  -8.9% │ BEARISH
-COMPQ    │ 🟢 BUY        │     +18% │  77% │   35 │  1.02 │  11.8% │ -11.6% │ BEARISH
+GOLD     │ ⏸️ HOLD      │        — │  37% │   64 │  1.03 │  13.0% │  -8.9% │ BEARISH
+COMPQ    │ 🟢 BUY        │      +7% │  85% │   35 │  1.02 │  11.8% │ -11.6% │ BEARISH
 RUT      │ ⏸️ HOLD      │        — │ 100% │    5 │  0.87 │   8.2% │  -8.4% │ NEUTRAL
 USD      │ ⏸️ HOLD      │        — │  52% │   55 │ -0.28 │   0.8% │  -7.6% │ BEARISH
 
@@ -66,14 +66,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-08-04 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   37%  (was 44%, change: -7.0pp)
-  ΔDay:     -7% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   37%  (was 37%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    36,750  (37%)
     Cash:      $    63,250  (63%)
-    → SELL $     7,000 of GC=F
+    → No trade needed
 
   ZONE: RISK  |  Danger: 64/100
 
@@ -107,13 +107,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 ================================================================================
 
   ACTION:   BUY
-  TARGET:   77%  (was 60%, change: +18.0pp)
-  ΔDay:     +18% from previous backtest day
+  TARGET:   85%  (was 78%, change: +7.5pp)
+  ΔDay:     +7% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    77,500  (77%)
-    Cash:      $    22,500  (23%)
-    → BUY  $    18,000 of ^IXIC
+    Invested:  $    85,000  (85%)
+    Cash:      $    15,000  (15%)
+    → BUY  $     7,500 of ^IXIC
 
   ZONE: WATCH  |  Danger: 35/100
 
