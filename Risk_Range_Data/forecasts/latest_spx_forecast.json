@@ -1,26 +1,26 @@
 {
   "ticker": "^GSPC",
-  "forecast_date": "2026-08-06",
-  "based_on_date": "2026-08-05",
-  "based_on_close": 7723.5498046875,
-  "vix": 15.8100004196167,
+  "forecast_date": "2026-08-07",
+  "based_on_date": "2026-08-06",
+  "based_on_close": 7709.9599609375,
+  "vix": 15.149999618530273,
   "regime": "investible",
-  "forecast_high": 7783.151206498644,
-  "forecast_low": 7641.767306341004,
-  "high_pct": 0.7716840483759291,
-  "low_pct": -1.0588718971794746,
-  "range_width": 141.3839001576398,
+  "forecast_high": 7762.87103031826,
+  "forecast_low": 7615.197946160391,
+  "high_pct": 0.6862690552069476,
+  "low_pct": -1.2290856924967206,
+  "range_width": 147.6730841578683,
   "floor_active": true,
   "reference_levels": {
-    "trr_50": 7754.214562851677,
-    "llr_90": 7664.72372102357,
-    "llr_80": 7680.094301519951
+    "trr_50": 7753.415410233624,
+    "llr_90": 7630.320944724389,
+    "llr_80": 7665.237452066819
   },
   "risks": [
-    "Range persistence detected (1.00x median) \u2014 floor applied",
-    "Predicted range (1.83%) above 90th percentile for regime"
+    "Range persistence detected (1.15x median) \u2014 floor applied",
+    "Predicted range (1.92%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-08-05 19:29:01 EST",
+  "timestamp": "2026-08-06 21:37:11 EST",
   "model_version": "v4",
   "status": "success"
 }
