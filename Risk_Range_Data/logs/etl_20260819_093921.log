@@ -1,0 +1,413 @@
+09:39:21 | INFO  | ======================================================================
+09:39:21 | INFO  | ETL PIPELINE START
+09:39:21 | INFO  | ======================================================================
+09:39:21 | INFO  | 
+📋 PIPELINE PLAN:
+09:39:21 | INFO  |    HTML Files: 53 new / 53 total
+09:39:21 | INFO  |    Master needs propagation: False
+09:39:21 | INFO  | 
+======================================================================
+09:39:21 | INFO  | STAGE 1: HTML PARSING
+09:39:21 | INFO  | ======================================================================
+09:39:21 | INFO  | 
+Processing: AUGUST 19, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_08-19-2026.csv (37 rows)
+09:39:21 | INFO  | 
+Processing: JULY 1, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_07-01-2026.csv (38 rows)
+09:39:21 | INFO  | 
+Processing: AUGUST 10, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_08-10-2026.csv (37 rows)
+09:39:21 | INFO  | 
+Processing: JULY 22, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_07-22-2026.csv (38 rows)
+09:39:21 | INFO  | 
+Processing: JUNE 9, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_06-09-2026.csv (36 rows)
+09:39:21 | INFO  | 
+Processing: JUNE 4, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_06-04-2026.csv (37 rows)
+09:39:21 | INFO  | 
+Processing: JUNE 11, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_06-11-2026.csv (36 rows)
+09:39:21 | INFO  | 
+Processing: JUNE 25, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_06-25-2026.csv (38 rows)
+09:39:21 | INFO  | 
+Processing: AUGUST 7, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_08-07-2026.csv (37 rows)
+09:39:21 | INFO  | 
+Processing: JUNE 17, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_06-17-2026.csv (36 rows)
+09:39:21 | INFO  | 
+Processing: JULY 24, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_07-24-2026.csv (38 rows)
+09:39:21 | INFO  | 
+Processing: JULY 21, 2026.html
+09:39:21 | INFO  |   ✅ Saved: RR_07-21-2026.csv (38 rows)
+09:39:21 | INFO  | 
+Processing: AUGUST 17, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_08-17-2026.csv (37 rows)
+09:39:22 | INFO  | 
+Processing: JUNE 16, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_06-16-2026.csv (36 rows)
+09:39:22 | INFO  | 
+Processing: JULY 23, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_07-23-2026.csv (38 rows)
+09:39:22 | INFO  | 
+Processing: AUGUST 13, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_08-13-2026.csv (37 rows)
+09:39:22 | INFO  | 
+Processing: JUNE 23, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_06-23-2026.csv (37 rows)
+09:39:22 | INFO  | 
+Processing: JUNE 12, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_06-12-2026.csv (36 rows)
+09:39:22 | INFO  | 
+Processing: JUNE 8, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_06-08-2026.csv (37 rows)
+09:39:22 | INFO  | 
+Processing: JULY 6, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_07-06-2026.csv (37 rows)
+09:39:22 | INFO  | 
+Processing: JUNE 22, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_06-22-2026.csv (37 rows)
+09:39:22 | INFO  | 
+Processing: JUNE 15, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_06-15-2026.csv (36 rows)
+09:39:22 | INFO  | 
+Processing: AUGUST 6, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_08-06-2026.csv (37 rows)
+09:39:22 | INFO  | 
+Processing: JULY 13, 2026.html
+09:39:22 | INFO  |   ✅ Saved: RR_07-13-2026.csv (37 rows)
+09:39:22 | INFO  | 
+Processing: JUNE 5, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_06-05-2026.csv (37 rows)
+09:39:23 | INFO  | 
+Processing: AUGUST 11, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_08-11-2026.csv (37 rows)
+09:39:23 | INFO  | 
+Processing: JULY 8, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_07-08-2026.csv (37 rows)
+09:39:23 | INFO  | 
+Processing: JUNE 26, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_06-26-2026.csv (38 rows)
+09:39:23 | INFO  | 
+Processing: JULY 16, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_07-16-2026.csv (37 rows)
+09:39:23 | INFO  | 
+Processing: JULY 31, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_07-31-2026.csv (37 rows)
+09:39:23 | INFO  | 
+Processing: JUNE 10, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_06-10-2026.csv (36 rows)
+09:39:23 | INFO  | 
+Processing: JULY 2, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_07-02-2026.csv (38 rows)
+09:39:23 | INFO  | 
+Processing: AUGUST 3, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_08-03-2026.csv (37 rows)
+09:39:23 | INFO  | 
+Processing: JULY 7, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_07-07-2026.csv (37 rows)
+09:39:23 | INFO  | 
+Processing: AUGUST 18, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_08-18-2026.csv (37 rows)
+09:39:23 | INFO  | 
+Processing: JULY 17, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_07-17-2026.csv (38 rows)
+09:39:23 | INFO  | 
+Processing: JULY 20, 2026.html
+09:39:23 | INFO  |   ✅ Saved: RR_07-20-2026.csv (38 rows)
+09:39:23 | INFO  | 
+Processing: JUNE 29, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_06-29-2026.csv (38 rows)
+09:39:24 | INFO  | 
+Processing: JULY 30, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_07-30-2026.csv (38 rows)
+09:39:24 | INFO  | 
+Processing: AUGUST 4, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_08-04-2026.csv (37 rows)
+09:39:24 | INFO  | 
+Processing: JUNE 30, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_06-30-2026.csv (38 rows)
+09:39:24 | INFO  | 
+Processing: AUGUST 14, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_08-14-2026.csv (37 rows)
+09:39:24 | INFO  | 
+Processing: JUNE 24, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_06-24-2026.csv (37 rows)
+09:39:24 | INFO  | 
+Processing: JULY 9, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_07-09-2026.csv (37 rows)
+09:39:24 | INFO  | 
+Processing: AUGUST 12, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_08-12-2026.csv (37 rows)
+09:39:24 | INFO  | 
+Processing: JUNE 18, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_06-18-2026.csv (37 rows)
+09:39:24 | INFO  | 
+Processing: JULY 10, 2026.html
+09:39:24 | INFO  |   ✅ Saved: RR_07-10-2026.csv (37 rows)
+09:39:24 | INFO  | 
+Processing: JULY 29, 2026.html
+09:39:25 | INFO  |   ✅ Saved: RR_07-29-2026.csv (38 rows)
+09:39:25 | INFO  | 
+Processing: JULY 15, 2026.html
+09:39:25 | INFO  |   ✅ Saved: RR_07-15-2026.csv (37 rows)
+09:39:25 | INFO  | 
+Processing: JULY 28, 2026.html
+09:39:25 | INFO  |   ✅ Saved: RR_07-28-2026.csv (38 rows)
+09:39:25 | INFO  | 
+Processing: AUGUST 5, 2026.html
+09:39:25 | INFO  |   ✅ Saved: RR_08-05-2026.csv (37 rows)
+09:39:25 | INFO  | 
+Processing: JULY 14, 2026.html
+09:39:25 | INFO  |   ✅ Saved: RR_07-14-2026.csv (37 rows)
+09:39:25 | INFO  | 
+Processing: JULY 27, 2026.html
+09:39:25 | INFO  |   ✅ Saved: RR_07-27-2026.csv (38 rows)
+09:39:25 | INFO  | 
+✅ HTML parsing complete: 53 success, 0 errors
+09:39:25 | INFO  | 
+======================================================================
+09:39:25 | INFO  | STAGE 2: MASTER AGGREGATION
+09:39:25 | INFO  | ======================================================================
+09:39:25 | INFO  | ✅ Backed up master to: risk_ranges_master_backup_20260819_093925.csv
+09:39:25 | INFO  | Loaded existing master: 74,912 rows
+09:39:25 | INFO  |   Loaded: RR_08-19-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-01-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_08-10-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-22-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_06-09-2026.csv (36 rows)
+09:39:25 | INFO  |   Loaded: RR_06-04-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-11-2026.csv (36 rows)
+09:39:25 | INFO  |   Loaded: RR_06-25-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_08-07-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-17-2026.csv (36 rows)
+09:39:25 | INFO  |   Loaded: RR_07-24-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_07-21-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_08-17-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-16-2026.csv (36 rows)
+09:39:25 | INFO  |   Loaded: RR_07-23-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_08-13-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-23-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-12-2026.csv (36 rows)
+09:39:25 | INFO  |   Loaded: RR_06-08-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-06-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-22-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-15-2026.csv (36 rows)
+09:39:25 | INFO  |   Loaded: RR_08-06-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-13-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-05-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_08-11-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-08-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-26-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_07-16-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-31-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-10-2026.csv (36 rows)
+09:39:25 | INFO  |   Loaded: RR_07-02-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_08-03-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-07-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_08-18-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-17-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_07-20-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_06-29-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_07-30-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_08-04-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-30-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_08-14-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-24-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-09-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_08-12-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_06-18-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-10-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-29-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_07-15-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-28-2026.csv (38 rows)
+09:39:25 | INFO  |   Loaded: RR_08-05-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-14-2026.csv (37 rows)
+09:39:25 | INFO  |   Loaded: RR_07-27-2026.csv (38 rows)
+09:39:25 | INFO  | Combined new data: 1970 rows
+09:39:25 | INFO  | Removed 1970 duplicate entries
+09:39:25 | INFO  | ✅ Saved master CSV: 74,912 total rows
+09:39:25 | INFO  |    Date range: 2017-01-03 to 2026-08-19
+09:39:25 | INFO  | 
+======================================================================
+09:39:25 | INFO  | STAGE 3: TICKER SUBSETTING
+09:39:25 | INFO  | ======================================================================
+09:39:26 | INFO  | Loaded master: 74,912 rows
+09:39:26 | INFO  | Creating subsets for 9 tickers
+09:39:26 | INFO  |   ✅ UST10Y: 2392 rows | 2017-01-03 to 2026-08-19
+09:39:26 | INFO  |   ✅ SPX: 2392 rows | 2017-01-03 to 2026-08-19
+09:39:26 | INFO  |   ✅ COMPQ: 2392 rows | 2017-01-03 to 2026-08-19
+09:39:26 | INFO  |   ✅ RUT: 2391 rows | 2017-01-03 to 2026-08-19
+09:39:26 | INFO  |   ✅ VIX: 2392 rows | 2017-01-03 to 2026-08-19
+09:39:26 | INFO  |   ✅ USD: 2392 rows | 2017-01-03 to 2026-08-19
+09:39:26 | INFO  |   ✅ GOLD: 2390 rows | 2017-01-03 to 2026-08-19
+09:39:26 | INFO  |   ✅ AAPL: 2390 rows | 2017-01-03 to 2026-08-19
+09:39:26 | INFO  |   ✅ BITCOIN: 761 rows | 2023-08-01 to 2026-08-19
+09:39:26 | INFO  | ✅ Ticker subsetting complete
+09:39:26 | INFO  | 
+======================================================================
+09:39:26 | INFO  | STAGE 4: ENRICHMENT
+09:39:26 | INFO  | ======================================================================
+09:39:26 | INFO  | Enriching 9 tickers
+09:39:26 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:26 | INFO  | Enriching: SPX
+09:39:26 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:26 | INFO  |   Loaded 2392 rows from SPX.csv
+09:39:26 | INFO  |   Yahoo ticker: ^GSPC
+09:39:26 | INFO  |   OHLC prefix: GSPC
+09:39:26 | INFO  |   Vol prefix: VIX
+09:39:26 | INFO  |   Downloading ^GSPC OHLC...
+09:39:28 | INFO  |     Downloaded 2420 days (2017-01-03 to 2026-08-19)
+09:39:28 | INFO  |   Downloading ^VIX volatility...
+09:39:28 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:28 | WARNING |   ⚠️  28 trading days missing from original CSV
+09:39:28 | INFO  |   ✓ Enrichment complete: 2420 rows
+09:39:28 | INFO  |   ✅ Saved: SPX_enriched.csv (2420 rows)
+09:39:28 | WARNING |   ⚠️  28 rows need manual update
+09:39:28 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:28 | INFO  | Enriching: GOLD
+09:39:28 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:28 | INFO  |   Loaded 2390 rows from GOLD.csv
+09:39:28 | INFO  |   Yahoo ticker: GC=F
+09:39:28 | INFO  |   OHLC prefix: GC
+09:39:28 | INFO  |   Vol prefix: GVZ
+09:39:28 | INFO  |   Downloading GC=F OHLC...
+09:39:28 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:28 | INFO  |   Downloading ^GVZ volatility...
+09:39:29 | INFO  |     Downloaded 2419 days (2017-01-03 to 2026-08-18)
+09:39:29 | WARNING |   ⚠️  32 trading days missing from original CSV
+09:39:29 | INFO  |   ✓ Enrichment complete: 2421 rows
+09:39:29 | INFO  |   ✅ Saved: GOLD_enriched.csv (2421 rows)
+09:39:29 | WARNING |   ⚠️  32 rows need manual update
+09:39:29 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:29 | INFO  | Enriching: UST10Y
+09:39:29 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:29 | INFO  |   Loaded 2392 rows from UST10Y.csv
+09:39:29 | INFO  |   ⚠️  Row count changed (18 → 2392) - re-enriching
+09:39:29 | INFO  |   Yahoo ticker: ^TNX
+09:39:29 | INFO  |   OHLC prefix: TNX
+09:39:29 | INFO  |   Vol prefix: VIX
+09:39:29 | INFO  |   Downloading ^TNX OHLC...
+09:39:29 | INFO  |     Downloaded 2420 days (2017-01-03 to 2026-08-19)
+09:39:29 | INFO  |   Downloading ^VIX volatility...
+09:39:29 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:29 | WARNING |   ⚠️  28 trading days missing from original CSV
+09:39:29 | INFO  |   ✓ Enrichment complete: 2420 rows
+09:39:29 | INFO  |   ✅ Saved: UST10Y_enriched.csv (2420 rows)
+09:39:29 | WARNING |   ⚠️  28 rows need manual update
+09:39:29 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:29 | INFO  | Enriching: COMPQ
+09:39:29 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:29 | INFO  |   Loaded 2392 rows from COMPQ.csv
+09:39:29 | INFO  |   Yahoo ticker: ^IXIC
+09:39:29 | INFO  |   OHLC prefix: IXIC
+09:39:29 | INFO  |   Vol prefix: VIX
+09:39:29 | INFO  |   Downloading ^IXIC OHLC...
+09:39:30 | INFO  |     Downloaded 2420 days (2017-01-03 to 2026-08-19)
+09:39:30 | INFO  |   Downloading ^VIX volatility...
+09:39:30 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:30 | WARNING |   ⚠️  28 trading days missing from original CSV
+09:39:30 | INFO  |   ✓ Enrichment complete: 2420 rows
+09:39:30 | INFO  |   ✅ Saved: COMPQ_enriched.csv (2420 rows)
+09:39:30 | WARNING |   ⚠️  28 rows need manual update
+09:39:30 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:30 | INFO  | Enriching: RUT
+09:39:30 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:30 | INFO  |   Loaded 2391 rows from RUT.csv
+09:39:30 | INFO  |   Yahoo ticker: ^RUT
+09:39:30 | INFO  |   OHLC prefix: RUT
+09:39:30 | INFO  |   Vol prefix: VIX
+09:39:30 | INFO  |   Downloading ^RUT OHLC...
+09:39:31 | INFO  |     Downloaded 2419 days (2017-01-03 to 2026-08-18)
+09:39:31 | INFO  |   Downloading ^VIX volatility...
+09:39:31 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:31 | WARNING |   ⚠️  29 trading days missing from original CSV
+09:39:31 | INFO  |   ✓ Enrichment complete: 2419 rows
+09:39:31 | INFO  |   ✅ Saved: RUT_enriched.csv (2419 rows)
+09:39:31 | WARNING |   ⚠️  29 rows need manual update
+09:39:31 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:31 | INFO  | Enriching: VIX
+09:39:31 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:31 | INFO  |   Loaded 2392 rows from VIX.csv
+09:39:31 | INFO  |   Yahoo ticker: ^VIX
+09:39:31 | INFO  |   OHLC prefix: VIX
+09:39:31 | INFO  |   Vol prefix: VIXI
+09:39:31 | INFO  |   Downloading ^VIX OHLC...
+09:39:31 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:31 | INFO  |   Downloading ^VIX volatility...
+09:39:31 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:31 | WARNING |   ⚠️  29 trading days missing from original CSV
+09:39:31 | INFO  |   ✓ Enrichment complete: 2421 rows
+09:39:31 | INFO  |   ✅ Saved: VIX_enriched.csv (2421 rows)
+09:39:31 | WARNING |   ⚠️  29 rows need manual update
+09:39:31 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:31 | INFO  | Enriching: USD
+09:39:31 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:31 | INFO  |   Loaded 2392 rows from USD.csv
+09:39:31 | INFO  |   Yahoo ticker: DX-Y.NYB
+09:39:31 | INFO  |   OHLC prefix: DX
+09:39:31 | INFO  |   Vol prefix: VIX
+09:39:31 | INFO  |   Downloading DX-Y.NYB OHLC...
+09:39:32 | INFO  |     Downloaded 2422 days (2017-01-03 to 2026-08-19)
+09:39:32 | INFO  |   Downloading ^VIX volatility...
+09:39:32 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:32 | WARNING |   ⚠️  30 trading days missing from original CSV
+09:39:32 | INFO  |   ✓ Enrichment complete: 2422 rows
+09:39:32 | INFO  |   ✅ Saved: USD_enriched.csv (2422 rows)
+09:39:32 | WARNING |   ⚠️  30 rows need manual update
+09:39:32 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:32 | INFO  | Enriching: AAPL
+09:39:32 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:32 | INFO  |   Loaded 2390 rows from AAPL.csv
+09:39:32 | INFO  |   Yahoo ticker: AAPL
+09:39:32 | INFO  |   OHLC prefix: AAPL
+09:39:32 | INFO  |   Vol prefix: VIX
+09:39:32 | INFO  |   Downloading AAPL OHLC...
+09:39:33 | INFO  |     Downloaded 2420 days (2017-01-03 to 2026-08-19)
+09:39:33 | INFO  |   Downloading ^VIX volatility...
+09:39:33 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:33 | WARNING |   ⚠️  30 trading days missing from original CSV
+09:39:33 | INFO  |   ✓ Enrichment complete: 2420 rows
+09:39:33 | INFO  |   ✅ Saved: AAPL_enriched.csv (2420 rows)
+09:39:33 | WARNING |   ⚠️  30 rows need manual update
+09:39:33 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+09:39:33 | INFO  | Enriching: BITCOIN
+09:39:33 | INFO  | ──────────────────────────────────────────────────────────────────────
+09:39:33 | INFO  |   Loaded 761 rows from BITCOIN.csv
+09:39:33 | INFO  |   ⚠️  Row count changed (3517 → 761) - re-enriching
+09:39:33 | INFO  |   Yahoo ticker: BTC-USD
+09:39:33 | INFO  |   OHLC prefix: BTC
+09:39:33 | INFO  |   Vol prefix: VIX
+09:39:33 | INFO  |   Downloading BTC-USD OHLC...
+09:39:33 | INFO  |     Downloaded 3517 days (2017-01-02 to 2026-08-19)
+09:39:33 | INFO  |   Downloading ^VIX volatility...
+09:39:33 | INFO  |     Downloaded 2421 days (2017-01-03 to 2026-08-19)
+09:39:33 | WARNING |   ⚠️  2756 trading days missing from original CSV
+09:39:33 | INFO  |   ✓ Enrichment complete: 3517 rows
+09:39:33 | INFO  |   ✅ Saved: BITCOIN_enriched.csv (3517 rows)
+09:39:33 | WARNING |   ⚠️  2756 rows need manual update
+09:39:33 | INFO  | 
+======================================================================
+09:39:33 | INFO  | ✅ Enrichment complete:
+09:39:33 | INFO  |    Success: 9
+09:39:33 | INFO  |    Skipped (up-to-date): 0
+09:39:33 | INFO  |    Errors:  0
+09:39:33 | INFO  | ======================================================================
+09:39:33 | INFO  | 
+======================================================================
+09:39:33 | INFO  | ✅ PIPELINE COMPLETE
+09:39:33 | INFO  | ======================================================================
