@@ -1,17 +1,17 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-08-19 12:05:34
+  Generated: 2026-08-19 13:40:23
 ================================================================================
 
 SUMMARY TABLE:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-SPX      │ ⏸️ HOLD      │        — │ 100% │    2 │  1.09 │  10.0% │  -9.8% │ BULLISH
-GOLD     │ ⏸️ HOLD      │        — │  74% │   42 │  1.03 │  13.0% │  -8.9% │ BEARISH
+SPX      │ ⏸️ HOLD      │        — │ 100% │    2 │  1.09 │  10.1% │  -9.8% │ BULLISH
+GOLD     │ ⏸️ HOLD      │        — │  74% │   42 │  1.03 │  13.1% │  -8.9% │ BEARISH
 COMPQ    │ ⏸️ HOLD      │        — │ 100% │    0 │  1.02 │  11.8% │ -11.6% │ BULLISH
 RUT      │ ⏸️ HOLD      │        — │ 100% │    5 │  0.87 │   8.2% │  -8.4% │ NEUTRAL
-USD      │ ⏸️ HOLD      │        — │  61% │   50 │ -0.29 │   0.8% │  -7.6% │ BEARISH
+USD      │ 🔴 SELL       │      -4% │  58% │   52 │ -0.29 │   0.8% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -23,7 +23,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   S&P 500 (SPX)
-  Data from: 2026-08-18 00:00:00
+  Data from: 2026-08-19 00:00:00
 ================================================================================
 
   ACTION:   HOLD
@@ -41,13 +41,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.855        0
-  Score Velocity                 -0.051        2
+  V5B Score                       0.829        0
+  Score Velocity                 -0.052        2
   TREND                         BULLISH        0
   TRADE                         BULLISH        0
-  ^VIX Level                       15.8        0
-  ^VIX Accel                       3.7%        0
-  Mkt Drawdown                    -1.4%        0
+  ^VIX Level                       15.2        0
+  ^VIX Accel                       4.2%        0
+  Mkt Drawdown                    -1.0%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                 2
 
@@ -56,7 +56,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Metric                         D1
   ────────────────────────────────────────────────────
   Sharpe                       1.09
-  CAGR                        10.0%
+  CAGR                        10.1%
   Max Drawdown                -9.8%
   Avg Exposure                  52%
 
@@ -87,7 +87,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   TRADE                         BULLISH        0
   ^GVZ Level                        nan        0
   ^GVZ Accel                       nan%        0
-  Mkt Drawdown                   -16.9%        7
+  Mkt Drawdown                   -15.0%        7
   ────────────────────────────────────────────────────
   TOTAL DANGER                                42
 
@@ -96,14 +96,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Metric                         D1
   ────────────────────────────────────────────────────
   Sharpe                       1.03
-  CAGR                        13.0%
+  CAGR                        13.1%
   Max Drawdown                -8.9%
   Avg Exposure                  51%
 
 
 ================================================================================
   NASDAQ COMPOSITE (COMPQ)
-  Data from: 2026-08-18 00:00:00
+  Data from: 2026-08-19 00:00:00
 ================================================================================
 
   ACTION:   HOLD
@@ -121,13 +121,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.445        0
-  Score Velocity                  0.014        0
+  V5B Score                       0.390        0
+  Score Velocity                 -0.030        0
   TREND                         BULLISH        0
   TRADE                         BULLISH        0
-  ^VIX Level                       15.8        0
-  ^VIX Accel                       3.7%        0
-  Mkt Drawdown                    -3.0%        0
+  ^VIX Level                       15.2        0
+  ^VIX Accel                       4.2%        0
+  Mkt Drawdown                    -2.8%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                 0
 
@@ -161,8 +161,8 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                       0.810        0
-  Score Velocity                  0.019        0
+  V5B Score                       0.836        0
+  Score Velocity                  0.034        0
   TREND                         NEUTRAL        5
   TRADE                         BULLISH        0
   ^VIX Level                       15.8        0
@@ -186,30 +186,30 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-08-19 00:00:00
 ================================================================================
 
-  ACTION:   HOLD
-  TARGET:   61%  (was 61%, change: -0.0pp)
-  ΔDay:     — from previous backtest day
+  ACTION:   SELL
+  TARGET:   58%  (was 61%, change: -3.5pp)
+  ΔDay:     -4% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    61,250  (61%)
-    Cash:      $    38,750  (39%)
-    → No trade needed
+    Invested:  $    57,750  (58%)
+    Cash:      $    42,250  (42%)
+    → SELL $     3,500 of DX-Y.NYB
 
-  ZONE: RISK  |  Danger: 50/100
+  ZONE: RISK  |  Danger: 52/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -0.439       20
-  Score Velocity                 -0.017        0
+  V5B Score                      -0.493       20
+  Score Velocity                 -0.070        2
   TREND                         BEARISH       15
   TRADE                         BEARISH       15
-  ^VIX Level                       15.8        0
-  ^VIX Accel                       8.5%        0
-  Mkt Drawdown                    -2.2%        0
+  ^VIX Level                       15.2        0
+  ^VIX Accel                       4.2%        0
+  Mkt Drawdown                    -2.6%        0
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                50
+  TOTAL DANGER                                52
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
