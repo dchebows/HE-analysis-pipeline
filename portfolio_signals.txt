@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-08-26 13:50:31
+  Generated: 2026-08-27 02:53:42
 ================================================================================
 
 SUMMARY TABLE:
@@ -8,10 +8,10 @@ SUMMARY TABLE:
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 SPX      │ ⏸️ HOLD      │        — │ 100% │    5 │  1.08 │  10.0% │  -9.8% │ BULLISH
-GOLD     │ 🔴 SELL       │     -13% │  66% │   47 │  1.04 │  13.1% │  -8.9% │ BEARISH
+GOLD     │ ⏸️ HOLD      │        — │  66% │   47 │  1.04 │  13.1% │  -8.9% │ BEARISH
 COMPQ    │ ⏸️ HOLD      │        — │  51% │   56 │  1.02 │  11.8% │ -11.6% │ BEARISH
 RUT      │ ⏸️ HOLD      │        — │ 100% │    5 │  0.86 │   8.2% │  -8.4% │ BULLISH
-USD      │ 🟢 BUY        │      +3% │  61% │   50 │ -0.29 │   0.8% │  -7.6% │ BEARISH
+USD      │ ⏸️ HOLD      │        — │  61% │   50 │ -0.29 │   0.8% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -66,14 +66,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-08-26 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   66%  (was 79%, change: -12.5pp)
-  ΔDay:     -13% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   66%  (was 66%, change: -0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    66,500  (66%)
     Cash:      $    33,500  (34%)
-    → SELL $    12,500 of GC=F
+    → No trade needed
 
   ZONE: RISK  |  Danger: 47/100
 
@@ -186,14 +186,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-08-26 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   61%  (was 58%, change: +3.5pp)
-  ΔDay:     +3% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   61%  (was 61%, change: -0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    61,250  (61%)
     Cash:      $    38,750  (39%)
-    → BUY  $     3,500 of DX-Y.NYB
+    → No trade needed
 
   ZONE: RISK  |  Danger: 50/100
 
