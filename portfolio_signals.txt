@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-08-28 06:06:07
+  Generated: 2026-08-28 13:21:03
 ================================================================================
 
 SUMMARY TABLE:
@@ -8,7 +8,7 @@ SUMMARY TABLE:
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 SPX      │ ⏸️ HOLD      │        — │ 100% │    5 │  1.09 │  10.1% │  -9.8% │ BULLISH
-GOLD     │ ⏸️ HOLD      │        — │  66% │   47 │  1.04 │  13.1% │  -8.9% │ BEARISH
+GOLD     │ 🟢 BUY        │     +12% │  79% │   39 │  1.04 │  13.1% │  -8.9% │ BEARISH
 COMPQ    │ ⏸️ HOLD      │        — │  61% │   50 │  1.02 │  11.8% │ -11.6% │ BEARISH
 RUT      │ ⏸️ HOLD      │        — │ 100% │   10 │  0.86 │   8.2% │  -8.4% │ NEUTRAL
 USD      │ ⏸️ HOLD      │        — │  61% │   50 │ -0.29 │   0.8% │  -7.6% │ BEARISH
@@ -63,33 +63,33 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   GOLD FUTURES (GOLD)
-  Data from: 2026-08-27 00:00:00
+  Data from: 2026-08-28 00:00:00
 ================================================================================
 
-  ACTION:   HOLD
-  TARGET:   66%  (was 66%, change: -0.0pp)
-  ΔDay:     — from previous backtest day
+  ACTION:   BUY
+  TARGET:   79%  (was 66%, change: +12.5pp)
+  ΔDay:     +12% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    66,500  (66%)
-    Cash:      $    33,500  (34%)
-    → No trade needed
+    Invested:  $    79,000  (79%)
+    Cash:      $    21,000  (21%)
+    → BUY  $    12,500 of GC=F
 
-  ZONE: RISK  |  Danger: 47/100
+  ZONE: WATCH  |  Danger: 39/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -0.579       20
-  Score Velocity                  0.470        0
+  V5B Score                      -0.647       20
+  Score Velocity                  0.285        0
   TREND                         BEARISH       15
   TRADE                         BULLISH        0
-  ^GVZ Level                       26.8        8
-  ^GVZ Accel                      -1.8%        0
-  Mkt Drawdown                   -12.3%        4
+  ^GVZ Level                        nan        0
+  ^GVZ Accel                       nan%        0
+  Mkt Drawdown                   -12.5%        4
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                47
+  TOTAL DANGER                                39
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
@@ -183,7 +183,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   US DOLLAR INDEX (USD)
-  Data from: 2026-08-27 00:00:00
+  Data from: 2026-08-28 00:00:00
 ================================================================================
 
   ACTION:   HOLD
@@ -201,12 +201,12 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -0.530       20
-  Score Velocity                 -0.018        0
+  V5B Score                      -0.543       20
+  Score Velocity                  0.007        0
   TREND                         BEARISH       15
   TRADE                         BEARISH       15
   ^VIX Level                       14.5        0
-  ^VIX Accel                      -9.4%        0
+  ^VIX Accel                      -4.4%        0
   Mkt Drawdown                    -2.4%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                50
