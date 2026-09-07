@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-09-07 18:03:16
+  Generated: 2026-09-07 23:58:46
 ================================================================================
 
 SUMMARY TABLE:
@@ -8,10 +8,10 @@ SUMMARY TABLE:
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 SPX      │ ⏸️ HOLD      │        — │ 100% │    7 │  1.08 │  10.0% │  -9.8% │ NEUTRAL
-GOLD     │ 🟢 BUY        │     +18% │  40% │   62 │  1.03 │  13.0% │  -8.9% │ BEARISH
+GOLD     │ ⏸️ HOLD      │      +1% │  40% │   62 │  1.03 │  13.0% │  -8.9% │ BEARISH
 COMPQ    │ ⏸️ HOLD      │        — │ 100% │    0 │  1.02 │  11.8% │ -11.6% │ BULLISH
 RUT      │ ⏸️ HOLD      │        — │  92% │   30 │  0.86 │   8.2% │  -8.4% │ BULLISH
-USD      │ 🔴 SELL       │      -4% │  58% │   52 │ -0.28 │   0.8% │  -7.6% │ BEARISH
+USD      │ ⏸️ HOLD      │        — │  58% │   52 │ -0.28 │   0.8% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -66,14 +66,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-09-07 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   40%  (was 22%, change: +18.0pp)
-  ΔDay:     +18% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   40%  (was 40%, change: +0.6pp)
+  ΔDay:     +1% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    39,670  (40%)
-    Cash:      $    60,330  (60%)
-    → BUY  $    18,000 of GC=F
+    Invested:  $    40,250  (40%)
+    Cash:      $    59,750  (60%)
+    → BUY  $       580 of GC=F
 
   ZONE: RISK  |  Danger: 62/100
 
@@ -186,14 +186,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-09-07 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   58%  (was 61%, change: -3.5pp)
-  ΔDay:     -4% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   58%  (was 58%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    57,750  (58%)
     Cash:      $    42,250  (42%)
-    → SELL $     3,500 of DX-Y.NYB
+    → No trade needed
 
   ZONE: RISK  |  Danger: 52/100
 
