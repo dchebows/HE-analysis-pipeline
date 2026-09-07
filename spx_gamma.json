@@ -1,13 +1,13 @@
 {
-  "spx_gamma": 37.48,
+  "spx_gamma": 39.47,
   "spx_spot": 7718.6,
-  "spx_flip": 7675.64,
-  "timestamp": "2026-09-04 23:41:51",
+  "spx_flip": 7690.17,
+  "timestamp": "2026-09-07 23:41:55",
   "symbol": "_SPX",
-  "gamma_throttle": 17.98,
+  "gamma_throttle": 18.5,
   "rv_10day": 8.86,
-  "vix": 14.53,
-  "dist_to_flip_pct": 0.56,
+  "vix": 15.3,
+  "dist_to_flip_pct": 0.37,
   "regime": "POSITIVE GAMMA",
   "regime_description": "Dealers moderately long gamma. Mean-reversion dominant.",
   "risk_level": "LOW-MODERATE",
@@ -15,9 +15,9 @@
   "vol_signal": "SELL VOLATILITY",
   "dir_signal": "NEUTRAL-BULLISH (close to flip)",
   "key_levels": {
-    "gamma_flip": 7676.0,
-    "put_wall": 7445.0,
+    "gamma_flip": 7690.0,
+    "put_wall": 7459.0,
     "call_wall": 7950.0,
-    "danger_zone": 7292.0
+    "danger_zone": 7306.0
   }
 }
