@@ -284,3 +284,5 @@ date,asset,close,trend,trade,v5b_score,danger_score,target_weight,action,data_so
 2026-09-04,RUT,2975.65,BULLISH,BEARISH,0.269,30,0.925,HOLD,hedgeye_actual
 2026-09-04,SPX,7718.6,NEUTRAL,BULLISH,0.5576,7,1.0,HOLD,hedgeye_actual
 2026-09-04,USD,99.16,BEARISH,BEARISH,-0.5424,50,0.6125,HOLD,hedgeye_actual
+2026-09-07,GOLD,4476.6,BEARISH,BEARISH,-1.0113,62,0.3967,BUY,keltner_estimate
+2026-09-07,USD,98.91,BEARISH,BEARISH,-0.579,52,0.5775,SELL,keltner_estimate
