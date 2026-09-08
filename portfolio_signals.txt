@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-09-08 17:00:46
+  Generated: 2026-09-08 23:49:49
 ================================================================================
 
 SUMMARY TABLE:
@@ -8,9 +8,9 @@ SUMMARY TABLE:
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 SPX      │ ⏸️ HOLD      │        — │ 100% │    5 │  1.08 │  10.0% │  -9.8% │ NEUTRAL
-GOLD     │ 🔴 SELL       │     -12% │  28% │   70 │  1.03 │  13.0% │  -8.9% │ BEARISH
+GOLD     │ ⏸️ HOLD      │        — │  28% │   70 │  1.03 │  13.0% │  -8.9% │ BEARISH
 COMPQ    │ ⏸️ HOLD      │        — │ 100% │    0 │  1.02 │  11.7% │ -11.6% │ BULLISH
-RUT      │ 🟢 BUY        │      +7% │ 100% │   25 │  0.86 │   8.2% │  -8.4% │ BULLISH
+RUT      │ ⏸️ HOLD      │        — │ 100% │   25 │  0.86 │   8.2% │  -8.4% │ BULLISH
 USD      │ ⏸️ HOLD      │        — │  58% │   52 │ -0.29 │   0.8% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
@@ -66,14 +66,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-09-08 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   28%  (was 40%, change: -11.9pp)
-  ΔDay:     -12% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   28%  (was 28%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    28,333  (28%)
     Cash:      $    71,667  (72%)
-    → SELL $    11,917 of GC=F
+    → No trade needed
 
   ZONE: DANGER  |  Danger: 70/100
 
@@ -146,14 +146,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-09-08 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   100%  (was 92%, change: +7.5pp)
-  ΔDay:     +7% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   100%  (was 100%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $   100,000  (100%)
     Cash:      $         0  (0%)
-    → BUY  $     7,500 of ^RUT
+    → No trade needed
 
   ZONE: SAFE  |  Danger: 25/100
 
