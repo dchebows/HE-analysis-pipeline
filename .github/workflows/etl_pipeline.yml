@@ -49,9 +49,10 @@ jobs:
 
           git diff --staged --quiet || git commit -m "🔄 ETL update $(date +'%Y-%m-%d %H:%M EST')"
           
-          # Pull any remote changes (from previous queued runs) before pushing
-          git pull --rebase origin main
-          git push
+          # Fetch latest and rebase against origin/main safely
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
           
       - name: Upload logs
         if: always()
