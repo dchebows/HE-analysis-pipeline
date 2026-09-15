@@ -40,21 +40,21 @@ jobs:
           TZ: America/New_York
 
       - name: Commit results
-    run: |
-      git config --local user.email "github-actions[bot]@users.noreply.github.com"
-      git config --local user.name "github-actions[bot]"
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
 
-      # Stage all changes and new files under Risk_Range_Data
-      git add Risk_Range_Data/
+          # Stage all changes and new files under Risk_Range_Data
+          git add Risk_Range_Data/
 
-      # Commit if there are any staged changes
-      git diff --staged --quiet || git commit -m "🔄 ETL update $(date +'%Y-%m-%d %H:%M EST')"
-      
-      # Fetch and rebase cleanly now that working directory is clean
-      git fetch origin main
-      git rebase origin/main
-      git push origin HEAD:main
-          
+          # Commit if there are any staged changes
+          git diff --staged --quiet || git commit -m "🔄 ETL update $(date +'%Y-%m-%d %H:%M EST')"
+
+          # Fetch and rebase cleanly now that working directory is clean
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v4
