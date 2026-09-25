@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-09-24 17:44:42
+  Generated: 2026-09-25 00:17:12
 ================================================================================
 
 SUMMARY TABLE:
@@ -11,7 +11,7 @@ SPX      │ ⏸️ HOLD      │        — │ 100% │    5 │  1.07 │   9
 GOLD     │ ⏸️ HOLD      │        — │  42% │   61 │  1.02 │  12.9% │  -8.7% │ BEARISH
 COMPQ    │ ⏸️ HOLD      │        — │ 100% │    5 │  1.02 │  11.8% │ -11.6% │ NEUTRAL
 RUT      │ ⏸️ HOLD      │        — │  60% │   51 │  0.85 │   8.1% │  -8.4% │ BEARISH
-USD      │ 🟡 LIGHT BUY  │      +1% │  80% │   38 │ -0.27 │   0.8% │  -7.6% │ BEARISH
+USD      │ ⏸️ HOLD      │        — │  80% │   38 │ -0.27 │   0.8% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -186,14 +186,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-09-24 00:00:00
 ================================================================================
 
-  ACTION:   LIGHT BUY
-  TARGET:   80%  (was 79%, change: +1.2pp)
-  ΔDay:     +1% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   80%  (was 80%, change: -0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    80,500  (80%)
     Cash:      $    19,500  (20%)
-    → BUY  $     1,250 of DX-Y.NYB
+    → No trade needed
 
   ZONE: WATCH  |  Danger: 38/100
 
