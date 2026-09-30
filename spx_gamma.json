@@ -1,13 +1,13 @@
 {
-  "spx_gamma": -0.34,
-  "spx_spot": 7683.69,
-  "spx_flip": 7684.05,
-  "timestamp": "2026-09-29 01:26:39",
+  "spx_gamma": -11.68,
+  "spx_spot": 7670.84,
+  "spx_flip": 7682.63,
+  "timestamp": "2026-09-30 01:02:14",
   "symbol": "_SPX",
-  "gamma_throttle": -0.27,
-  "rv_10day": 12.15,
-  "vix": 16.07,
-  "dist_to_flip_pct": -0.0,
+  "gamma_throttle": -9.22,
+  "rv_10day": 11.88,
+  "vix": 16.04,
+  "dist_to_flip_pct": -0.15,
   "regime": "TRANSITION ZONE",
   "regime_description": "Gamma near neutral. Regime could flip. Elevated uncertainty.",
   "risk_level": "ELEVATED",
@@ -15,9 +15,9 @@
   "vol_signal": "CAUTION - REDUCE EXPOSURE",
   "dir_signal": "NO CLEAR DIRECTION",
   "key_levels": {
-    "gamma_flip": 7684.0,
-    "put_wall": 7454.0,
-    "call_wall": 7914.0,
-    "danger_zone": 7300.0
+    "gamma_flip": 7683.0,
+    "put_wall": 7452.0,
+    "call_wall": 7901.0,
+    "danger_zone": 7298.0
   }
 }
