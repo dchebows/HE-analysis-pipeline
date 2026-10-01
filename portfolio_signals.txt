@@ -1,6 +1,6 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-10-01 12:38:07
+  Generated: 2026-10-01 18:41:54
 ================================================================================
 
 SUMMARY TABLE:
@@ -8,7 +8,7 @@ SUMMARY TABLE:
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 SPX      │ ⏸️ HOLD      │        — │ 100% │    0 │  1.06 │   9.8% │  -9.8% │ BULLISH
-GOLD     │ 🟢 BUY        │     +11% │  40% │   62 │  1.02 │  12.8% │  -8.7% │ BEARISH
+GOLD     │ ⏸️ HOLD      │        — │  40% │   62 │  1.02 │  12.8% │  -8.7% │ BEARISH
 COMPQ    │ ⏸️ HOLD      │        — │ 100% │    5 │  1.02 │  11.8% │ -11.6% │ NEUTRAL
 RUT      │ ⏸️ HOLD      │        — │  37% │   64 │  0.85 │   8.0% │  -8.4% │ BEARISH
 USD      │ ⏸️ HOLD      │        — │  88% │   33 │ -0.26 │   0.9% │  -7.6% │ BEARISH
@@ -66,14 +66,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-10-01 00:00:00
 ================================================================================
 
-  ACTION:   BUY
-  TARGET:   40%  (was 30%, change: +10.6pp)
-  ΔDay:     +11% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   40%  (was 40%, change: -0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    40,250  (40%)
     Cash:      $    59,750  (60%)
-    → BUY  $    10,580 of GC=F
+    → No trade needed
 
   ZONE: RISK  |  Danger: 62/100
 
