@@ -1,24 +1,24 @@
 {
-  "as_of": "2026-10-01",
-  "generated": "2026-10-02 02:18 UTC",
+  "as_of": "2026-10-02",
+  "generated": "2026-10-03 02:04 UTC",
   "risk": {
-    "score": 79,
+    "score": 82,
     "regime": "HIGH STRESS",
     "components": {
       "Rate Vol (MOVE)": {
-        "pct": 93.50961538461539,
+        "pct": 93.04556354916068,
         "weight": 0.25
       },
       "HY Credit": {
-        "pct": 77.75229357798165,
+        "pct": 89.47368421052632,
         "weight": 0.3
       },
       "IG Credit (BBB)": {
-        "pct": 65.82568807339449,
+        "pct": 73.4553775743707,
         "weight": 0.2
       },
       "Yield Curve (2-10)": {
-        "pct": 75.48076923076923,
+        "pct": 68.58513189448442,
         "weight": 0.25
       }
     }
@@ -26,52 +26,52 @@
   "panels": {
     "MOVE": {
       "metrics": {
-        "last": 108.12519836425781,
-        "d1": 110.44999694824219,
-        "w1": 104.58000183105469,
-        "m1": 77.87999725341797,
-        "last_dt": "2026-10-01",
+        "last": 107.28679656982422,
+        "d1": 108.12999725341797,
+        "w1": 96.0,
+        "m1": 79.70999908447266,
+        "last_dt": "2026-10-02",
         "dod": [
-          -232.4798583984375,
-          -2.104842596848411
+          -84.320068359375,
+          -0.7798027420805265
         ],
         "wow": [
-          354.5196533203125,
-          3.3899373409175038
+          1128.6796569824219,
+          11.75707976023357
         ],
         "mom": [
-          3024.5201110839844,
-          38.83564737736616
+          2757.6797485351562,
+          34.59640923609477
         ]
       },
       "trend": {
         "trend": "Rising",
         "change": true,
-        "score": 24,
+        "score": 22,
         "strength": "Weak",
-        "z": 2.9365630459717824
+        "z": 2.6381898665968
       },
       "kind": "vol",
       "name": "MOVE"
     },
     "HY_OAS": {
       "metrics": {
-        "last": 3.12,
-        "d1": 3.08,
-        "w1": 2.73,
-        "m1": 2.63,
-        "last_dt": "2026-09-30",
+        "last": 3.24,
+        "d1": 3.12,
+        "w1": 2.8,
+        "m1": 2.65,
+        "last_dt": "2026-10-01",
         "dod": [
-          4.0000000000000036,
-          1.2987012987013102
+          12.00000000000001,
+          3.8461538461538547
         ],
         "wow": [
-          39.000000000000014,
-          14.28571428571428
+          44.00000000000004,
+          15.714285714285726
         ],
         "mom": [
-          49.00000000000002,
-          18.63117870722435
+          59.00000000000003,
+          22.264150943396245
         ]
       },
       "trend": {
@@ -79,59 +79,59 @@
         "change": true,
         "score": 65,
         "strength": "Moderate",
-        "z": 3.863097460515564
+        "z": 4.170394549511396
       },
       "kind": "credit",
       "name": "HY OAS"
     },
     "BBB_OAS": {
       "metrics": {
-        "last": 1.03,
-        "d1": 1.02,
-        "w1": 0.95,
-        "m1": 0.98,
-        "last_dt": "2026-09-30",
+        "last": 1.06,
+        "d1": 1.03,
+        "w1": 0.97,
+        "m1": 0.99,
+        "last_dt": "2026-10-01",
         "dod": [
-          1.0000000000000009,
-          0.9803921568627416
+          3.0000000000000027,
+          2.9126213592232997
         ],
         "wow": [
-          8.000000000000007,
-          8.421052631578952
+          9.000000000000007,
+          9.278350515463929
         ],
         "mom": [
-          5.000000000000004,
-          5.102040816326525
+          7.000000000000006,
+          7.070707070707072
         ]
       },
       "trend": {
         "trend": "Rising",
         "change": true,
-        "score": 57,
+        "score": 60,
         "strength": "Moderate",
-        "z": 2.62536156833526
+        "z": 3.7185040980590913
       },
       "kind": "credit",
       "name": "BBB OAS"
     },
     "CURVE": {
       "metrics": {
-        "last": 0.41000000000000014,
-        "d1": 0.3700000000000001,
-        "w1": 0.2600000000000007,
-        "m1": 0.41000000000000014,
-        "last_dt": "2026-09-30",
+        "last": 0.45999999999999996,
+        "d1": 0.41000000000000014,
+        "w1": 0.3099999999999996,
+        "m1": 0.40000000000000036,
+        "last_dt": "2026-10-01",
         "dod": [
-          4.0000000000000036,
-          10.81081081081081
+          4.999999999999982,
+          12.195121951219456
         ],
         "wow": [
-          14.999999999999947,
-          57.69230769230733
+          15.000000000000036,
+          48.38709677419373
         ],
         "mom": [
-          0.0,
-          0.0
+          5.999999999999961,
+          14.99999999999988
         ]
       },
       "trend": {
@@ -139,68 +139,68 @@
         "change": true,
         "score": 35,
         "strength": "Weak",
-        "z": 0.1705679262815652
+        "z": 0.8173119314099444
       },
       "kind": "curve",
       "name": "2-10 Spread",
-      "regime": "Bear Flattener",
-      "interp": "Front-end selling off faster",
-      "spread_level": 0.41000000000000014,
+      "regime": "Bear Steepener",
+      "interp": "Long-end selling off faster",
+      "spread_level": 0.45999999999999996,
       "m2": {
-        "last": 4.88,
-        "d1": 4.89,
-        "w1": 4.85,
-        "m1": 4.34,
-        "last_dt": "2026-09-30",
+        "last": 4.78,
+        "d1": 4.88,
+        "w1": 4.87,
+        "m1": 4.39,
+        "last_dt": "2026-10-01",
         "dod": [
-          -0.9999999999999787,
-          -0.2044989775051076
+          -9.999999999999964,
+          -2.049180327868849
         ],
         "wow": [
-          3.000000000000025,
-          0.6185567010309256
+          -8.999999999999986,
+          -1.848049281314168
         ],
         "mom": [
-          54.0,
-          12.442396313364057
+          39.00000000000006,
+          8.883826879271094
         ]
       },
       "m10": {
-        "last": 5.29,
-        "d1": 5.26,
-        "w1": 5.11,
-        "m1": 4.75,
-        "last_dt": "2026-09-30",
+        "last": 5.24,
+        "d1": 5.29,
+        "w1": 5.18,
+        "m1": 4.79,
+        "last_dt": "2026-10-01",
         "dod": [
-          3.000000000000025,
-          0.5703422053231932
+          -4.999999999999982,
+          -0.9451795841209809
         ],
         "wow": [
-          17.99999999999997,
-          3.5225048923678948
+          6.00000000000005,
+          1.1583011583011782
         ],
         "mom": [
-          54.0,
-          11.368421052631582
+          45.000000000000014,
+          9.394572025052206
         ]
       }
     }
   },
   "highlights": {
     "risk_off": [
-      "Bond volatility (MOVE) +3% WoW \u2014 rate markets jumpier. \u2192 Choppier Treasuries; hedging costs rising.",
-      "HY OAS +49 bps MoM \u2014 investors demanding MORE yield for junk-rated borrowers (spreads widening = rising credit fear). \u2192 Watch equity weakness; refinancing pricier.",
-      "BBB OAS +5 bps MoM \u2014 investors demanding MORE yield for lowest investment-grade borrowers (spreads widening = rising credit fear). \u2192 Watch equity weakness; refinancing pricier."
+      "Bond volatility (MOVE) +12% WoW \u2014 rate markets jumpier. \u2192 Choppier Treasuries; hedging costs rising.",
+      "HY OAS +59 bps MoM \u2014 investors demanding MORE yield for junk-rated borrowers (spreads widening = rising credit fear). \u2192 Watch equity weakness; refinancing pricier.",
+      "BBB OAS +7 bps MoM \u2014 investors demanding MORE yield for lowest investment-grade borrowers (spreads widening = rising credit fear). \u2192 Watch equity weakness; refinancing pricier."
     ],
     "risk_on": [],
     "curve": [
-      "2-10 spread positive at +41 bps \u2014 normal upward slope. \u2192 Healthy baseline.",
-      "Regime: Bear Flattener \u2014 short rates rising faster \u2014 Fed staying higher. \u2192 Squeezes bank margins."
+      "2-10 spread positive at +46 bps \u2014 normal upward slope. \u2192 Healthy baseline.",
+      "Regime: Bear Steepener \u2014 long rates rising faster than short \u2014 growth/inflation/issuance. \u2192 Pressures long bonds & REITs/utilities."
     ],
     "trend": [
-      "MOVE: possible reversal \u2014 volatility turning UP [early/low-conviction, 24/100]",
+      "MOVE: possible reversal \u2014 volatility turning UP [early/low-conviction, 22/100]",
       "HY OAS: possible reversal \u2014 spreads turning WIDER (credit risk building) [moderate, 65/100]",
-      "BBB OAS: possible reversal \u2014 spreads turning WIDER (credit risk building) [moderate, 57/100]",
+      "BBB OAS: possible reversal \u2014 spreads turning WIDER (credit risk building) [moderate, 60/100]",
       "2-10 Spread: possible reversal \u2014 curve steepening [early/low-conviction, 35/100]"
     ]
   }
