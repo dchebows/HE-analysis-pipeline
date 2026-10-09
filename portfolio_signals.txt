@@ -1,17 +1,17 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-10-09 02:07:18
+  Generated: 2026-10-09 10:31:42
 ================================================================================
 
 SUMMARY TABLE:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-SPX      │ ⏸️ HOLD      │        — │ 100% │    5 │  1.09 │  10.1% │  -9.8% │ NEUTRAL
-GOLD     │ ⏸️ HOLD      │        — │  40% │   62 │  1.01 │  12.8% │  -8.7% │ BEARISH
-COMPQ    │ ⏸️ HOLD      │        — │ 100% │    5 │  1.03 │  11.8% │ -11.6% │ NEUTRAL
-RUT      │ ⏸️ HOLD      │        — │  60% │   51 │  0.85 │   8.1% │  -8.4% │ BEARISH
-USD      │ ⏸️ HOLD      │        — │  88% │   33 │ -0.26 │   0.9% │  -7.6% │ BEARISH
+SPX      │ ⏸️ HOLD      │        — │ 100% │    5 │  1.08 │  10.0% │  -9.8% │ NEUTRAL
+GOLD     │ ⏸️ HOLD      │        — │  40% │   62 │  1.01 │  12.7% │  -8.7% │ BEARISH
+COMPQ    │ ⏸️ HOLD      │        — │ 100% │    5 │  1.02 │  11.8% │ -11.6% │ NEUTRAL
+RUT      │ 🔴 SELL       │      -5% │  54% │   54 │  0.85 │   8.0% │  -8.4% │ BEARISH
+USD      │ ⏸️ HOLD      │        — │  88% │   33 │ -0.25 │   0.9% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -23,87 +23,7 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   S&P 500 (SPX)
-  Data from: 2026-10-06 00:00:00
-================================================================================
-
-  ACTION:   HOLD
-  TARGET:   100%  (was 100%, change: +0.0pp)
-  ΔDay:     — from previous backtest day
-
-  On $100,000 portfolio:
-    Invested:  $   100,000  (100%)
-    Cash:      $         0  (0%)
-    → No trade needed
-
-  ZONE: SAFE  |  Danger: 5/100
-
-  SIGNAL BREAKDOWN:
-  ────────────────────────────────────────────────────
-  Signal                          Value   Points
-  ────────────────────────────────────────────────────
-  V5B Score                       0.752        0
-  Score Velocity                  0.108        0
-  TREND                         NEUTRAL        5
-  TRADE                         BULLISH        0
-  ^VIX Level                       15.0        0
-  ^VIX Accel                      -6.4%        0
-  Mkt Drawdown                     0.0%        0
-  ────────────────────────────────────────────────────
-  TOTAL DANGER                                 5
-
-  BACKTEST CONTEXT:
-  ────────────────────────────────────────────────────
-  Metric                         D1
-  ────────────────────────────────────────────────────
-  Sharpe                       1.09
-  CAGR                        10.1%
-  Max Drawdown                -9.8%
-  Avg Exposure                  52%
-
-
-================================================================================
-  GOLD FUTURES (GOLD)
-  Data from: 2026-10-07 00:00:00
-================================================================================
-
-  ACTION:   HOLD
-  TARGET:   40%  (was 40%, change: -0.0pp)
-  ΔDay:     — from previous backtest day
-
-  On $100,000 portfolio:
-    Invested:  $    40,250  (40%)
-    Cash:      $    59,750  (60%)
-    → No trade needed
-
-  ZONE: RISK  |  Danger: 62/100
-
-  SIGNAL BREAKDOWN:
-  ────────────────────────────────────────────────────
-  Signal                          Value   Points
-  ────────────────────────────────────────────────────
-  V5B Score                      -1.375       20
-  Score Velocity                 -0.072        2
-  TREND                         BEARISH       15
-  TRADE                         BEARISH       15
-  ^GVZ Level                        nan        0
-  ^GVZ Accel                       nan%        0
-  Mkt Drawdown                   -22.0%       10
-  ────────────────────────────────────────────────────
-  TOTAL DANGER                                62
-
-  BACKTEST CONTEXT:
-  ────────────────────────────────────────────────────
-  Metric                         D1
-  ────────────────────────────────────────────────────
-  Sharpe                       1.01
-  CAGR                        12.8%
-  Max Drawdown                -8.7%
-  Avg Exposure                  51%
-
-
-================================================================================
-  NASDAQ COMPOSITE (COMPQ)
-  Data from: 2026-10-06 00:00:00
+  Data from: 2026-10-08 00:00:00
 ================================================================================
 
   ACTION:   HOLD
@@ -122,12 +42,12 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Signal                          Value   Points
   ────────────────────────────────────────────────────
   V5B Score                       0.820        0
-  Score Velocity                  0.108        0
+  Score Velocity                  0.236        0
   TREND                         NEUTRAL        5
   TRADE                         BULLISH        0
-  ^VIX Level                       15.0        0
-  ^VIX Accel                      -6.4%        0
-  Mkt Drawdown                     0.0%        0
+  ^VIX Level                       15.4        0
+  ^VIX Accel                      -6.0%        0
+  Mkt Drawdown                    -0.7%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                 5
 
@@ -135,7 +55,87 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Metric                         D1
   ────────────────────────────────────────────────────
-  Sharpe                       1.03
+  Sharpe                       1.08
+  CAGR                        10.0%
+  Max Drawdown                -9.8%
+  Avg Exposure                  52%
+
+
+================================================================================
+  GOLD FUTURES (GOLD)
+  Data from: 2026-10-09 00:00:00
+================================================================================
+
+  ACTION:   HOLD
+  TARGET:   40%  (was 40%, change: -0.0pp)
+  ΔDay:     — from previous backtest day
+
+  On $100,000 portfolio:
+    Invested:  $    40,250  (40%)
+    Cash:      $    59,750  (60%)
+    → No trade needed
+
+  ZONE: RISK  |  Danger: 62/100
+
+  SIGNAL BREAKDOWN:
+  ────────────────────────────────────────────────────
+  Signal                          Value   Points
+  ────────────────────────────────────────────────────
+  V5B Score                      -1.391       20
+  Score Velocity                 -0.057        2
+  TREND                         BEARISH       15
+  TRADE                         BEARISH       15
+  ^GVZ Level                        nan        0
+  ^GVZ Accel                       nan%        0
+  Mkt Drawdown                   -20.8%       10
+  ────────────────────────────────────────────────────
+  TOTAL DANGER                                62
+
+  BACKTEST CONTEXT:
+  ────────────────────────────────────────────────────
+  Metric                         D1
+  ────────────────────────────────────────────────────
+  Sharpe                       1.01
+  CAGR                        12.7%
+  Max Drawdown                -8.7%
+  Avg Exposure                  51%
+
+
+================================================================================
+  NASDAQ COMPOSITE (COMPQ)
+  Data from: 2026-10-08 00:00:00
+================================================================================
+
+  ACTION:   HOLD
+  TARGET:   100%  (was 100%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
+
+  On $100,000 portfolio:
+    Invested:  $   100,000  (100%)
+    Cash:      $         0  (0%)
+    → No trade needed
+
+  ZONE: SAFE  |  Danger: 5/100
+
+  SIGNAL BREAKDOWN:
+  ────────────────────────────────────────────────────
+  Signal                          Value   Points
+  ────────────────────────────────────────────────────
+  V5B Score                       0.780        0
+  Score Velocity                  0.085        0
+  TREND                         NEUTRAL        5
+  TRADE                         BULLISH        0
+  ^VIX Level                       15.4        0
+  ^VIX Accel                      -6.0%        0
+  Mkt Drawdown                    -1.5%        0
+  ────────────────────────────────────────────────────
+  TOTAL DANGER                                 5
+
+  BACKTEST CONTEXT:
+  ────────────────────────────────────────────────────
+  Metric                         D1
+  ────────────────────────────────────────────────────
+  Sharpe                       1.02
   CAGR                        11.8%
   Max Drawdown               -11.6%
   Avg Exposure                  50%
@@ -143,47 +143,47 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
 
 ================================================================================
   RUSSELL 2000 (RUT)
-  Data from: 2026-10-06 00:00:00
+  Data from: 2026-10-08 00:00:00
 ================================================================================
 
-  ACTION:   HOLD
-  TARGET:   60%  (was 60%, change: +0.0pp)
-  ΔDay:     — from previous backtest day
+  ACTION:   SELL
+  TARGET:   54%  (was 60%, change: -5.2pp)
+  ΔDay:     -5% from previous backtest day
 
   On $100,000 portfolio:
-    Invested:  $    59,500  (60%)
-    Cash:      $    40,500  (40%)
-    → No trade needed
+    Invested:  $    54,250  (54%)
+    Cash:      $    45,750  (46%)
+    → SELL $     5,250 of ^RUT
 
-  ZONE: RISK  |  Danger: 51/100
+  ZONE: RISK  |  Danger: 54/100
 
   SIGNAL BREAKDOWN:
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -0.338       20
-  Score Velocity                  0.055        0
+  V5B Score                      -0.407       20
+  Score Velocity                  0.062        0
   TREND                         BEARISH       15
   TRADE                         BEARISH       15
-  ^VIX Level                       15.0        0
-  ^VIX Accel                      -6.4%        0
-  Mkt Drawdown                    -7.8%        1
+  ^VIX Level                       15.4        0
+  ^VIX Accel                      -6.0%        0
+  Mkt Drawdown                    -8.9%        4
   ────────────────────────────────────────────────────
-  TOTAL DANGER                                51
+  TOTAL DANGER                                54
 
   BACKTEST CONTEXT:
   ────────────────────────────────────────────────────
   Metric                         D1
   ────────────────────────────────────────────────────
   Sharpe                       0.85
-  CAGR                         8.1%
+  CAGR                         8.0%
   Max Drawdown                -8.4%
   Avg Exposure                  31%
 
 
 ================================================================================
   US DOLLAR INDEX (USD)
-  Data from: 2026-10-07 00:00:00
+  Data from: 2026-10-09 00:00:00
 ================================================================================
 
   ACTION:   HOLD
@@ -201,13 +201,13 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Signal                          Value   Points
   ────────────────────────────────────────────────────
-  V5B Score                      -0.293       15
-  Score Velocity                 -0.022        0
+  V5B Score                      -0.291       15
+  Score Velocity                 -0.025        0
   TREND                         BEARISH       15
   TRADE                         NEUTRAL        3
-  ^VIX Level                       15.9        0
-  ^VIX Accel                      -2.5%        0
-  Mkt Drawdown                     0.0%        0
+  ^VIX Level                       15.2        0
+  ^VIX Accel                      -0.5%        0
+  Mkt Drawdown                    -0.1%        0
   ────────────────────────────────────────────────────
   TOTAL DANGER                                33
 
@@ -215,10 +215,10 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   ────────────────────────────────────────────────────
   Metric                         D1
   ────────────────────────────────────────────────────
-  Sharpe                      -0.26
+  Sharpe                      -0.25
   CAGR                         0.9%
   Max Drawdown                -7.6%
-  Avg Exposure                  49%
+  Avg Exposure                  48%
 
 
 ================================================================================
