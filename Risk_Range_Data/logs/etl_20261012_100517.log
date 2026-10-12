@@ -1,0 +1,203 @@
+10:05:17 | INFO  | ======================================================================
+10:05:17 | INFO  | ETL PIPELINE START
+10:05:17 | INFO  | ======================================================================
+10:05:17 | INFO  | 
+📋 PIPELINE PLAN:
+10:05:17 | INFO  |    HTML Files: 1 new / 50 total
+10:05:17 | INFO  |    Master needs propagation: False
+10:05:17 | INFO  | 
+======================================================================
+10:05:17 | INFO  | STAGE 1: HTML PARSING
+10:05:17 | INFO  | ======================================================================
+10:05:17 | INFO  | 
+Processing: OCTOBER 12, 2026.html
+10:05:17 | INFO  |   ✅ Saved: RR_10-12-2026.csv (37 rows)
+10:05:17 | INFO  | 
+✅ HTML parsing complete: 1 success, 0 errors
+10:05:17 | INFO  | 
+======================================================================
+10:05:17 | INFO  | STAGE 2: MASTER AGGREGATION
+10:05:17 | INFO  | ======================================================================
+10:05:17 | INFO  | ✅ Backed up master to: risk_ranges_master_backup_20261012_100517.csv
+10:05:17 | INFO  | Loaded existing master: 76,241 rows
+10:05:17 | INFO  |   Loaded: RR_10-12-2026.csv (37 rows)
+10:05:17 | INFO  | Combined new data: 37 rows
+10:05:18 | INFO  | ✅ Saved master CSV: 76,278 total rows
+10:05:18 | INFO  |    Date range: 2017-01-03 to 2026-10-12
+10:05:18 | INFO  | 
+======================================================================
+10:05:18 | INFO  | STAGE 3: TICKER SUBSETTING
+10:05:18 | INFO  | ======================================================================
+10:05:18 | INFO  | Loaded master: 76,278 rows
+10:05:18 | INFO  | Creating subsets for 9 tickers
+10:05:18 | INFO  |   ✅ UST10Y: 2429 rows | 2017-01-03 to 2026-10-12
+10:05:18 | INFO  |   ✅ SPX: 2429 rows | 2017-01-03 to 2026-10-12
+10:05:18 | INFO  |   ✅ COMPQ: 2429 rows | 2017-01-03 to 2026-10-12
+10:05:18 | INFO  |   ✅ RUT: 2428 rows | 2017-01-03 to 2026-10-12
+10:05:18 | INFO  |   ✅ VIX: 2429 rows | 2017-01-03 to 2026-10-12
+10:05:18 | INFO  |   ✅ USD: 2429 rows | 2017-01-03 to 2026-10-12
+10:05:18 | INFO  |   ✅ GOLD: 2427 rows | 2017-01-03 to 2026-10-12
+10:05:18 | INFO  |   ✅ AAPL: 2427 rows | 2017-01-03 to 2026-10-12
+10:05:18 | INFO  |   ✅ BITCOIN: 798 rows | 2023-08-01 to 2026-10-12
+10:05:18 | INFO  | ✅ Ticker subsetting complete
+10:05:18 | INFO  | 
+======================================================================
+10:05:18 | INFO  | STAGE 4: ENRICHMENT
+10:05:18 | INFO  | ======================================================================
+10:05:18 | INFO  | Enriching 9 tickers
+10:05:18 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:18 | INFO  | Enriching: SPX
+10:05:18 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:18 | INFO  |   Loaded 2429 rows from SPX.csv
+10:05:18 | INFO  |   Yahoo ticker: ^GSPC
+10:05:18 | INFO  |   OHLC prefix: GSPC
+10:05:18 | INFO  |   Vol prefix: VIX
+10:05:18 | INFO  |   Downloading ^GSPC OHLC...
+10:05:18 | INFO  |     Downloaded 2457 days (2017-01-03 to 2026-10-12)
+10:05:18 | INFO  |   Downloading ^VIX volatility...
+10:05:19 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:19 | WARNING |   ⚠️  28 trading days missing from original CSV
+10:05:19 | INFO  |   ✓ Enrichment complete: 2457 rows
+10:05:19 | INFO  |   ✅ Saved: SPX_enriched.csv (2457 rows)
+10:05:19 | WARNING |   ⚠️  28 rows need manual update
+10:05:19 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:19 | INFO  | Enriching: GOLD
+10:05:19 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:19 | INFO  |   Loaded 2427 rows from GOLD.csv
+10:05:19 | INFO  |   Yahoo ticker: GC=F
+10:05:19 | INFO  |   OHLC prefix: GC
+10:05:19 | INFO  |   Vol prefix: GVZ
+10:05:19 | INFO  |   Downloading GC=F OHLC...
+10:05:19 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:19 | INFO  |   Downloading ^GVZ volatility...
+10:05:19 | INFO  |     Downloaded 2456 days (2017-01-03 to 2026-10-09)
+10:05:19 | WARNING |   ⚠️  33 trading days missing from original CSV
+10:05:19 | INFO  |   ✓ Enrichment complete: 2459 rows
+10:05:19 | INFO  |   ✅ Saved: GOLD_enriched.csv (2459 rows)
+10:05:19 | WARNING |   ⚠️  33 rows need manual update
+10:05:19 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:19 | INFO  | Enriching: UST10Y
+10:05:19 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:19 | INFO  |   Loaded 2429 rows from UST10Y.csv
+10:05:19 | INFO  |   Yahoo ticker: ^TNX
+10:05:19 | INFO  |   OHLC prefix: TNX
+10:05:19 | INFO  |   Vol prefix: VIX
+10:05:19 | INFO  |   Downloading ^TNX OHLC...
+10:05:20 | INFO  |     Downloaded 2457 days (2017-01-03 to 2026-10-12)
+10:05:20 | INFO  |   Downloading ^VIX volatility...
+10:05:20 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:20 | WARNING |   ⚠️  28 trading days missing from original CSV
+10:05:20 | INFO  |   ✓ Enrichment complete: 2457 rows
+10:05:20 | INFO  |   ✅ Saved: UST10Y_enriched.csv (2457 rows)
+10:05:20 | WARNING |   ⚠️  28 rows need manual update
+10:05:20 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:20 | INFO  | Enriching: COMPQ
+10:05:20 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:20 | INFO  |   Loaded 2429 rows from COMPQ.csv
+10:05:20 | INFO  |   Yahoo ticker: ^IXIC
+10:05:20 | INFO  |   OHLC prefix: IXIC
+10:05:20 | INFO  |   Vol prefix: VIX
+10:05:20 | INFO  |   Downloading ^IXIC OHLC...
+10:05:20 | INFO  |     Downloaded 2457 days (2017-01-03 to 2026-10-12)
+10:05:20 | INFO  |   Downloading ^VIX volatility...
+10:05:20 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:20 | WARNING |   ⚠️  28 trading days missing from original CSV
+10:05:20 | INFO  |   ✓ Enrichment complete: 2457 rows
+10:05:20 | INFO  |   ✅ Saved: COMPQ_enriched.csv (2457 rows)
+10:05:20 | WARNING |   ⚠️  28 rows need manual update
+10:05:20 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:20 | INFO  | Enriching: RUT
+10:05:20 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:20 | INFO  |   Loaded 2428 rows from RUT.csv
+10:05:20 | INFO  |   Yahoo ticker: ^RUT
+10:05:20 | INFO  |   OHLC prefix: RUT
+10:05:20 | INFO  |   Vol prefix: VIX
+10:05:20 | INFO  |   Downloading ^RUT OHLC...
+10:05:20 | INFO  |     Downloaded 2457 days (2017-01-03 to 2026-10-12)
+10:05:20 | INFO  |   Downloading ^VIX volatility...
+10:05:21 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:21 | WARNING |   ⚠️  29 trading days missing from original CSV
+10:05:21 | INFO  |   ✓ Enrichment complete: 2457 rows
+10:05:21 | INFO  |   ✅ Saved: RUT_enriched.csv (2457 rows)
+10:05:21 | WARNING |   ⚠️  29 rows need manual update
+10:05:21 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:21 | INFO  | Enriching: VIX
+10:05:21 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:21 | INFO  |   Loaded 2429 rows from VIX.csv
+10:05:21 | INFO  |   Yahoo ticker: ^VIX
+10:05:21 | INFO  |   OHLC prefix: VIX
+10:05:21 | INFO  |   Vol prefix: VIXI
+10:05:21 | INFO  |   Downloading ^VIX OHLC...
+10:05:21 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:21 | INFO  |   Downloading ^VIX volatility...
+10:05:21 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:21 | WARNING |   ⚠️  30 trading days missing from original CSV
+10:05:21 | INFO  |   ✓ Enrichment complete: 2459 rows
+10:05:21 | INFO  |   ✅ Saved: VIX_enriched.csv (2459 rows)
+10:05:21 | WARNING |   ⚠️  30 rows need manual update
+10:05:21 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:21 | INFO  | Enriching: USD
+10:05:21 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:21 | INFO  |   Loaded 2429 rows from USD.csv
+10:05:21 | INFO  |   Yahoo ticker: DX-Y.NYB
+10:05:21 | INFO  |   OHLC prefix: DX
+10:05:21 | INFO  |   Vol prefix: VIX
+10:05:21 | INFO  |   Downloading DX-Y.NYB OHLC...
+10:05:21 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:21 | INFO  |   Downloading ^VIX volatility...
+10:05:21 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:21 | WARNING |   ⚠️  30 trading days missing from original CSV
+10:05:21 | INFO  |   ✓ Enrichment complete: 2459 rows
+10:05:21 | INFO  |   ✅ Saved: USD_enriched.csv (2459 rows)
+10:05:21 | WARNING |   ⚠️  30 rows need manual update
+10:05:21 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:21 | INFO  | Enriching: AAPL
+10:05:21 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:21 | INFO  |   Loaded 2427 rows from AAPL.csv
+10:05:21 | INFO  |   Yahoo ticker: AAPL
+10:05:21 | INFO  |   OHLC prefix: AAPL
+10:05:21 | INFO  |   Vol prefix: VIX
+10:05:21 | INFO  |   Downloading AAPL OHLC...
+10:05:22 | INFO  |     Downloaded 2457 days (2017-01-03 to 2026-10-12)
+10:05:22 | INFO  |   Downloading ^VIX volatility...
+10:05:22 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:22 | WARNING |   ⚠️  30 trading days missing from original CSV
+10:05:22 | INFO  |   ✓ Enrichment complete: 2457 rows
+10:05:22 | INFO  |   ✅ Saved: AAPL_enriched.csv (2457 rows)
+10:05:22 | WARNING |   ⚠️  30 rows need manual update
+10:05:22 | INFO  | 
+──────────────────────────────────────────────────────────────────────
+10:05:22 | INFO  | Enriching: BITCOIN
+10:05:22 | INFO  | ──────────────────────────────────────────────────────────────────────
+10:05:22 | INFO  |   Loaded 798 rows from BITCOIN.csv
+10:05:22 | INFO  |   ⚠️  Row count changed (3568 → 798) - re-enriching
+10:05:22 | INFO  |   Yahoo ticker: BTC-USD
+10:05:22 | INFO  |   OHLC prefix: BTC
+10:05:22 | INFO  |   Vol prefix: VIX
+10:05:22 | INFO  |   Downloading BTC-USD OHLC...
+10:05:22 | INFO  |     Downloaded 3571 days (2017-01-02 to 2026-10-12)
+10:05:22 | INFO  |   Downloading ^VIX volatility...
+10:05:22 | INFO  |     Downloaded 2459 days (2017-01-03 to 2026-10-12)
+10:05:22 | WARNING |   ⚠️  2773 trading days missing from original CSV
+10:05:22 | INFO  |   ✓ Enrichment complete: 3571 rows
+10:05:22 | INFO  |   ✅ Saved: BITCOIN_enriched.csv (3571 rows)
+10:05:22 | WARNING |   ⚠️  2773 rows need manual update
+10:05:22 | INFO  | 
+======================================================================
+10:05:22 | INFO  | ✅ Enrichment complete:
+10:05:22 | INFO  |    Success: 9
+10:05:22 | INFO  |    Skipped (up-to-date): 0
+10:05:22 | INFO  |    Errors:  0
+10:05:22 | INFO  | ======================================================================
+10:05:22 | INFO  | 
+======================================================================
+10:05:22 | INFO  | ✅ PIPELINE COMPLETE
+10:05:22 | INFO  | ======================================================================
