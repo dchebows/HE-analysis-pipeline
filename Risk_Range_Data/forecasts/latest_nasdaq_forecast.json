@@ -2,26 +2,26 @@
   "ticker": "^IXIC",
   "forecast_date": "2026-10-13",
   "based_on_date": "2026-10-12",
-  "based_on_close": 27245.90234375,
+  "based_on_close": 27245.900390625,
   "vix": 20.84000015258789,
   "regime": "chop",
-  "forecast_high": 27508.527657817023,
-  "forecast_low": 26655.54350348651,
-  "high_pct": 0.9639075658188562,
-  "low_pct": -2.166780284298099,
-  "range_width": 852.984154330512,
+  "forecast_high": 27508.525685865705,
+  "forecast_low": 26655.54159268144,
+  "high_pct": 0.9639075658188606,
+  "low_pct": -2.1667802842981,
+  "range_width": 852.9840931842664,
   "floor_active": true,
   "reference_levels": {
-    "trr_50": 27353.883147369,
-    "llr_95": 26722.800475014657,
-    "llr_90": 26908.392257339663,
-    "llr_80": 26929.403751239777
+    "trr_50": 27353.88118650339,
+    "llr_95": 26722.798559388266,
+    "llr_90": 26908.390328409103,
+    "llr_80": 26929.40182080301
   },
   "risks": [
     "Range persistence detected (1.76x median) \u2014 floor applied",
     "Predicted range (3.13%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-10-12 23:06:41 EST",
+  "timestamp": "2026-10-13 21:20:16 EST",
   "model_version": "v5",
   "status": "success"
 }
