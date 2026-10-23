@@ -1,25 +1,23 @@
 {
   "ticker": "^GSPC",
-  "forecast_date": "2026-10-22",
-  "based_on_date": "2026-10-21",
-  "based_on_close": 7757.169921875,
-  "vix": 16.68000030517578,
-  "regime": "investible",
-  "forecast_high": 7815.052938615367,
-  "forecast_low": 7645.87112853946,
-  "high_pct": 0.7461872992769977,
-  "low_pct": -1.4347860683273208,
-  "range_width": 169.18181007590647,
+  "forecast_date": "2026-10-23",
+  "based_on_date": "2026-10-22",
+  "based_on_close": 7663.43017578125,
+  "vix": 19.030000686645508,
+  "regime": "chop",
+  "forecast_high": 7709.298136657774,
+  "forecast_low": 7546.643131432993,
+  "high_pct": 0.5985304207700721,
+  "low_pct": -1.5239526122041185,
+  "range_width": 162.65500522478123,
   "floor_active": false,
   "reference_levels": {
-    "trr_50": 7793.809911290563,
-    "llr_90": 7662.729910379819,
-    "llr_80": 7662.187964686655
+    "trr_50": 7693.334855541877,
+    "llr_90": 7582.9282311991155,
+    "llr_80": 7596.399938632351
   },
-  "risks": [
-    "Predicted range (2.18%) above 90th percentile for regime"
-  ],
-  "timestamp": "2026-10-21 20:47:42 EST",
+  "risks": [],
+  "timestamp": "2026-10-22 20:47:22 EST",
   "model_version": "v4",
   "status": "success"
 }
