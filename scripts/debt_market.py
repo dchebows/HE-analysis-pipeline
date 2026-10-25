@@ -72,6 +72,7 @@ print("Fetching...")
 MOVE = get_yahoo('^MOVE')
 HY   = get_fred('BAMLH0A0HYM2')
 BBB  = get_fred('BAMLC0A4CBBB')
+CCC  = get_fred('BAMLH0A3HYC')
 HYG  = get_yahoo('HYG')
 Y2   = get_fred('DGS2')
 Y10  = get_fred('DGS10')
@@ -82,6 +83,7 @@ panels = {}
 panels['MOVE']   = dict(metrics=compute_metrics(MOVE), trend=detect_trend_change(MOVE), kind='vol',  name='MOVE')
 panels['HY_OAS'] = dict(metrics=compute_metrics(HY),   trend=detect_trend_change(HY),   kind='credit', name='HY OAS')
 panels['BBB_OAS']= dict(metrics=compute_metrics(BBB),  trend=detect_trend_change(BBB),  kind='credit', name='BBB OAS')
+panels['CCC_OAS']= dict(metrics=compute_metrics(CCC),  trend=detect_trend_change(CCC),  kind='credit', name='CCC OAS')
 
 m2, m10, msp = compute_metrics(Y2), compute_metrics(Y10), compute_metrics(spread)
 regime, interp = classify_steepener(m2['mom'][0], m10['mom'][0])
@@ -89,6 +91,8 @@ panels['CURVE'] = dict(metrics=msp, trend=detect_trend_change(spread), kind='cur
                        name='2-10 Spread', regime=regime, interp=interp,
                        spread_level=float(spread.iloc[-1]),
                        m2=m2, m10=m10)
+
+panels['Y2'] = dict(metrics=m2, trend=detect_trend_change(Y2), kind='rate', name='2-Yr Yield')  # NEW
 
 # ---------- risk score ----------
 components = {
@@ -102,6 +106,13 @@ regime_lbl = ('HIGH STRESS' if score>=70 else 'ELEVATED' if score>=45
               else 'NEUTRAL' if score>=30 else 'CALM')
 
 # ---------- build highlights (action-oriented) ----------
+# Per-series wording and MoM trigger (bps). CCC moves far more than BBB, so it gets a higher threshold.
+CREDIT_TIER = {
+    'HY OAS':  ("junk-rated borrowers", 5),
+    'BBB OAS': ("lowest investment-grade borrowers", 5),
+    'CCC OAS': ("the riskiest (CCC-rated) borrowers", 15),
+}
+
 def build_highlights(panels):
     risk_off, risk_on, curve, trend = [], [], [], []
     for key, r in panels.items():
@@ -113,11 +124,18 @@ def build_highlights(panels):
             elif wow_pct and wow_pct<-3:
                 risk_on.append(f"Bond volatility (MOVE) {wow_pct:.0f}% WoW — rates calming. → Supportive for risk assets.")
         elif kind=='credit':
-            tier = "junk-rated borrowers" if 'HY' in name else "lowest investment-grade borrowers"
-            if mom_bps>5:
+            tier, thr = CREDIT_TIER.get(name, ("these borrowers", 5))
+            if mom_bps>thr:
                 risk_off.append(f"{name} +{mom_bps:.0f} bps MoM — investors demanding MORE yield for {tier} (spreads widening = rising credit fear). → Watch equity weakness; refinancing pricier.")
-            elif mom_bps<-5:
+            elif mom_bps<-thr:
                 risk_on.append(f"{name} {mom_bps:.0f} bps MoM — spreads tightening (confidence in {tier}). → Credit conditions easing.")
+        elif kind=='rate':
+            lvl = m['last']
+            if abs(mom_bps) >= 15:
+                view = ("rising — market pricing a higher-for-longer Fed. → Pressure on rate-sensitive assets."
+                        if mom_bps>0 else
+                        "falling — market pricing Fed easing. → Often supportive for risk assets.")
+                curve.append(f"{name} at {lvl:.2f}% ({mom_bps:+.0f} bps MoM) {view}")
         elif kind=='curve':
             lvl = r['spread_level']*100; reg = r['regime']
             help_ = {
@@ -140,6 +158,7 @@ def build_highlights(panels):
             if kind=='credit': meaning = "spreads turning WIDER (credit risk building)" if d=='Rising' else "spreads turning TIGHTER (risk easing)"
             elif kind=='vol':  meaning = "volatility turning UP" if d=='Rising' else "volatility turning DOWN (calming)"
             elif kind=='curve':meaning = "curve steepening" if d=='Rising' else "curve flattening (watch for inversion)"
+            elif kind=='rate': meaning = "short-term yields turning UP" if d=='Rising' else "short-term yields turning DOWN"
             else: meaning = d.lower()
             conv = {'Strong':'high-conviction','Moderate':'moderate','Weak':'early/low-conviction'}[tc['strength']]
             trend.append(f"{name}: possible reversal — {meaning} [{conv}, {tc['score']}/100]")
@@ -160,7 +179,7 @@ with open('debt_market.json','w') as f:
 
 # ---------- write CSV (time series for plotting) ----------
 series = pd.DataFrame({
-    'MOVE': MOVE, 'HY_OAS': HY, 'BBB_OAS': BBB, 'HYG': HYG,
+    'MOVE': MOVE, 'HY_OAS': HY, 'BBB_OAS': BBB, 'CCC_OAS': CCC, 'HYG': HYG,
     'Y2': Y2, 'Y10': Y10, 'SPREAD': spread
 })
 series.index.name = 'date'
