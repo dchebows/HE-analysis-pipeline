@@ -295,7 +295,7 @@ print(f"📅 Fetching data from {start_date} to {end_date}")
 # TICKER CONFIGURATION
 # ============================================================
 tickers = ['^TNX', '^GSPC', '^IXIC', '^RUT', '^VIX', '^NYICDX', 
-           'AAAU', 'AAPL', 'IBIT', 'QQQ', 'GLD', 'SLV', 'NVDA']
+           'AAAU', 'AAPL', 'IBIT', 'QQQ', 'GLD', 'SLV', 'NVDA','SPYI','QQQI','ADX','OVL','GPIX','GPIQ','JAAA','CLOX','CLOZ','PFFA','PFN','UTG','UTF']
 
 # ============================================================
 # DOWNLOAD DATA - 🔧 FIXED DATA DOWNLOAD
