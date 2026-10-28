@@ -1,14 +1,14 @@
 # HE-analysis-pipeline
 CRR
-# 📊 Hedgeye Risk Range Analysis Pipeline
+# 📊 HE Risk Range Analysis Pipeline
 
-Automated data pipeline for processing Hedgeye Risk Range data and generating trading signals using GitHub Actions.
+Automated data pipeline for processing HE Risk Range data and generating trading signals using GitHub Actions.
 
 ## 🎯 Overview
 
 This project provides two automated workflows:
 
-1. **ETL Pipeline** - Processes Hedgeye Risk Range HTML files and enriches them with market data
+1. **ETL Pipeline** - Processes HE Risk Range HTML files and enriches them with market data
 2. **CRR Analysis** - Generates daily trading signals and gamma exposure metrics
 
 Both workflows run automatically Monday-Friday and commit results back to the repository.
@@ -16,11 +16,11 @@ Both workflows run automatically Monday-Friday and commit results back to the re
 ---
 
 ## 🏗️ Architecture
-┌─────────────────────────────────────────────────────────────────┐ │ HEDGEYE HTML FILES │ │ (uploaded to 00_raw_html/) │ └────────────────────────────┬────────────────────────────────────┘ ▼ ┌────────────────────┐ │ ETL PIPELINE │ │ (Mon-Fri 6am EST) │ └────────┬───────────┘ ▼ ┌──────────────┴──────────────┐ ▼ ▼ ┌─────────────────┐ ┌──────────────────┐ │ STAGE 1 & 2: │ │ STAGE 3 & 4: │ │ HTML → Master │────────→ │ Tickers → ML │ │ CSV │ │ Training Data │ └─────────────────┘ └────────┬─────────┘ ▼ ┌───────────────────────┐ │ CRR ANALYSIS │ │ (Mon-Fri 7pm EST) │ │ • SPX Gamma │ │ • Throttle Metrics │ │ • Trading Signals │ └───────────┬───────────┘ ▼ ┌───────────────────────┐ │ STREAMLIT DASHBOARD │ │ (displays results) │ └───────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐ │ HE HTML FILES │ │ (uploaded to 00_raw_html/) │ └────────────────────────────┬────────────────────────────────────┘ ▼ ┌────────────────────┐ │ ETL PIPELINE │ │ (Mon-Fri 6am EST) │ └────────┬───────────┘ ▼ ┌──────────────┴──────────────┐ ▼ ▼ ┌─────────────────┐ ┌──────────────────┐ │ STAGE 1 & 2: │ │ STAGE 3 & 4: │ │ HTML → Master │────────→ │ Tickers → ML │ │ CSV │ │ Training Data │ └─────────────────┘ └────────┬─────────┘ ▼ ┌───────────────────────┐ │ CRR ANALYSIS │ │ (Mon-Fri 7pm EST) │ │ • SPX Gamma │ │ • Throttle Metrics │ │ • Trading Signals │ └───────────┬───────────┘ ▼ ┌───────────────────────┐ │ STREAMLIT DASHBOARD │ │ (displays results) │ └───────────────────────┘
 ---
 
 ## 📂 Repository Structure
-HE-analysis-pipeline/ ├── .github/workflows/ # GitHub Actions workflows │ ├── etl_pipeline.yml # ETL automation │ └── crr_analysis.yml # CRR signal generation │ ├── scripts/ # Python scripts │ └── etl_pipeline.py # ETL processing logic │ ├── Risk_Range_Data/ # Data storage │ ├── 00_raw_html/ # Input: Hedgeye HTML files │ ├── 01_processed/ # Individual daily CSVs │ ├── 02_master/ # Consolidated master CSV │ ├── 03_tickers/ # Per-ticker subsets │ ├── 04_enriched/ # ML-ready enriched data │ └── logs/ # Execution logs │ ├── CRR_v7.py # CRR analysis script ├── app.py # Streamlit dashboard │ ├── requirements.txt # Full dependencies (GitHub Actions) ├── requirements_streamlit.txt # Minimal deps (Streamlit Cloud) │ ├── output.csv # Daily analysis results ├── spx_gamma.json # SPX gamma metrics └── throttle_history.csv # Historical throttle data
+HE-analysis-pipeline/ ├── .github/workflows/ # GitHub Actions workflows │ ├── etl_pipeline.yml # ETL automation │ └── crr_analysis.yml # CRR signal generation │ ├── scripts/ # Python scripts │ └── etl_pipeline.py # ETL processing logic │ ├── Risk_Range_Data/ # Data storage │ ├── 00_raw_html/ # Input: HE HTML files │ ├── 01_processed/ # Individual daily CSVs │ ├── 02_master/ # Consolidated master CSV │ ├── 03_tickers/ # Per-ticker subsets │ ├── 04_enriched/ # ML-ready enriched data │ └── logs/ # Execution logs │ ├── CRR_v7.py # CRR analysis script ├── app.py # Streamlit dashboard │ ├── requirements.txt # Full dependencies (GitHub Actions) ├── requirements_streamlit.txt # Minimal deps (Streamlit Cloud) │ ├── output.csv # Daily analysis results ├── spx_gamma.json # SPX gamma metrics └── throttle_history.csv # Historical throttle data
 ---
 
 ## 🚀 Quick Start
@@ -28,14 +28,14 @@ HE-analysis-pipeline/ ├── .github/workflows/ # GitHub Actions workflows �
 ### Prerequisites
 
 - GitHub account with Actions enabled
-- Hedgeye Risk Range subscription (for HTML files)
+- HE Risk Range subscription (for HTML files)
 - Streamlit Cloud account (optional, for dashboard)
 
 ### Setup
 
 1. **Clone or fork this repository**
 
-2. **Upload Hedgeye HTML files:**
+2. **Upload HE HTML files:**
    - Navigate to `Risk_Range_Data/00_raw_html/`
    - Upload HTML files (format: `MONTH DD, YYYY.html`)
    - ETL workflow auto-triggers
@@ -64,7 +64,7 @@ HE-analysis-pipeline/ ├── .github/workflows/ # GitHub Actions workflows �
 **Process:**
 
 #### Stage 1: HTML Parsing
-- Extracts risk range tables from Hedgeye HTML files
+- Extracts risk range tables from HE HTML files
 - Parses: `INDEX`, `BUY TRADE`, `SELL TRADE`, `PREV. CLOSE`, `TREND`
 - Outputs: Individual CSVs in `01_processed/`
 
@@ -183,13 +183,13 @@ Trading date (MM/DD/YYYY)
 TICKER
 Asset ticker
 BUY TRADE
-Hedgeye lower risk range
+HE lower risk range
 SELL TRADE
-Hedgeye upper risk range
+HE upper risk range
 PREV. CLOSE
 Previous close price
 TREND
-Hedgeye trend (BULLISH/BEARISH/NEUTRAL)
+HE trend (BULLISH/BEARISH/NEUTRAL)
 {PREFIX}_Open
 Yahoo Finance open price
 {PREFIX}_High
@@ -341,7 +341,7 @@ Log files: Detailed execution history
  Risk management automation
  Real-time alerts via webhooks
 📚 Resources
-Hedgeye: https://hedgeye.com/
+HE: https://HE.com/
 Yahoo Finance API: https://python-yahoofinance.readthedocs.io/
 CBOE Options Data: https://www.cboe.com/
 GitHub Actions: https://docs.github.com/en/actions
@@ -654,7 +654,7 @@ V5B Trend Model - Proprietary distance/momentum composite
 V6 Ensemble - Context-aware regime switching
 D1 Strategy - Dynamic danger-based allocation
 Data Sources:
-Hedgeye Risk Range signals (manual HTML upload)
+HE Risk Range signals (manual HTML upload)
 Yahoo Finance OHLC data (automated via ETL)
 CBOE VIX/GVZ volatility indices
 Infrastructure:
