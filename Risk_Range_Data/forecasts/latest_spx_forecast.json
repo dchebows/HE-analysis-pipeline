@@ -1,23 +1,26 @@
 {
   "ticker": "^GSPC",
-  "forecast_date": "2026-11-02",
-  "based_on_date": "2026-10-30",
-  "based_on_close": 7580.06982421875,
-  "vix": 19.420000076293945,
+  "forecast_date": "2026-11-03",
+  "based_on_date": "2026-11-02",
+  "based_on_close": 7541.39990234375,
+  "vix": 21.149999618530273,
   "regime": "chop",
-  "forecast_high": 7626.557636756026,
-  "forecast_low": 7471.290303159406,
-  "high_pct": 0.6132900305053252,
-  "low_pct": -1.4350728104349029,
-  "range_width": 155.26733359662012,
+  "forecast_high": 7607.0788405736275,
+  "forecast_low": 7418.105065745563,
+  "high_pct": 0.8709117548515832,
+  "low_pct": -1.6349064920939853,
+  "range_width": 188.97377482806496,
   "floor_active": false,
   "reference_levels": {
-    "trr_50": 7597.727894809328,
-    "llr_90": 7490.460313320384,
-    "llr_80": 7498.621049660909
+    "trr_50": 7584.853215688971,
+    "llr_90": 7438.682767047208,
+    "llr_80": 7504.246069651209
   },
-  "risks": [],
-  "timestamp": "2026-10-30 21:42:54 EST",
+  "risks": [
+    "High VIX velocity (23.0%) \u2014 elevated tail risk",
+    "Predicted range (2.51%) above 90th percentile for regime"
+  ],
+  "timestamp": "2026-11-02 22:33:20 EST",
   "model_version": "v4",
   "status": "success"
 }
