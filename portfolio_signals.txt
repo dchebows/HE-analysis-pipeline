@@ -1,17 +1,17 @@
 ================================================================================
   MULTI-ASSET DAILY ACTION SIGNALS
-  Generated: 2026-11-03 17:44:22
+  Generated: 2026-11-03 19:59:08
 ================================================================================
 
 SUMMARY TABLE:
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ASSET    │ ACTION       │     ΔDay │ TGT% │ DNGR │  SHRP │   CAGR │  MaxDD │ TREND  
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────
-SPX      │ 🔴 SELL       │      -7% │  92% │   30 │  1.02 │   9.6% │  -9.8% │ BULLISH
-GOLD     │ 🔴 SELL       │      -7% │  37% │   64 │  1.00 │  12.6% │  -8.7% │ BEARISH
-COMPQ    │ 🔴 SELL       │     -16% │  38% │   63 │  1.01 │  11.6% │ -11.6% │ BEARISH
+SPX      │ ⏸️ HOLD      │        — │  92% │   30 │  1.02 │   9.6% │  -9.8% │ BULLISH
+GOLD     │ ⏸️ HOLD      │        — │  37% │   64 │  1.00 │  12.6% │  -8.7% │ BEARISH
+COMPQ    │ ⏸️ HOLD      │        — │  38% │   63 │  1.01 │  11.6% │ -11.6% │ BEARISH
 RUT      │ ⏸️ HOLD      │        — │  63% │   49 │  0.84 │   8.0% │  -8.4% │ BEARISH
-USD      │ 🟡 LIGHT BUY  │      +2% │  72% │   44 │ -0.26 │   0.9% │  -7.6% │ BEARISH
+USD      │ ⏸️ HOLD      │        — │  72% │   44 │ -0.26 │   0.9% │  -7.6% │ BEARISH
 
 Legend: ΔDay = Position % change to reach target | TGT% = Target Position
         DNGR = Danger Score | SHRP = Sharpe | CAGR = Annual Return | MaxDD = Max Drawdown
@@ -26,14 +26,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-11-03 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   92%  (was 100%, change: -7.5pp)
-  ΔDay:     -7% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   92%  (was 92%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    92,500  (92%)
     Cash:      $     7,500  (7%)
-    → SELL $     7,500 of ^GSPC
+    → No trade needed
 
   ZONE: WATCH  |  Danger: 30/100
 
@@ -66,14 +66,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-11-03 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   37%  (was 44%, change: -7.0pp)
-  ΔDay:     -7% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   37%  (was 37%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    36,750  (37%)
     Cash:      $    63,250  (63%)
-    → SELL $     7,000 of GC=F
+    → No trade needed
 
   ZONE: RISK  |  Danger: 64/100
 
@@ -106,14 +106,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-11-03 00:00:00
 ================================================================================
 
-  ACTION:   SELL
-  TARGET:   38%  (was 54%, change: -15.8pp)
-  ΔDay:     -16% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   38%  (was 38%, change: -0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    38,500  (38%)
     Cash:      $    61,500  (62%)
-    → SELL $    15,750 of ^IXIC
+    → No trade needed
 
   ZONE: RISK  |  Danger: 63/100
 
@@ -186,14 +186,14 @@ Legend: ΔDay = Position % change to reach target | TGT% = Target Position
   Data from: 2026-11-03 00:00:00
 ================================================================================
 
-  ACTION:   LIGHT BUY
-  TARGET:   72%  (was 70%, change: +1.5pp)
-  ΔDay:     +2% from previous backtest day
+  ACTION:   HOLD
+  TARGET:   72%  (was 72%, change: +0.0pp)
+  ΔDay:     — from previous backtest day
 
   On $100,000 portfolio:
     Invested:  $    71,500  (72%)
     Cash:      $    28,500  (29%)
-    → BUY  $     1,500 of DX-Y.NYB
+    → No trade needed
 
   ZONE: WATCH  |  Danger: 44/100
 
