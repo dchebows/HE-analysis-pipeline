@@ -17,31 +17,69 @@ VOL_TICKERS = {
     '^GVZ': 'GVZ (Gold)',
     '^OVX': 'OVX (Oil)',
 }
+
+# Same tickers as the validated correlation script.
+# Each entry: key -> list of tickers (first = primary, rest = fallbacks)
 CORR_TICKERS = {
-    'DXY':  'DX-Y.NYB',
-    'SPX':  'SPY',
-    'OIL':  'CL=F',
-    'GOLD': 'GLD',
-    'BTC':  'BTC-USD',
+    'DXY':  ['^NYICDX'],
+    'SPX':  ['^GSPC'],
+    'OIL':  ['BZ=F', 'CL=F'],
+    'GOLD': ['GC=F', 'GLD'],
+    'BTC':  ['BTC-USD'],
 }
+
+# Correlation method. The validated script correlates PRICE LEVELS.
+# Set to 'returns' for daily % change correlations instead.
+CORR_MODE = 'levels'
 
 start = (datetime.now().date() - timedelta(days=760)).strftime('%Y-%m-%d')
 tomorrow = (datetime.now().date() + timedelta(days=2)).strftime('%Y-%m-%d')
 
+
 # ============================================================
 # FETCH
 # ============================================================
+def download_close(ticker):
+    """Download one ticker's Close series (handles MultiIndex columns)."""
+    try:
+        data = yf.download(ticker, start=start, end=tomorrow,
+                           progress=False, auto_adjust=True)
+        if data is None or data.empty:
+            return None
+        if isinstance(data.columns, pd.MultiIndex):
+            close = data['Close'].iloc[:, 0] if 'Close' in data.columns.get_level_values(0) else data.iloc[:, 0]
+        else:
+            close = data['Close'] if 'Close' in data.columns else data.iloc[:, 0]
+        return close.dropna()
+    except Exception as e:
+        print(f"  download error for {ticker}: {e}")
+        return None
+
+
 vol_raw = yf.download(list(VOL_TICKERS.keys()), start=start, end=tomorrow,
                       progress=False, auto_adjust=True)['Close']
 vol_raw = vol_raw.dropna(how='all').ffill()
 
-corr_raw = yf.download(list(CORR_TICKERS.values()), start=start, end=tomorrow,
-                       progress=False, auto_adjust=True)['Close']
-corr_raw = corr_raw.dropna(how='all').ffill()
-corr_raw = corr_raw.rename(columns={v: k for k, v in CORR_TICKERS.items()})
+# Download each correlation asset separately, with fallbacks
+corr_series = {}
+for key, candidates in CORR_TICKERS.items():
+    for tk in candidates:
+        s = download_close(tk)
+        if s is not None and len(s):
+            corr_series[key] = s
+            print(f"✓ {key}: {len(s)} rows (ticker: {tk})")
+            break
+    else:
+        print(f"❌ {key}: failed to download")
+
+# KEY FIX: inner-join on common dates (dropna), NOT ffill.
+# Forward-filling mixed calendars (BTC trades 7 days/week, others don't)
+# injects fake flat prices / zero returns and distorts correlations.
+corr_raw = pd.DataFrame(corr_series).dropna()
 
 print(f"Vol rows: {len(vol_raw)} | cols: {list(vol_raw.columns)}")
 print(f"Corr rows: {len(corr_raw)} | cols: {list(corr_raw.columns)}")
+
 
 # ============================================================
 # PART 1: VOL METRICS
@@ -66,32 +104,43 @@ for tk, name in VOL_TICKERS.items():
             m['name'] = name
             vol_metrics[tk] = m
 
+
 # ============================================================
 # PART 2: USD CORRELATIONS
 # ============================================================
-rets = corr_raw.pct_change().dropna()
 WINDOWS = [15, 30, 90, 120, 180]
 CORR_ASSETS = ['SPX', 'OIL', 'GOLD', 'BTC']
+LOOKBACK_52W = 260  # trading rows, matches validated script
+
+data = corr_raw if CORR_MODE == 'levels' else corr_raw.pct_change().dropna()
 
 corr_table = {}
 for a in CORR_ASSETS:
-    if a not in rets.columns or 'DXY' not in rets.columns:
+    if a not in data.columns or 'DXY' not in data.columns:
         continue
     row = {}
+
+    # Windowed correlation over the last N rows
     for w in WINDOWS:
-        c = rets['DXY'].rolling(w).corr(rets[a]).iloc[-1]
-        row[f'{w}d'] = round(float(c), 2) if pd.notna(c) else None
-    roll30 = rets['DXY'].rolling(30).corr(rets[a]).dropna()
+        if len(data) >= w:
+            c = data['DXY'].tail(w).corr(data[a].tail(w))
+            row[f'{w}d'] = round(float(c), 2) if pd.notna(c) else None
+        else:
+            row[f'{w}d'] = None
+
+    # 52-week stats: rolling 30-day corr computed ONLY inside the last 260 rows
+    lookback = data.tail(LOOKBACK_52W)
+    roll30 = lookback['DXY'].rolling(30).corr(lookback[a]).dropna()
     if len(roll30):
-        last252 = roll30.tail(252)
-        row['hi_52w'] = round(float(last252.max()), 2)
-        row['lo_52w'] = round(float(last252.min()), 2)
-        row['pct_neg'] = round(float((last252 < 0).mean() * 100))
-        row['pct_pos'] = 100 - row['pct_neg']
+        row['hi_52w'] = round(float(roll30.max()), 2)
+        row['lo_52w'] = round(float(roll30.min()), 2)
+        row['pct_neg'] = int(round(float((roll30 < 0).mean() * 100)))
+        row['pct_pos'] = int(round(float((roll30 > 0).mean() * 100)))
         # sign-flip detection: did 30D corr cross zero recently?
         recent = roll30.tail(10)
         row['flipped'] = bool((recent.iloc[0] > 0) != (recent.iloc[-1] > 0))
     corr_table[a] = row
+
 
 # ============================================================
 # PART 3: CALLOUTS
@@ -131,19 +180,23 @@ for a, row in corr_table.items():
     elif abs(c30) > 0.7:
         kind = 'inverse' if c30 < 0 else 'positive'
         corr_callouts.append(
-            f"**{a}-USD strongly {kind}** (30D {c30:+.2f}, {row['pct_neg']}% time negative) — relationship intact.")
+            f"**{a}-USD strongly {kind}** (30D {c30:+.2f}, {row.get('pct_neg')}% time negative) — relationship intact.")
+
 # Always note gold (the key tell)
-if 'GOLD' in corr_table:
-    g = corr_table['GOLD']
+g = corr_table.get('GOLD')
+if g and g.get('30d') is not None and g.get('lo_52w') is not None:
     corr_callouts.append(
-        f"Gold-USD: 30D {g.get('30d'):+.2f} (52wk range {g.get('lo_52w'):+.2f} to {g.get('hi_52w'):+.2f}, "
-        f"{g.get('pct_neg')}% negative) — the classic dollar barometer.")
+        f"Gold-USD: 30D {g['30d']:+.2f} (52wk range {g['lo_52w']:+.2f} to {g['hi_52w']:+.2f}, "
+        f"{g['pct_neg']}% negative) — the classic dollar barometer.")
+
 
 # ============================================================
 # WRITE OUTPUTS
 # ============================================================
 payload = dict(
     as_of=vol_raw.index[-1].strftime('%Y-%m-%d'),
+    corr_as_of=corr_raw.index[-1].strftime('%Y-%m-%d'),
+    corr_mode=CORR_MODE,
     generated=datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC'),
     vol_metrics=vol_metrics,
     correlations=corr_table,
@@ -162,9 +215,12 @@ vol_series.to_csv('crossasset_series.csv')
 
 print(f"\n✅ Wrote crossasset.json + crossasset_series.csv (as_of {payload['as_of']})")
 
+
 # ============================================================
 # VALIDATION PRINTOUT
 # ============================================================
+print("\n=== CORRELATION TABLE ===")
+print(pd.DataFrame(corr_table).T.to_string())
 print("\n=== VOL CALLOUTS ===")
 for c in vol_callouts:
     print(f"  • {c}")
