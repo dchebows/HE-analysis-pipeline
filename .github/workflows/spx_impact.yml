@@ -28,7 +28,7 @@ jobs:
           pip install -r requirements.txt
 
       - name: Run SPX Impact
-        run: python spx_impact.py
+        run: python scripts/spx_impact.py
         env:
           TZ: America/New_York
 
