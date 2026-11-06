@@ -1,8 +1,8 @@
 {
   "as_of": "2026-11-06",
-  "generated": "2026-11-06 21:35 UTC",
+  "generated": "2026-11-06 22:23 UTC",
   "risk": {
-    "score": 88,
+    "score": 86,
     "regime": "HIGH STRESS",
     "components": {
       "Rate Vol (MOVE)": {
@@ -18,7 +18,7 @@
         "weight": 0.2
       },
       "Yield Curve (2-10)": {
-        "pct": 91.62679425837321,
+        "pct": 82.10023866348449,
         "weight": 0.25
       }
     }
@@ -146,93 +146,93 @@
     },
     "CURVE": {
       "metrics": {
-        "last": 0.3200000000000003,
-        "d1": 0.33999999999999986,
-        "w1": 0.3799999999999999,
-        "m1": 0.46999999999999975,
-        "last_dt": "2026-11-04",
+        "last": 0.3799999999999999,
+        "d1": 0.3200000000000003,
+        "w1": 0.3700000000000001,
+        "m1": 0.47999999999999954,
+        "last_dt": "2026-11-05",
         "dod": [
-          -1.9999999999999574,
-          -5.88235294117635
+          5.999999999999961,
+          18.749999999999865
         ],
         "wow": [
-          -5.999999999999961,
-          -15.789473684210432
+          0.9999999999999787,
+          2.702702702702653
         ],
         "mom": [
-          -14.999999999999947,
-          -31.91489361702118
+          -9.999999999999964,
+          -20.833333333333282
         ]
       },
       "trend": {
         "trend": "Falling",
         "change": true,
-        "score": 75,
-        "strength": "Strong",
-        "z": -0.8602928628525857
+        "score": 40,
+        "strength": "Moderate",
+        "z": -0.09245684050610636
       },
       "kind": "curve",
       "name": "2-10 Spread",
       "regime": "Bull Flattener",
       "interp": "Long-end rallying faster",
-      "spread_level": 0.3200000000000003,
+      "spread_level": 0.3799999999999999,
       "m2": {
-        "last": 4.58,
-        "d1": 4.61,
-        "w1": 4.67,
-        "m1": 4.84,
-        "last_dt": "2026-11-04",
+        "last": 4.46,
+        "d1": 4.58,
+        "w1": 4.61,
+        "m1": 4.79,
+        "last_dt": "2026-11-05",
         "dod": [
-          -3.000000000000025,
-          -0.6507592190889477
+          -12.00000000000001,
+          -2.6200873362445476
         ],
         "wow": [
-          -8.999999999999986,
-          -1.9271948608136968
+          -15.000000000000036,
+          -3.2537960954446943
         ],
         "mom": [
-          -25.99999999999998,
-          -5.371900826446274
+          -33.00000000000001,
+          -6.8893528183716075
         ]
       },
       "m10": {
-        "last": 4.9,
-        "d1": 4.95,
-        "w1": 5.05,
-        "m1": 5.31,
-        "last_dt": "2026-11-04",
+        "last": 4.84,
+        "d1": 4.9,
+        "w1": 4.98,
+        "m1": 5.27,
+        "last_dt": "2026-11-05",
         "dod": [
-          -4.999999999999982,
-          -1.0101010101010055
+          -6.00000000000005,
+          -1.224489795918382
         ],
         "wow": [
-          -14.999999999999947,
-          -2.970297029702962
+          -14.000000000000057,
+          -2.8112449799196915
         ],
         "mom": [
-          -40.99999999999993,
-          -7.721280602636527
+          -42.99999999999997,
+          -8.15939278937381
         ]
       }
     },
     "Y2": {
       "metrics": {
-        "last": 4.58,
-        "d1": 4.61,
-        "w1": 4.67,
-        "m1": 4.84,
-        "last_dt": "2026-11-04",
+        "last": 4.46,
+        "d1": 4.58,
+        "w1": 4.61,
+        "m1": 4.79,
+        "last_dt": "2026-11-05",
         "dod": [
-          -3.000000000000025,
-          -0.6507592190889477
+          -12.00000000000001,
+          -2.6200873362445476
         ],
         "wow": [
-          -8.999999999999986,
-          -1.9271948608136968
+          -15.000000000000036,
+          -3.2537960954446943
         ],
         "mom": [
-          -25.99999999999998,
-          -5.371900826446274
+          -33.00000000000001,
+          -6.8893528183716075
         ]
       },
       "trend": {
@@ -240,7 +240,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 0.03444246809998041
+        "z": -0.47548651057866775
       },
       "kind": "rate",
       "name": "2-Yr Yield"
@@ -256,14 +256,14 @@
       "Bond volatility (MOVE) -7% WoW \u2014 rates calming. \u2192 Supportive for risk assets."
     ],
     "curve": [
-      "2-10 spread positive at +32 bps \u2014 normal upward slope. \u2192 Healthy baseline.",
+      "2-10 spread positive at +38 bps \u2014 normal upward slope. \u2192 Healthy baseline.",
       "Regime: Bull Flattener \u2014 long rates falling faster \u2014 flight-to-safety. \u2192 Defensive/risk-OFF tone.",
-      "2-Yr Yield at 4.58% (-26 bps MoM) falling \u2014 market pricing Fed easing. \u2192 Often supportive for risk assets."
+      "2-Yr Yield at 4.46% (-33 bps MoM) falling \u2014 market pricing Fed easing. \u2192 Often supportive for risk assets."
     ],
     "trend": [
       "HY OAS: possible reversal \u2014 spreads turning WIDER (credit risk building) [early/low-conviction, 15/100]",
       "BBB OAS: possible reversal \u2014 spreads turning WIDER (credit risk building) [early/low-conviction, 19/100]",
-      "2-10 Spread: possible reversal \u2014 curve flattening (watch for inversion) [high-conviction, 75/100]"
+      "2-10 Spread: possible reversal \u2014 curve flattening (watch for inversion) [moderate, 40/100]"
     ]
   }
 }
