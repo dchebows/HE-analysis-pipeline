@@ -1,0 +1,51 @@
+name: SPX Constituent Impact
+on:
+  schedule:
+    - cron: '15 22 * * 1-5'  # 6:15pm EST Mon-Fri (22:15 UTC), staggered from CRR job
+  workflow_dispatch:
+
+concurrency:
+  group: spx-impact-pipeline
+  cancel-in-progress: false
+
+jobs:
+  spx-impact:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run SPX Impact
+        run: python spx_impact.py
+        env:
+          TZ: America/New_York
+
+      - name: Commit results
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+
+          git add spx_impact.json
+          git diff --staged --quiet || git commit -m "📈 SPX impact update $(date +'%Y-%m-%d %H:%M EST')"
+          git pull --rebase origin main
+          git push
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spx-impact-${{ github.run_number }}
+          path: spx_impact.json
+          retention-days: 30
