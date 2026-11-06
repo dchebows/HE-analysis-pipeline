@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 import requests
 import yfinance as yf
+import io
 
 warnings.filterwarnings("ignore")
 
@@ -28,7 +29,7 @@ def get_tickers():
     url = "https://en.wikipedia.org/wiki/List_of_S%26P_500_companies"
     r = requests.get(url, headers={"User-Agent": UA}, timeout=30)
     r.raise_for_status()
-    table = pd.read_html(r.text)[0]
+    table = pd.read_html(io.StringIO(r.text))[0]
     tickers = [t.replace(".", "-") for t in table["Symbol"].tolist()]
     print(f"  Found {len(tickers)} tickers")
     return tickers
@@ -77,7 +78,7 @@ def scrape_finviz_caps():
             r.raise_for_status()
 
             tbl = None
-            for d in pd.read_html(r.text):
+            for d in pd.read_html(io.StringIO(r.text)):
                 if len(d) > 5 and "Ticker" in d.columns:
                     tbl = d
                     break
