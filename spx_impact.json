@@ -1,131 +1,131 @@
 {
   "trading_date": "2026-11-06",
-  "generated": "2026-11-06 16:30:38",
-  "n_stocks": 503,
+  "generated": "2026-11-06 20:54:54",
+  "n_stocks": 433,
   "n_total": 503,
-  "spx_est_move": 0.4108,
+  "spx_est_move": 0.2579,
   "top_positive": [
     {
       "ticker": "NVDA",
       "ret": 2.7753,
-      "impact": 0.1769,
-      "weight": 6.3746
+      "impact": 0.2056,
+      "weight": 7.4086
     },
     {
       "ticker": "AMD",
       "ret": 11.0386,
-      "impact": 0.115,
-      "weight": 1.0417
+      "impact": 0.1336,
+      "weight": 1.2106
     },
     {
       "ticker": "TSLA",
       "ret": 4.2276,
-      "impact": 0.0847,
-      "weight": 2.0028
+      "impact": 0.0984,
+      "weight": 2.3276
     },
     {
       "ticker": "MU",
       "ret": 5.1204,
-      "impact": 0.0565,
-      "weight": 1.1042
+      "impact": 0.0657,
+      "weight": 1.2833
     },
     {
       "ticker": "GOOGL",
       "ret": 0.7821,
-      "impact": 0.0387,
-      "weight": 4.9521
-    },
-    {
-      "ticker": "GOOG",
-      "ret": 0.7773,
-      "impact": 0.0384,
-      "weight": 4.9373
+      "impact": 0.045,
+      "weight": 5.7553
     },
     {
       "ticker": "INTC",
       "ret": 7.7129,
-      "impact": 0.0326,
-      "weight": 0.4231
+      "impact": 0.0379,
+      "weight": 0.4917
     },
     {
       "ticker": "LRCX",
       "ret": 8.2289,
-      "impact": 0.0292,
-      "weight": 0.3548
+      "impact": 0.0339,
+      "weight": 0.4123
     },
     {
-      "ticker": "ANET",
-      "ret": 7.3134,
-      "impact": 0.0223,
-      "weight": 0.3052
+      "ticker": "KLAC",
+      "ret": 6.6949,
+      "impact": 0.0199,
+      "weight": 0.2966
     },
     {
-      "ticker": "PLTR",
-      "ret": 3.4776,
-      "impact": 0.019,
-      "weight": 0.5466
+      "ticker": "AMAT",
+      "ret": 4.2193,
+      "impact": 0.0183,
+      "weight": 0.4341
+    },
+    {
+      "ticker": "AVGO",
+      "ret": 0.7409,
+      "impact": 0.0171,
+      "weight": 2.3046
     }
   ],
   "top_negative": [
     {
       "ticker": "MSFT",
       "ret": -0.9927,
-      "impact": -0.0553,
-      "weight": 5.5735
+      "impact": -0.0643,
+      "weight": 6.4775
     },
     {
       "ticker": "AAPL",
       "ret": -0.523,
-      "impact": -0.0368,
-      "weight": 7.0374
+      "impact": -0.0428,
+      "weight": 8.1788
     },
     {
       "ticker": "WMT",
       "ret": -1.7225,
-      "impact": -0.0243,
-      "weight": 1.4086
+      "impact": -0.0282,
+      "weight": 1.637
     },
     {
       "ticker": "AMZN",
       "ret": -0.3497,
-      "impact": -0.0139,
-      "weight": 3.9659
+      "impact": -0.0161,
+      "weight": 4.6091
     },
     {
       "ticker": "LLY",
       "ret": -0.7862,
-      "impact": -0.0134,
-      "weight": 1.7059
+      "impact": -0.0156,
+      "weight": 1.9826
     },
     {
       "ticker": "NFLX",
       "ret": -3.2794,
-      "impact": -0.0121,
-      "weight": 0.3683
+      "impact": -0.014,
+      "weight": 0.428
     },
     {
       "ticker": "JPM",
       "ret": -0.8448,
-      "impact": -0.0106,
-      "weight": 1.2564
+      "impact": -0.0123,
+      "weight": 1.4602
     },
     {
       "ticker": "CSCO",
       "ret": -1.9536,
-      "impact": -0.0102,
-      "weight": 0.5234
+      "impact": -0.0119,
+      "weight": 0.6082
     },
     {
       "ticker": "CRM",
       "ret": -3.9387,
-      "impact": -0.0098,
-      "weight": 0.2487
+      "impact": -0.0114,
+      "weight": 0.289
     },
     {
       "ticker": "HD",
       "ret": -1.8489,
-      "impact": -0.009,
-      "weight": 0.4847
+      "impact": -0.0104,
+      "weight": 0.5633
     }
   ]
 }
