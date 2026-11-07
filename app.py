@@ -120,7 +120,17 @@ def load_crossasset_data():
     except Exception as e:
         return None, None, str(e)
 
+# ============================================================
+# SPX IMPACT LOADER
+# ============================================================
+SPX_IMPACT_URL = "https://raw.githubusercontent.com/dchebows/HE-analysis-pipeline/main/spx_impact.json"
 
+@st.cache_data(ttl=3600)
+def load_spx_impact():
+    try:
+        return json.loads(requests.get(SPX_IMPACT_URL).text), None
+    except Exception as e:
+        return None, str(e)
 
 # ============================================================
 # RISK RANGE HELPER FUNCTIONS
@@ -675,11 +685,11 @@ def generate_forecast_csv(forecast):
 # ============================================================
 # TAB NAVIGATION
 # ============================================================
-tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+tab0, tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
     "📋 Daily Briefing",
     "📊 CRR Analysis", "💼 Portfolio Signals", "🎯 Risk Range",
     "🏦 Debt Markets", "📊 CFTC Positioning", "🔄 Sector RRG",
-    "🌐 Cross-Asset"
+    "🌐 Cross-Asset", "📈 SPX Impact"
 ])
 
 # ============================================================
@@ -2616,3 +2626,74 @@ with tab0:
     st.caption("📋 Daily Briefing aggregates all dashboard tabs. "
                "Click any tab above for full detail.")
     st.caption("⚠️ Macro Stress is a heuristic, not a validated model — watch the trend.")
+
+
+# ============================================================
+# TAB 8: SPX CONSTITUENTS RELATIVE IMPACT BY MARKET CAP
+# ============================================================
+with tab8:
+    st.title("📈 SPX Constituents Relative Impact By Market Cap")
+    st.caption("🤖 Updated weekdays after the close (~6:15 PM EST)")
+
+    imp, imp_err = load_spx_impact()
+
+    if imp_err:
+        st.error(f"❌ Error loading SPX impact data: {imp_err}")
+        st.info("💡 Data appears after the SPX Impact workflow runs.")
+    else:
+        m1, m2, m3 = st.columns(3)
+        m1.metric("Trading Date", imp['trading_date'])
+        m2.metric("Est. SPX Daily Move", f"{imp['spx_est_move']:+.2f}%",
+                  help="Sum of constituent impacts (market-cap weighted)")
+        m3.metric("Stocks With Data", f"{imp['n_stocks']}/{imp['n_total']}")
+
+        st.divider()
+
+        pos_df = pd.DataFrame(imp['top_positive']).rename(columns={
+            'ticker': 'Top Contributor', 'ret': 'Daily %Return',
+            'impact': 'Positive Impact', 'weight': '% Weight'})
+        neg_df = pd.DataFrame(imp['top_negative']).rename(columns={
+            'ticker': 'Top Detractor', 'ret': 'Daily %Return',
+            'impact': 'Negative Impact', 'weight': '% Weight'})
+
+        def _txt(color):
+            return lambda v: f'color: {color}; font-weight: bold'
+
+        c1, c2 = st.columns(2)
+        with c1:
+            st.markdown("### 🟢 Largest Positive Impact")
+            st.dataframe(
+                pos_df[['Top Contributor', 'Daily %Return', 'Positive Impact', '% Weight']].style
+                    .map(_txt('#28a745'), subset=['Daily %Return', 'Positive Impact'])
+                    .map(_txt('#ff8c00'), subset=['% Weight'])
+                    .format({'Daily %Return': '{:+.2f}%', 'Positive Impact': '{:+.2f}',
+                             '% Weight': '{:.2f}%'}),
+                use_container_width=True, hide_index=True)
+        with c2:
+            st.markdown("### 🔴 Largest Negative Impact")
+            st.dataframe(
+                neg_df[['Top Detractor', 'Daily %Return', 'Negative Impact', '% Weight']].style
+                    .map(_txt('#dc3545'), subset=['Daily %Return', 'Negative Impact'])
+                    .map(_txt('#ff8c00'), subset=['% Weight'])
+                    .format({'Daily %Return': '{:+.2f}%', 'Negative Impact': '{:+.2f}',
+                             '% Weight': '{:.2f}%'}),
+                use_container_width=True, hide_index=True)
+
+        combined = pd.concat([
+            pos_df.rename(columns={'Top Contributor': 'Ticker', 'Positive Impact': 'Impact'}).assign(Side='Contributor'),
+            neg_df.rename(columns={'Top Detractor': 'Ticker', 'Negative Impact': 'Impact'}).assign(Side='Detractor'),
+        ], ignore_index=True)
+        st.download_button("📥 Download CSV", data=combined.to_csv(index=False),
+                           file_name=f"SPX_Impact_{imp['trading_date']}.csv", mime="text/csv")
+
+        with st.expander("📖 How to read this"):
+            st.markdown("""
+            - **Daily %Return** = last close vs. prior close.
+            - **% Weight** = stock market cap ÷ total S&P 500 market cap.
+            - **Impact** = Return × Weight, the percentage points the stock added to (or took from) the index move.
+            - **Est. SPX Daily Move** is the sum of all impacts. It is an approximation and won't exactly match the official index (market-cap vs. float-adjusted weights).
+            """)
+
+        st.divider()
+        st.caption(f"📊 Source: Yahoo Finance (Finviz fallback for market caps) | "
+                   f"Data as of {imp['trading_date']} | Generated {imp['generated']}")
