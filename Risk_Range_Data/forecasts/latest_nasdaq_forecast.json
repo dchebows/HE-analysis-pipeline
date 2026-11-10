@@ -3,7 +3,7 @@
   "forecast_date": "2026-11-10",
   "based_on_date": "2026-11-09",
   "based_on_close": 25253.138671875,
-  "vix": 29.110000610351562,
+  "vix": 28.969999313354492,
   "regime": "chop",
   "forecast_high": 25833.504268754175,
   "forecast_low": 23705.35934324132,
@@ -19,11 +19,11 @@
   },
   "risks": [
     "Range persistence detected (2.62x median) \u2014 floor applied",
-    "High VXN velocity (23.9%) \u2014 elevated tail risk",
-    "VXN at 29.1, approaching get_out threshold (30)",
+    "High VXN velocity (24.3%) \u2014 elevated tail risk",
+    "VXN at 29.0, approaching get_out threshold (30)",
     "Predicted range (8.43%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-11-09 20:59:50 EST",
+  "timestamp": "2026-11-09 23:15:02 EST",
   "model_version": "v5",
   "status": "success"
 }
