@@ -1,131 +1,131 @@
 {
-  "trading_date": "2026-11-09",
-  "generated": "2026-11-09 23:06:55",
-  "n_stocks": 503,
+  "trading_date": "2026-11-10",
+  "generated": "2026-11-10 20:55:50",
+  "n_stocks": 433,
   "n_total": 503,
-  "spx_est_move": 2.3918,
+  "spx_est_move": -0.2436,
   "top_positive": [
     {
       "ticker": "AVGO",
-      "ret": 8.7814,
-      "impact": 0.1852,
-      "weight": 2.109
-    },
-    {
-      "ticker": "AAPL",
-      "ret": 2.4301,
-      "impact": 0.1713,
-      "weight": 7.0474
-    },
-    {
-      "ticker": "MSFT",
-      "ret": 2.7459,
-      "impact": 0.1537,
-      "weight": 5.5987
-    },
-    {
-      "ticker": "AMD",
-      "ret": 13.2594,
-      "impact": 0.1529,
-      "weight": 1.1535
+      "ret": 3.9126,
+      "impact": 0.1001,
+      "weight": 2.5583
     },
     {
       "ticker": "AMZN",
-      "ret": 2.9425,
-      "impact": 0.1174,
-      "weight": 3.9914
-    },
-    {
-      "ticker": "META",
-      "ret": 5.1168,
-      "impact": 0.116,
-      "weight": 2.2677
-    },
-    {
-      "ticker": "TSLA",
-      "ret": 5.5357,
-      "impact": 0.1144,
-      "weight": 2.0665
+      "ret": 1.476,
+      "impact": 0.0698,
+      "weight": 4.7283
     },
     {
       "ticker": "LLY",
-      "ret": 4.2799,
-      "impact": 0.0744,
-      "weight": 1.7392
+      "ret": 1.4406,
+      "impact": 0.0297,
+      "weight": 2.0596
     },
     {
-      "ticker": "MU",
-      "ret": 6.2536,
-      "impact": 0.0717,
-      "weight": 1.1471
+      "ticker": "BRK-B",
+      "ret": 1.4063,
+      "impact": 0.0281,
+      "weight": 2.0007
     },
     {
-      "ticker": "GOOGL",
-      "ret": 1.1834,
-      "impact": 0.058,
-      "weight": 4.8988
+      "ticker": "AMD",
+      "ret": 1.3036,
+      "impact": 0.0178,
+      "weight": 1.3641
+    },
+    {
+      "ticker": "TSLA",
+      "ret": 0.4576,
+      "impact": 0.0111,
+      "weight": 2.4234
+    },
+    {
+      "ticker": "UNH",
+      "ret": 1.8862,
+      "impact": 0.0111,
+      "weight": 0.586
+    },
+    {
+      "ticker": "RTX",
+      "ret": 2.0172,
+      "impact": 0.0088,
+      "weight": 0.4363
+    },
+    {
+      "ticker": "CVS",
+      "ret": 4.4106,
+      "impact": 0.0081,
+      "weight": 0.1838
+    },
+    {
+      "ticker": "TXN",
+      "ret": 1.6197,
+      "impact": 0.0072,
+      "weight": 0.4435
     }
   ],
   "top_negative": [
     {
       "ticker": "NVDA",
-      "ret": -4.2703,
-      "impact": -0.2548,
-      "weight": 5.9661
+      "ret": -5.4738,
+      "impact": -0.3604,
+      "weight": 6.5835
     },
     {
-      "ticker": "PM",
-      "ret": -2.4055,
-      "impact": -0.01,
-      "weight": 0.4162
+      "ticker": "MSFT",
+      "ret": -2.2048,
+      "impact": -0.1409,
+      "weight": 6.3917
     },
     {
-      "ticker": "XOM",
-      "ret": -0.6873,
-      "impact": -0.0064,
-      "weight": 0.9292
+      "ticker": "AAPL",
+      "ret": -0.6216,
+      "impact": -0.0508,
+      "weight": 8.176
     },
     {
-      "ticker": "CVX",
-      "ret": -0.8607,
-      "impact": -0.0049,
-      "weight": 0.5687
+      "ticker": "GOOGL",
+      "ret": -0.2672,
+      "impact": -0.0152,
+      "weight": 5.7035
     },
     {
-      "ticker": "ACN",
-      "ret": -2.3532,
-      "impact": -0.0049,
-      "weight": 0.2078
+      "ticker": "MU",
+      "ret": -1.0966,
+      "impact": -0.0145,
+      "weight": 1.3244
     },
     {
-      "ticker": "COP",
-      "ret": -1.3209,
-      "impact": -0.0029,
-      "weight": 0.2199
+      "ticker": "INTC",
+      "ret": -2.0886,
+      "impact": -0.0104,
+      "weight": 0.4988
     },
     {
-      "ticker": "COF",
-      "ret": -1.6298,
-      "impact": -0.0027,
-      "weight": 0.1652
+      "ticker": "CAT",
+      "ret": -2.3895,
+      "impact": -0.0103,
+      "weight": 0.4318
     },
     {
-      "ticker": "ELV",
-      "ret": -1.7316,
-      "impact": -0.0022,
-      "weight": 0.125
+      "ticker": "ORCL",
+      "ret": -1.511,
+      "impact": -0.009,
+      "weight": 0.5938
     },
     {
-      "ticker": "TTWO",
-      "ret": -3.4765,
-      "impact": -0.0019,
-      "weight": 0.0536
+      "ticker": "NEM",
+      "ret": -4.1547,
+      "impact": -0.0084,
+      "weight": 0.2012
     },
     {
-      "ticker": "HUM",
-      "ret": -2.4254,
-      "impact": -0.0017,
-      "weight": 0.0703
+      "ticker": "ISRG",
+      "ret": -2.2842,
+      "impact": -0.0058,
+      "weight": 0.2518
     }
   ]
 }
