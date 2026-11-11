@@ -1,24 +1,24 @@
 {
   "as_of": "2026-11-10",
-  "generated": "2026-11-10 22:31 UTC",
+  "generated": "2026-11-11 01:58 UTC",
   "risk": {
     "score": 86,
     "regime": "HIGH STRESS",
     "components": {
       "Rate Vol (MOVE)": {
-        "pct": 74.46300715990454,
+        "pct": 74.64114832535886,
         "weight": 0.25
       },
       "HY Credit": {
-        "pct": 90.43280182232346,
+        "pct": 90.41095890410958,
         "weight": 0.3
       },
       "IG Credit (BBB)": {
-        "pct": 85.19362186788155,
+        "pct": 85.15981735159818,
         "weight": 0.2
       },
       "Yield Curve (2-10)": {
-        "pct": 91.40811455847256,
+        "pct": 91.38755980861244,
         "weight": 0.25
       }
     }
@@ -49,7 +49,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 0.18299023863356
+        "z": 0.1829902386335599
       },
       "kind": "vol",
       "name": "MOVE"
@@ -79,7 +79,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 1.2320523105354464
+        "z": 1.2320523105354508
       },
       "kind": "credit",
       "name": "HY OAS"
@@ -109,7 +109,7 @@
         "change": true,
         "score": 13,
         "strength": "Weak",
-        "z": 1.5701919265201203
+        "z": 1.5701919265201743
       },
       "kind": "credit",
       "name": "BBB OAS"
@@ -139,7 +139,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 1.1778036308151656
+        "z": 1.1778036308151678
       },
       "kind": "credit",
       "name": "CCC OAS"
@@ -240,7 +240,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": -0.11891877168947707
+        "z": -0.11891877168947704
       },
       "kind": "rate",
       "name": "2-Yr Yield"
