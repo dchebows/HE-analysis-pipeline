@@ -485,4 +485,4 @@ date,asset,close,trend,trade,v5b_score,danger_score,target_weight,action,data_so
 2026-11-11,SPX,7619.38,BEARISH,BEARISH,-0.0902,45,0.7,HOLD,hedgeye_actual
 2026-11-11,USD,102.92,BEARISH,NEUTRAL,-0.0368,23,1.0,HOLD,hedgeye_actual
 2026-11-12,GOLD,3901.8,BEARISH,BEARISH,-1.1658,60,0.4375,HOLD,hedgeye_actual
-2026-11-12,USD,102.94,BEARISH,NEUTRAL,-0.0708,28,0.955,SELL,hedgeye_actual
+2026-11-12,USD,102.94,BEARISH,NEUTRAL,-0.0708,28,0.955,HOLD,hedgeye_actual
