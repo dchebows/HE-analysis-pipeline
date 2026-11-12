@@ -20,7 +20,7 @@
     "Range persistence detected (1.95x median) \u2014 floor applied",
     "Predicted range (3.28%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-11-11 20:15:53 EST",
+  "timestamp": "2026-11-11 22:11:14 EST",
   "model_version": "v4",
   "status": "success"
 }
