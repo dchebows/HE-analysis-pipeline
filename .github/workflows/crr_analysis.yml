@@ -1,7 +1,7 @@
 name: Daily CRR Analysis
 on:
   schedule:
-    - cron: '0 22 * * 1-5'  # 6pm EST Mon-Fri (22:00 UTC)
+    - cron: '17 21 * * 1-5'  # 4:17pm EST Mon-Fri (17:00 UTC)
   workflow_dispatch:
 
 concurrency:
