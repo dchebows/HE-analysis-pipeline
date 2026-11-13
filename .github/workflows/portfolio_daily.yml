@@ -3,7 +3,7 @@ on:
   schedule:
     - cron: '15 22 * * 1-5'  # 6:15pm EST Mon-Fri (22:15 UTC)
   workflow_run:
-    workflows: ["Daily CRR Analysis", "ETL Pipeline - Risk Range Data"]
+    workflows: ["ETL Pipeline - Risk Range Data"]
     types:
       - completed
   workflow_dispatch:
