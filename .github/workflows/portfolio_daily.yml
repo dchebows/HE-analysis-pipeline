@@ -61,14 +61,18 @@ jobs:
       - name: Commit and push output files
         run: |
           git add portfolio_summary.csv portfolio_signals.txt position_history.csv
-      
           if git diff --staged --quiet; then
             echo "No changes to commit"
-          else
-            git commit -m "📊 Portfolio signals update $(date +'%Y-%m-%d %H:%M UTC')"
-            git push
-            echo "✅ Changes pushed to repository"
+            exit 0
           fi
+          git commit -m "📊 Portfolio signals update $(date +'%Y-%m-%d %H:%M UTC')"
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push origin HEAD:main && exit 0
+            echo "Push attempt $i failed, retrying..."
+            sleep 5
+          done
+          echo "ERROR: push failed after 3 attempts"
+          exit 1
 
       - name: Upload artifacts
         if: always()
