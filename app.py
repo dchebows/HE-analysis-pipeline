@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objects as go
 import numpy as np
 import requests
+import time
 
 # ============================================================
 # PAGE CONFIG
@@ -48,17 +49,14 @@ def load_data():
     except Exception as e:
         return None, None, None, str(e)
 
-@st.cache_data(ttl=3600)
+def _bust(url, secs=300):
+    return f"{url}?t={int(time.time() // secs)}"
+
+@st.cache_data(ttl=300)
 def load_portfolio_data():
-    """Load portfolio signals data"""
     try:
-        portfolio_df = pd.read_csv(PORTFOLIO_CSV_URL)
-        
-        # Load text report
-        import requests
-        txt_response = requests.get(PORTFOLIO_TXT_URL)
-        portfolio_txt = txt_response.text
-        
+        portfolio_df = pd.read_csv(_bust(PORTFOLIO_CSV_URL))
+        portfolio_txt = requests.get(_bust(PORTFOLIO_TXT_URL)).text
         return portfolio_df, portfolio_txt, None
     except Exception as e:
         return None, None, str(e)
@@ -1258,7 +1256,11 @@ with tab1:
 with tab2:
     st.title("💼 Multi-Asset Portfolio Signals")
     st.caption("🤖 Automated updates daily at 7:05 PM EST")
-    
+
+    if st.button("🔄 Refresh data now"):
+        st.cache_data.clear()
+        st.rerun()
+        
     # Load portfolio data
     portfolio_df, portfolio_txt, port_error = load_portfolio_data()
     
