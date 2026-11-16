@@ -40,27 +40,38 @@ class PositionHistory:
             logger.info("📂 No existing position history - will create new file")
     
     def get_yesterday_position(self, asset, today_date):
-    if self.history_df is None or self.history_df.empty:
-        return None
-    today = pd.Timestamp(today_date).normalize()
-    h = self.history_df[(self.history_df['asset'] == asset) &
-                        (self.history_df['date'] < today)].sort_values('date')
-    if h.empty:
-        return None
-    y = h.iloc[-1]
-    logger.info(f"   Prior day ({y['date'].date()}): {y['target_weight']*100:.0f}% | {y['action']}")
-    return {'date': y['date'], 'weight': y['target_weight'], 'action': y['action'],
-            'danger': y['danger_score'], 'data_source': y.get('data_source', 'unknown')}
+        """Get the last saved position strictly BEFORE today's data date"""
+        if self.history_df is None or self.history_df.empty:
+            return None
+        today = pd.Timestamp(today_date).normalize()
+        h = self.history_df[
+            (self.history_df['asset'] == asset) &
+            (self.history_df['date'] < today)
+        ].sort_values('date')
+        if h.empty:
+            return None
+        y = h.iloc[-1]
+        logger.info(f"   Prior day ({y['date'].date()}): {y['target_weight']*100:.0f}% | {y['action']}")
+        return {
+            'date': y['date'],
+            'weight': y['target_weight'],
+            'action': y['action'],
+            'danger': y['danger_score'],
+            'data_source': y.get('data_source', 'unknown')
+        }
 
-def save_today_position(self, asset, date, close, trend, trade, v5b_score,
-                        danger_score, target_weight, action, data_source):
-    date = pd.Timestamp(date).normalize()          # <-- normalize
-    if not self.history_df.empty:
-        self.history_df['date'] = pd.to_datetime(self.history_df['date'])
-        self.history_df = self.history_df[
-            ~((self.history_df['date'] == date) & (self.history_df['asset'] == asset))
-        ]
-        
+    def save_today_position(self, asset, date, close, trend, trade, v5b_score,
+                            danger_score, target_weight, action, data_source):
+        """Save today's position to history (idempotent for same-day re-runs)"""
+        date = pd.Timestamp(date).normalize()
+
+        # Remove existing record for this date/asset (if re-running same day)
+        if not self.history_df.empty:
+            self.history_df['date'] = pd.to_datetime(self.history_df['date'])
+            self.history_df = self.history_df[
+                ~((self.history_df['date'] == date) & (self.history_df['asset'] == asset))
+            ]
+
         new_record = pd.DataFrame([{
             'date': date,
             'asset': asset,
@@ -73,7 +84,7 @@ def save_today_position(self, asset, date, close, trend, trade, v5b_score,
             'action': action,
             'data_source': data_source
         }])
-        
+
         self.history_df = pd.concat([self.history_df, new_record], ignore_index=True)
         self.history_df = self.history_df.sort_values(['date', 'asset']).reset_index(drop=True)
     
