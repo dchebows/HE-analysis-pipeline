@@ -1,216 +1,218 @@
 {
-  "as_of": "2026-11-13",
-  "generated": "2026-11-14 03:24 UTC",
+  "as_of": "2026-11-16",
+  "generated": "2026-11-17 05:08 UTC",
   "benchmark": "SPY",
   "performance": [
     {
       "sector": "Consumer Discretionary",
       "ticker": "XLY",
-      "price": 119.9800033569336,
-      "d1": -0.39846897823937466,
-      "mtd": 3.986831524542578,
-      "qtd": 10.235214437585194,
-      "ytd": 1.1019949843801946
+      "price": 118.1500015258789,
+      "d1": -1.5252556924927996,
+      "mtd": 2.400766457271586,
+      "qtd": 8.553845554244276,
+      "ytd": -0.4400753500136245
     },
     {
       "sector": "Financial Select Sector",
       "ticker": "XLF",
-      "price": 58.68000030517578,
-      "d1": 0.8074235150237197,
-      "mtd": 3.8400319378804504,
-      "qtd": 9.887637880942869,
-      "ytd": 8.44938197865812
+      "price": 58.18000030517578,
+      "d1": -0.8520790685065838,
+      "mtd": 2.9552327610072204,
+      "qtd": 8.951308319683049,
+      "ytd": 7.525307494893241
     },
     {
       "sector": "Health Care Select Sector",
       "ticker": "XLV",
-      "price": 188.85000610351562,
-      "d1": 0.5430465114824257,
-      "mtd": 2.152870174419186,
-      "qtd": 12.130393157988628,
-      "ytd": 23.5087804034918
+      "price": 187.8800048828125,
+      "d1": -0.513635789967315,
+      "mtd": 1.6281764727245074,
+      "qtd": 11.554451327298132,
+      "ytd": 22.874395103587332
     },
     {
       "sector": "Technology Select Sector",
       "ticker": "XLK",
-      "price": 170.27999877929688,
-      "d1": -2.008405022360449,
-      "mtd": -5.141772608759998,
-      "qtd": -13.011494876476693,
-      "ytd": 18.7012614309904
+      "price": 164.75999450683594,
+      "d1": -3.2417220531082536,
+      "mtd": -8.216812685289398,
+      "qtd": -15.831420430735154,
+      "ytd": 14.853296461864286
     },
     {
       "sector": "Consumer Staples Select Sector",
       "ticker": "XLP",
-      "price": 92.3499984741211,
-      "d1": 1.4166494071090607,
-      "mtd": 3.27667229386428,
-      "qtd": 14.578164047698671,
-      "ytd": 21.175617315466067
+      "price": 92.5999984741211,
+      "d1": 0.270709262729496,
+      "mtd": 3.5562518120025643,
+      "qtd": 14.888337750841195,
+      "ytd": 21.503663099187232
     },
     {
       "sector": "Industrial Select Sector",
       "ticker": "XLI",
-      "price": 168.77999877929688,
-      "d1": -0.38952056928682754,
-      "mtd": 0.8243757067672552,
-      "qtd": 1.077975265189779,
-      "ytd": 9.6742413568506
+      "price": 165.66000366210938,
+      "d1": -1.8485573763200036,
+      "mtd": -1.0394207274887712,
+      "qtd": -0.7905091024097977,
+      "ytd": 7.646850078325529
     },
     {
       "sector": "Materials Select Sector",
       "ticker": "XLB",
-      "price": 52.22999954223633,
-      "d1": -0.2101654757945659,
-      "mtd": -0.967011983313415,
-      "qtd": 7.248457338799863,
-      "ytd": 16.649990756115663
+      "price": 51.470001220703125,
+      "d1": -1.455099230699064,
+      "mtd": -2.408040230082509,
+      "qtd": 5.687885861126385,
+      "ytd": 14.9526176380129
     },
     {
       "sector": "The Energy Select Sector",
       "ticker": "XLE",
-      "price": 64.95999908447266,
-      "d1": 0.9793210562506927,
-      "mtd": -7.226503572097509,
-      "qtd": 5.626014771500265,
-      "ytd": 48.171363551210675
+      "price": 63.689998626708984,
+      "d1": -1.9550499933231102,
+      "mtd": -9.040271807816824,
+      "qtd": 3.5609733767625773,
+      "ytd": 45.27455195860186
     },
     {
       "sector": "Utilities Select Sector",
       "ticker": "XLU",
-      "price": 44.040000915527344,
-      "d1": 0.5249932321995887,
-      "mtd": 1.4045604560561475,
-      "qtd": 11.663292213461718,
-      "ytd": 5.315653531791398
+      "price": 44.119998931884766,
+      "d1": 0.1816485347283736,
+      "mtd": 1.5887603542723339,
+      "qtd": 11.866126947596944,
+      "ytd": 5.506967497963222
     },
     {
       "sector": "Real Estate Select Sector",
       "ticker": "XLRE",
-      "price": 44.369998931884766,
-      "d1": 0.0225390473301168,
-      "mtd": 2.7797100158384547,
-      "qtd": 8.45758762497657,
-      "ytd": 12.611970998420997
+      "price": 44.25,
+      "d1": -0.2704506080087654,
+      "mtd": 2.5017416651909707,
+      "qtd": 8.164263419813178,
+      "ytd": 12.307411238165123
     },
     {
       "sector": "Communications Services Sector",
       "ticker": "XLC",
-      "price": 108.69000244140625,
-      "d1": 1.0505809859254756,
-      "mtd": 8.79879958084917,
-      "qtd": -2.054608231248267,
-      "ytd": -6.8290839271750166
+      "price": 106.81999969482422,
+      "d1": -1.7204919537932017,
+      "mtd": 6.92692498823706,
+      "qtd": -3.739750815740872,
+      "ytd": -8.432088030067476
     },
     {
       "sector": "S&P 500 (SPY)",
       "ticker": "SPY",
-      "price": 754.3699951171875,
-      "d1": -0.3632185145994393,
-      "mtd": -0.17863436699727675,
-      "qtd": -1.0830953034550839,
-      "ytd": 11.488466341475378
+      "price": 739.9500122070312,
+      "d1": -1.9115265723043784,
+      "mtd": -2.0867462959092253,
+      "qtd": -2.9739182212305315,
+      "ytd": 9.357334682303463
     }
   ],
   "callouts": {
     "rotations": [
       {
         "ticker": "XLY",
-        "from": "Lagging",
-        "to": "Leading",
-        "text": "\ud83d\udfe2 **XLY** rotated Lagging \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
-      },
-      {
-        "ticker": "XLF",
-        "from": "Lagging",
-        "to": "Weakening",
-        "text": "\ud83d\udfe1 **XLF** rotated Lagging \u2192 **Weakening** \u2014 losing steam \u2014 consider trimming"
-      },
-      {
-        "ticker": "XLP",
         "from": "Weakening",
         "to": "Leading",
-        "text": "\ud83d\udfe2 **XLP** rotated Weakening \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
+        "text": "\ud83d\udfe2 **XLY** rotated Weakening \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
       },
       {
-        "ticker": "XLU",
+        "ticker": "XLV",
         "from": "Weakening",
         "to": "Leading",
-        "text": "\ud83d\udfe2 **XLU** rotated Weakening \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
+        "text": "\ud83d\udfe2 **XLV** rotated Weakening \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
+      },
+      {
+        "ticker": "XLI",
+        "from": "Lagging",
+        "to": "Leading",
+        "text": "\ud83d\udfe2 **XLI** rotated Lagging \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
+      },
+      {
+        "ticker": "XLB",
+        "from": "Weakening",
+        "to": "Leading",
+        "text": "\ud83d\udfe2 **XLB** rotated Weakening \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
       },
       {
         "ticker": "XLRE",
-        "from": "Lagging",
+        "from": "Weakening",
         "to": "Leading",
-        "text": "\ud83d\udfe2 **XLRE** rotated Lagging \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
+        "text": "\ud83d\udfe2 **XLRE** rotated Weakening \u2192 **Leading** \u2014 showing leadership \u2014 overweight candidate"
       }
     ],
     "leaders": [
       "XLY",
+      "XLV",
       "XLP",
+      "XLI",
+      "XLB",
       "XLU",
       "XLRE"
     ],
     "laggards": [
-      "XLI",
       "XLC"
     ],
     "accel": [
       {
         "ticker": "XLP",
-        "delta": 1.59
+        "delta": 1.46
       },
       {
-        "ticker": "XLU",
-        "delta": 1.56
+        "ticker": "XLRE",
+        "delta": 1.46
       },
       {
         "ticker": "XLY",
-        "delta": 1.34
+        "delta": 1.43
       }
     ],
     "decel": [
       {
         "ticker": "XLK",
-        "delta": -0.95
+        "delta": -1.11
       },
       {
         "ticker": "XLC",
-        "delta": -0.57
+        "delta": 0.03
       },
       {
         "ticker": "XLE",
-        "delta": -0.29
+        "delta": 0.1
       }
     ],
     "perf_snapshot": {
       "best_ytd": {
         "ticker": "XLE",
-        "val": 48.17
+        "val": 45.27
       },
       "worst_ytd": {
         "ticker": "XLC",
-        "val": -6.83
+        "val": -8.43
       },
       "best_1d": {
         "ticker": "XLP",
-        "val": 1.42
+        "val": 0.27
       }
     },
     "quad_counts": {
-      "Leading": 4,
-      "Weakening": 4,
-      "Lagging": 2,
+      "Leading": 7,
+      "Weakening": 2,
+      "Lagging": 1,
       "Improving": 1
     },
     "quad_now": {
       "XLY": "Leading",
       "XLF": "Weakening",
-      "XLV": "Weakening",
+      "XLV": "Leading",
       "XLK": "Improving",
       "XLP": "Leading",
-      "XLI": "Lagging",
-      "XLB": "Weakening",
+      "XLI": "Leading",
+      "XLB": "Leading",
       "XLE": "Weakening",
       "XLU": "Leading",
       "XLRE": "Leading",
