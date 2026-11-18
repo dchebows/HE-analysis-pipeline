@@ -1,24 +1,24 @@
 {
   "as_of": "2026-11-17",
-  "generated": "2026-11-17 23:57 UTC",
+  "generated": "2026-11-18 03:45 UTC",
   "risk": {
     "score": 90,
     "regime": "HIGH STRESS",
     "components": {
       "Rate Vol (MOVE)": {
-        "pct": 89.47368421052632,
+        "pct": 89.44844124700239,
         "weight": 0.25
       },
       "HY Credit": {
-        "pct": 90.66059225512528,
+        "pct": 90.6392694063927,
         "weight": 0.3
       },
       "IG Credit (BBB)": {
-        "pct": 84.05466970387245,
+        "pct": 84.24657534246576,
         "weight": 0.2
       },
       "Yield Curve (2-10)": {
-        "pct": 95.2153110047847,
+        "pct": 95.44364508393285,
         "weight": 0.25
       }
     }
@@ -49,7 +49,7 @@
         "change": true,
         "score": 35,
         "strength": "Weak",
-        "z": 0.8078235346858333
+        "z": 0.8078235346858178
       },
       "kind": "vol",
       "name": "MOVE"
@@ -79,7 +79,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 1.0762962591837377
+        "z": 1.0762962591837364
       },
       "kind": "credit",
       "name": "HY OAS"
@@ -109,7 +109,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 1.194217570472866
+        "z": 1.1942175704728453
       },
       "kind": "credit",
       "name": "BBB OAS"
@@ -139,7 +139,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 0.9790922310037886
+        "z": 0.9790922310037924
       },
       "kind": "credit",
       "name": "CCC OAS"
@@ -169,7 +169,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": -1.0070352082151433
+        "z": -1.007035208215143
       },
       "kind": "curve",
       "name": "2-10 Spread",
@@ -240,7 +240,7 @@
         "change": true,
         "score": 75,
         "strength": "Strong",
-        "z": 0.9453229204021829
+        "z": 0.9453229204021915
       },
       "kind": "rate",
       "name": "2-Yr Yield"
