@@ -1,29 +1,29 @@
 {
   "ticker": "^IXIC",
-  "forecast_date": "2026-11-17",
-  "based_on_date": "2026-11-16",
-  "based_on_close": 24509.7578125,
-  "vix": 32.900001525878906,
+  "forecast_date": "2026-11-18",
+  "based_on_date": "2026-11-17",
+  "based_on_close": 24328.380859375,
+  "vix": 34.439998626708984,
   "regime": "get_out",
-  "forecast_high": 25145.410036986574,
-  "forecast_low": 23985.56212654983,
-  "high_pct": 2.5934659548630483,
-  "low_pct": -2.1387224221482493,
-  "range_width": 1159.8479104367434,
+  "forecast_high": 24816.726970374377,
+  "forecast_low": 23322.50150719027,
+  "high_pct": 2.0073103665309953,
+  "low_pct": -4.134592260779702,
+  "range_width": 1494.225463184106,
   "floor_active": true,
   "reference_levels": {
-    "trr_50": 24767.19658931895,
-    "llr_95": 23896.226221986137,
-    "llr_90": 24025.036493117947,
-    "llr_80": 24067.303416122155
+    "trr_50": 24569.240538412345,
+    "llr_95": 23553.948898679195,
+    "llr_90": 23765.764969255742,
+    "llr_80": 23919.52984084769
   },
   "risks": [
-    "Range persistence detected (1.12x median) \u2014 floor applied",
-    "High VXN velocity (15.2%) \u2014 elevated tail risk",
+    "Range persistence detected (1.04x median) \u2014 floor applied",
+    "High VXN velocity (17.2%) \u2014 elevated tail risk",
     "Get_out regime active \u2014 model reliability reduced",
-    "Predicted range (4.73%) above 90th percentile for regime"
+    "Predicted range (6.14%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-11-16 23:41:29 EST",
+  "timestamp": "2026-11-18 09:28:36 EST",
   "model_version": "v5",
   "status": "success"
 }
