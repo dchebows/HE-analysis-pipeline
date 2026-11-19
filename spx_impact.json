@@ -1,131 +1,131 @@
 {
-  "trading_date": "2026-11-17",
-  "generated": "2026-11-18 20:53:21",
+  "trading_date": "2026-11-18",
+  "generated": "2026-11-18 22:22:23",
   "n_stocks": 503,
   "n_total": 503,
-  "spx_est_move": -1.0101,
+  "spx_est_move": -0.108,
   "top_positive": [
     {
+      "ticker": "AMZN",
+      "ret": 3.8194,
+      "impact": 0.1574,
+      "weight": 4.1212
+    },
+    {
       "ticker": "AVGO",
-      "ret": 2.4595,
-      "impact": 0.0592,
+      "ret": 3.6446,
+      "impact": 0.0877,
       "weight": 2.4059
     },
     {
-      "ticker": "GEV",
-      "ret": 2.1399,
-      "impact": 0.0062,
-      "weight": 0.2909
+      "ticker": "AMD",
+      "ret": 5.3098,
+      "impact": 0.0663,
+      "weight": 1.249
     },
     {
-      "ticker": "RTX",
-      "ret": 1.5958,
-      "impact": 0.0061,
-      "weight": 0.3793
+      "ticker": "GOOGL",
+      "ret": 0.7994,
+      "impact": 0.0395,
+      "weight": 4.9429
     },
     {
-      "ticker": "GILD",
-      "ret": 1.5992,
-      "impact": 0.0048,
-      "weight": 0.2984
+      "ticker": "PANW",
+      "ret": 9.9033,
+      "impact": 0.0392,
+      "weight": 0.3962
     },
     {
-      "ticker": "MRVL",
-      "ret": 2.3253,
-      "impact": 0.0043,
-      "weight": 0.1864
+      "ticker": "GOOG",
+      "ret": 0.5764,
+      "impact": 0.0282,
+      "weight": 4.8862
     },
     {
-      "ticker": "SYK",
-      "ret": 2.1949,
-      "impact": 0.0038,
-      "weight": 0.1724
+      "ticker": "CRWD",
+      "ret": 7.947,
+      "impact": 0.0275,
+      "weight": 0.3455
     },
     {
-      "ticker": "CSCO",
-      "ret": 0.6242,
-      "impact": 0.0034,
-      "weight": 0.5446
+      "ticker": "MSFT",
+      "ret": 0.4049,
+      "impact": 0.0218,
+      "weight": 5.3733
     },
     {
-      "ticker": "APH",
-      "ret": 1.2329,
-      "impact": 0.0033,
-      "weight": 0.2683
+      "ticker": "TSLA",
+      "ret": 0.9497,
+      "impact": 0.0205,
+      "weight": 2.1591
     },
     {
-      "ticker": "GLW",
-      "ret": 2.1852,
-      "impact": 0.0029,
-      "weight": 0.1326
-    },
-    {
-      "ticker": "PWR",
-      "ret": 2.1557,
-      "impact": 0.0028,
-      "weight": 0.1293
+      "ticker": "TJX",
+      "ret": 8.0477,
+      "impact": 0.0177,
+      "weight": 0.2197
     }
   ],
   "top_negative": [
     {
-      "ticker": "MSFT",
-      "ret": -2.2684,
-      "impact": -0.1219,
-      "weight": 5.3733
-    },
-    {
-      "ticker": "GOOG",
-      "ret": -1.3013,
-      "impact": -0.0636,
-      "weight": 4.8862
-    },
-    {
-      "ticker": "GOOGL",
-      "ret": -1.2407,
-      "impact": -0.0613,
-      "weight": 4.9429
-    },
-    {
-      "ticker": "JPM",
-      "ret": -2.4393,
-      "impact": -0.0299,
-      "weight": 1.2252
-    },
-    {
-      "ticker": "META",
-      "ret": -1.2037,
-      "impact": -0.027,
-      "weight": 2.2429
-    },
-    {
-      "ticker": "V",
-      "ret": -2.2722,
-      "impact": -0.0251,
-      "weight": 1.1028
-    },
-    {
-      "ticker": "UNH",
-      "ret": -5.4221,
-      "impact": -0.0242,
-      "weight": 0.4463
-    },
-    {
       "ticker": "NVDA",
-      "ret": -0.4355,
-      "impact": -0.0226,
+      "ret": -2.8946,
+      "impact": -0.1502,
       "weight": 5.189
     },
     {
-      "ticker": "CRM",
-      "ret": -9.454,
-      "impact": -0.0211,
-      "weight": 0.2231
+      "ticker": "UNH",
+      "ret": -10.2058,
+      "impact": -0.0455,
+      "weight": 0.4463
     },
     {
       "ticker": "LLY",
-      "ret": -1.126,
-      "impact": -0.0197,
+      "ret": -2.3171,
+      "impact": -0.0406,
       "weight": 1.7533
+    },
+    {
+      "ticker": "XOM",
+      "ret": -3.9651,
+      "impact": -0.037,
+      "weight": 0.9325
+    },
+    {
+      "ticker": "BRK-B",
+      "ret": -2.069,
+      "impact": -0.036,
+      "weight": 1.7378
+    },
+    {
+      "ticker": "CVX",
+      "ret": -3.9515,
+      "impact": -0.0226,
+      "weight": 0.5719
+    },
+    {
+      "ticker": "JPM",
+      "ret": -1.7729,
+      "impact": -0.0217,
+      "weight": 1.2252
+    },
+    {
+      "ticker": "JNJ",
+      "ret": -2.1529,
+      "impact": -0.0201,
+      "weight": 0.9345
+    },
+    {
+      "ticker": "MRK",
+      "ret": -3.899,
+      "impact": -0.0189,
+      "weight": 0.4835
+    },
+    {
+      "ticker": "ABBV",
+      "ret": -2.3257,
+      "impact": -0.0167,
+      "weight": 0.7197
     }
   ]
 }
