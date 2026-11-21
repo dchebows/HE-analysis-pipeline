@@ -11,36 +11,133 @@ import pandas as pd
 import numpy as np
 from datetime import datetime, timedelta
 import json
+import os
 import requests
 from scipy.stats import norm
 import warnings
 warnings.filterwarnings('ignore')
 
+ ############################ BLOCK A ################################
 # ============================================================
-# CBOE OPTIONS CHAIN FUNCTIONS FOR SPX GAMMA
+# OPTIONS CHAIN FUNCTIONS FOR SPX GAMMA (yfinance / ETF proxy)
 # ============================================================
+
+# ETF proxy and (optional) index ticker used to compute the ETF->index scale
+SYMBOL_MAP = {
+    "_SPX": ("SPY", "^GSPC"),
+    "_NDX": ("QQQ", "^NDX"),
+    "_RUT": ("IWM", "^RUT"),
+    "_DIA": ("DIA", "^DJI"),
+}
+FALLBACK_SCALE = {"_SPX": 10.0, "_NDX": 40.0, "_RUT": 10.0, "_DIA": 100.0}
+MAX_EXPIRIES = 5          # nearest N expiries pulled from Yahoo
+GAMMA_RANGE = (0.8, 1.2)  # strike range around spot used for the gamma profile
+
+
+def _last_price(tkr):
+    """Latest price for a yfinance Ticker, with history fallback."""
+    try:
+        p = tkr.fast_info['lastPrice']
+        if p is not None and not np.isnan(p) and p > 0:
+            return float(p)
+    except Exception:
+        pass
+    hist = tkr.history(period='5d')
+    if hist.empty:
+        raise RuntimeError("Could not retrieve live price")
+    return float(hist['Close'].iloc[-1])
+
 
 def get_cboe_options_chain(symbol):
-    """Fetch options chain from CBOE"""
-    s = requests.Session()
-    response = s.get(f'https://cdn.cboe.com/api/global/delayed_quotes/options/{symbol}.json')
-    data = json.loads(response.content)
-    s.close()
-    quote = data['data']
-    options = pd.DataFrame(quote['options'])
-    quote.pop('options')
+    """
+    Drop-in replacement for the old CBOE fetch (name kept so nothing else breaks).
+    Pulls the option chain from Yahoo Finance for a liquid ETF proxy and scales
+    spot / strikes / open interest up to index terms.
+    Returns: quote, options, snapshot_time
+    """
+    etf, index = SYMBOL_MAP.get(symbol, (symbol.replace("_", ""), None))
+    print(f"   Fetching options for {etf} from Yahoo Finance (proxy for {symbol})...")
 
-    options[['symbol', 'expiration_date', 'put_call', 'strike_price']] = options.option.str.extract(r'([A-Z]+)(\d{6})([CP])(\d+)')
-    options['expiration_date'] = pd.to_datetime(options.expiration_date, yearfirst=True)
+    tkr = yf.Ticker(etf)
+    etf_price = _last_price(tkr)
 
-    for c in ['strike_price', 'open_interest', 'iv', 'gamma']:
-        options[c] = pd.to_numeric(options[c])
-    options['strike_price'] = options['strike_price'] / 1000
-    snapshot_time = pd.to_datetime(data['timestamp'])
+    # Scale = index level / ETF price (more accurate than a hard-coded 10x)
+    scale = 1.0
+    if index is not None:
+        try:
+            scale = _last_price(yf.Ticker(index)) / etf_price
+        except Exception:
+            scale = FALLBACK_SCALE.get(symbol, 1.0)
+            print(f"   ⚠️  Index price unavailable, using fallback scale {scale}")
+    print(f"   Scale factor ETF->index: {scale:.4f}")
+
+    spot_price = etf_price * scale
+    snapshot_time = pd.Timestamp.now().floor('s')
+    quote = {
+        'symbol': symbol,
+        'current_price': spot_price,
+        'timestamp': snapshot_time.strftime("%Y-%m-%d %H:%M:%S"),
+    }
+
+    expiries = tkr.options
+    if not expiries:
+        raise RuntimeError(f"No option expiries returned for {etf}")
+
+    frames = []
+    for expiry in expiries[:MAX_EXPIRIES]:
+        try:
+            chain = tkr.option_chain(expiry)
+        except Exception as e:
+            print(f"   ⚠️  Skipping expiry {expiry}: {e}")
+            continue
+        for side_df, side in ((chain.calls, 'C'), (chain.puts, 'P')):
+            d = side_df.copy()
+            d['put_call'] = side
+            d['expiration_date'] = pd.to_datetime(expiry)
+            frames.append(d)
+
+    if not frames:
+        raise RuntimeError("No option chains could be downloaded")
+
+    options = pd.concat(frames, ignore_index=True)
+    options = options.rename(columns={
+        'contractSymbol': 'option',
+        'strike': 'strike_price',
+        'openInterest': 'open_interest',
+        'impliedVolatility': 'iv',
+    })
+
+    for c in ['strike_price', 'open_interest', 'iv']:
+        options[c] = pd.to_numeric(options[c], errors='coerce')
+
+    options = options.dropna(subset=['strike_price', 'open_interest', 'iv'])
+    # Drop dead quotes: zero OI and junk IVs (Yahoo returns ~1e-5 off-hours)
+    options = options[(options['open_interest'] > 0) & (options['iv'] > 0.01)].copy()
+    if options.empty:
+        raise RuntimeError("Option chain empty after filtering")
+
+    # Scale strikes to index level; one index contract ~ `scale` ETF contracts
+    options['strike_price'] = options['strike_price'] * scale
+    options['open_interest'] = options['open_interest'] / scale
+
     options['days_to_expiration'] = np.busday_count(
-        pd.Series(snapshot_time).dt.date.values.astype('datetime64[D]'),
-        options['expiration_date'].dt.date.values.astype('datetime64[D]')) / 262
+        np.array([snapshot_time.date()], dtype='datetime64[D]'),
+        options['expiration_date'].dt.date.values.astype('datetime64[D]')
+    ) / 262
+    options.loc[options['days_to_expiration'] <= 0, 'days_to_expiration'] = 1 / 262
 
+    # Black-Scholes gamma per contract (kept for compatibility with CBOE schema)
+    S = spot_price
+    K = options['strike_price'].to_numpy()
+    iv = options['iv'].to_numpy()
+    T = options['days_to_expiration'].to_numpy()
+    r = 0.05
+    d1 = (np.log(S / K) + T * (r + 0.5 * iv ** 2)) / (iv * np.sqrt(T))
+    options['gamma'] = norm.pdf(d1) / (S * iv * np.sqrt(T))
+
+    options = options.reset_index(drop=True)
+    print(f"   Loaded {len(options)} contracts across "
+          f"{options['expiration_date'].nunique()} expiries")
     return quote, options, snapshot_time
 
 
@@ -56,82 +153,69 @@ def _isThirdFriday(d):
     return d.weekday() == 4 and 15 <= d.day <= 21
 
 
-def _gamma_range(quote, from_range=0.8, to_range=1.2):
+def _gamma_range(quote, from_range=GAMMA_RANGE[0], to_range=GAMMA_RANGE[1]):
     """Calculate gamma range around spot"""
     spotPrice = quote['current_price']
-    fromStrike = from_range * spotPrice
-    toStrike = to_range * spotPrice
-    return spotPrice, fromStrike, toStrike
+    return spotPrice, from_range * spotPrice, to_range * spotPrice
 
 
 def calculate_spx_gamma_metrics(symbol='_SPX'):
     """
     Calculate SPX gamma exposure, spot, and flip point
-    Returns: dict with gamma, spot, flip, timestamp
+    Returns: dict with gamma, spot, flip, timestamp (+ 'error' on failure)
     """
-    print(f"📊 Fetching CBOE options chain for {symbol}...")
-    
+    print(f"📊 Fetching options chain for {symbol}...")
+
     try:
         quote, options, snapshot_time = get_cboe_options_chain(symbol)
-        
+
         spotPrice, fromStrike, toStrike = _gamma_range(quote)
         levels = np.linspace(fromStrike, toStrike, 60)
-        
-        # For 0DTE options, set DTE = 1 day
-        options.loc[options['days_to_expiration'] <= 0, 'days_to_expiration'] = 1/262
-        
+
         totalGamma = []
-        
-        # Calculate gamma at each level
         df = options.copy()
         for level in levels:
             df_ = df[df.put_call == 'C']
             df.loc[df_.index, 'callGammaEx'] = _calcGammaExCall(
                 level, df_.strike_price, df_.iv, df_.days_to_expiration, 0, 0, df_.open_interest
             )
-            
             df_ = df[df.put_call == 'P']
             df.loc[df_.index, 'putGammaEx'] = _calcGammaExCall(
                 level, df_.strike_price, df_.iv, df_.days_to_expiration, 0, 0, df_.open_interest
             )
-            
             totalGamma.append(df.callGammaEx.sum() - df.putGammaEx.sum())
-        
-        # Convert to billions
+
         totalGamma = np.array(totalGamma) / 10 ** 9
-        
-        # Find Gamma Flip Point
+
+        # Gamma flip point
         zeroCrossIdx = np.where(np.diff(np.sign(totalGamma)))[0]
-        
         if len(zeroCrossIdx) > 0:
             negGamma = totalGamma[zeroCrossIdx]
             posGamma = totalGamma[zeroCrossIdx + 1]
             negStrike = levels[zeroCrossIdx]
             posStrike = levels[zeroCrossIdx + 1]
-            
             zeroGamma = posStrike - ((posStrike - negStrike) * posGamma / (posGamma - negGamma))
             zeroGamma = float(zeroGamma[0])
         else:
             zeroGamma = float(spotPrice)
-        
-        # Calculate total gamma at spot
+
         spot_gamma = float(np.interp(spotPrice, levels, totalGamma))
-        
+
         result = {
             'spx_gamma': round(spot_gamma, 2),
             'spx_spot': round(float(spotPrice), 2),
             'spx_flip': round(zeroGamma, 2),
             'timestamp': snapshot_time.strftime('%Y-%m-%d %H:%M:%S'),
-            'symbol': symbol
+            'symbol': symbol,
+            'data_source': 'yfinance (ETF proxy scaled to index)',
         }
-        
+
         print(f"✅ SPX Gamma Metrics:")
         print(f"   Spot: ${result['spx_spot']:,.2f}")
         print(f"   Gamma: ${result['spx_gamma']:.2f} Bn")
         print(f"   Flip: ${result['spx_flip']:,.2f}")
-        
         return result
-        
+
     except Exception as e:
         print(f"❌ Error calculating SPX gamma: {e}")
         return {
@@ -140,8 +224,9 @@ def calculate_spx_gamma_metrics(symbol='_SPX'):
             'spx_flip': 0,
             'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
             'symbol': symbol,
-            'error': str(e)
+            'error': str(e),
         }
+# ########################## END BLOCK A ##############################
 
 def calculate_gamma_throttle_metrics(quote, options, spot_price, gamma_flip, total_gex_bn):
     """
@@ -342,33 +427,61 @@ for ticker in tickers:
 
 print("✅ Data download complete\n")
 
+# ############################ BLOCK B ################################
 # ============================================================
 # CALCULATE SPX GAMMA METRICS
 # ============================================================
 print("🎯 Calculating SPX Gamma Exposure...")
+
+# Every key the dashboard reads. Guarantees the JSON schema is always complete,
+# even if the gamma fetch or the throttle calculation fails.
+THROTTLE_DEFAULTS = {
+    'gamma_throttle': 0,
+    'rv_10day': 0,
+    'vix': 0,
+    'dist_to_flip_pct': 0,
+    'regime': 'UNKNOWN',
+    'regime_description': 'Data unavailable',
+    'risk_level': 'UNKNOWN',
+    'position_size': 'Unknown',
+    'vol_signal': 'Unknown',
+    'dir_signal': 'Unknown',
+    'key_levels': {'gamma_flip': 0, 'put_wall': 0, 'call_wall': 0, 'danger_zone': 0},
+}
+
 spx_metrics = calculate_spx_gamma_metrics('_SPX')
 
-# If gamma calculation was successful, add throttle metrics
+throttle_metrics = {}
 if 'error' not in spx_metrics:
-    # Re-fetch options data for throttle calculation
-    quote, options, snapshot_time = get_cboe_options_chain('_SPX')
-    
-    # Calculate throttle metrics
+    # quote/options aren't used inside the throttle calc, so no second fetch needed
     throttle_metrics = calculate_gamma_throttle_metrics(
-        quote=quote,
-        options=options,
+        quote=None,
+        options=None,
         spot_price=spx_metrics['spx_spot'],
         gamma_flip=spx_metrics['spx_flip'],
         total_gex_bn=spx_metrics['spx_gamma']
     )
-    
-    # Merge throttle metrics into spx_metrics
-    spx_metrics.update(throttle_metrics)
 
-# Save to JSON file for Streamlit dashboard
+# defaults < gamma metrics < throttle metrics
+spx_metrics = {**THROTTLE_DEFAULTS, **spx_metrics, **throttle_metrics}
+
+# If the fetch failed, keep yesterday's good file instead of publishing zeros
+if 'error' in spx_metrics and os.path.exists('spx_gamma.json'):
+    try:
+        with open('spx_gamma.json') as f:
+            prev = json.load(f)
+        if 'error' not in prev and prev.get('spx_spot', 0) > 0:
+            prev['stale'] = True
+            prev['last_error'] = spx_metrics['error']
+            spx_metrics = {**THROTTLE_DEFAULTS, **prev}
+            print("⚠️  Gamma fetch failed - keeping previous spx_gamma.json (marked stale)")
+    except Exception as e:
+        print(f"⚠️  Could not reuse previous spx_gamma.json: {e}")
+
 with open('spx_gamma.json', 'w') as f:
-    json.dump(spx_metrics, f, indent=2)
+    json.dump(spx_metrics, f, indent=2, default=str)
 print(f"💾 SPX gamma data saved to spx_gamma.json\n")
+# ########################## END BLOCK B ##############################
 
 # Save daily throttle history for charting
 if 'gamma_throttle' in spx_metrics and spx_metrics['gamma_throttle'] != 0:
