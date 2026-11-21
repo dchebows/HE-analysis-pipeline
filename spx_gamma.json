@@ -1,8 +1,24 @@
 {
-  "spx_gamma": 0,
-  "spx_spot": 0,
-  "spx_flip": 0,
-  "timestamp": "2026-11-20 21:11:27",
+  "gamma_throttle": -15.69,
+  "rv_10day": 27.23,
+  "vix": 35.89,
+  "dist_to_flip_pct": -4.49,
+  "regime": "NEGATIVE GAMMA",
+  "regime_description": "Dealers short gamma. Moves amplified. Trending market.",
+  "risk_level": "HIGH",
+  "position_size": "25% of normal or hedged",
+  "vol_signal": "BUY VOLATILITY / TREND FOLLOW",
+  "dir_signal": "FOLLOW THE TREND",
+  "key_levels": {
+    "gamma_flip": 7221.0,
+    "put_wall": 7004.0,
+    "call_wall": 7118.0,
+    "danger_zone": 6860.0
+  },
+  "spx_gamma": -2.94,
+  "spx_spot": 6910.39,
+  "spx_flip": 7220.95,
+  "timestamp": "2026-11-20 21:30:02",
   "symbol": "_SPX",
-  "error": "Expecting value: line 1 column 1 (char 0)"
+  "data_source": "yfinance (ETF proxy scaled to index)"
 }
