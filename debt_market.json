@@ -1,24 +1,24 @@
 {
   "as_of": "2026-11-20",
-  "generated": "2026-11-20 23:21 UTC",
+  "generated": "2026-11-21 03:16 UTC",
   "risk": {
     "score": 94,
     "regime": "HIGH STRESS",
     "components": {
       "Rate Vol (MOVE)": {
-        "pct": 92.82296650717703,
+        "pct": 92.80575539568345,
         "weight": 0.25
       },
       "HY Credit": {
-        "pct": 94.07744874715262,
+        "pct": 94.06392694063926,
         "weight": 0.3
       },
       "IG Credit (BBB)": {
-        "pct": 92.02733485193622,
+        "pct": 92.00913242009132,
         "weight": 0.2
       },
       "Yield Curve (2-10)": {
-        "pct": 96.65071770334929,
+        "pct": 96.64268585131894,
         "weight": 0.25
       }
     }
@@ -49,7 +49,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 1.1102248155525567
+        "z": 1.110224815552558
       },
       "kind": "vol",
       "name": "MOVE"
@@ -79,7 +79,7 @@
         "change": true,
         "score": 48,
         "strength": "Moderate",
-        "z": 1.535123233682127
+        "z": 1.5351232336821203
       },
       "kind": "credit",
       "name": "HY OAS"
@@ -109,7 +109,7 @@
         "change": true,
         "score": 14,
         "strength": "Weak",
-        "z": 1.720373494904028
+        "z": 1.7203734949040632
       },
       "kind": "credit",
       "name": "BBB OAS"
@@ -139,7 +139,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": 1.3025314509767267
+        "z": 1.3025314509767238
       },
       "kind": "credit",
       "name": "CCC OAS"
@@ -169,7 +169,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": -1.0517631103686236
+        "z": -1.051763110368623
       },
       "kind": "curve",
       "name": "2-10 Spread",
@@ -240,7 +240,7 @@
         "change": true,
         "score": 35,
         "strength": "Weak",
-        "z": 0.530703850045552
+        "z": 0.5307038500455585
       },
       "kind": "rate",
       "name": "2-Yr Yield"
