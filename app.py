@@ -987,7 +987,7 @@ with tab1:
     
     with col1:
         st.markdown("**📊 Volatility Signal**")
-        vol_signal = spx_gamma['vol_signal']
+        vol_signal = str(spx_gamma.get('vol_signal', 'Unknown'))
         if 'SELL' in vol_signal:
             vol_bg = "#28a745"
         elif 'BUY' in vol_signal:
