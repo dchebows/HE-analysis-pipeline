@@ -1,131 +1,131 @@
 {
-  "trading_date": "2026-11-20",
-  "generated": "2026-11-20 22:12:56",
-  "n_stocks": 502,
+  "trading_date": "2026-11-23",
+  "generated": "2026-11-24 00:59:23",
+  "n_stocks": 501,
   "n_total": 503,
-  "spx_est_move": -3.4047,
+  "spx_est_move": 5.2722,
   "top_positive": [
     {
-      "ticker": "WMT",
-      "ret": 1.5154,
-      "impact": 0.0232,
-      "weight": 1.5334
+      "ticker": "NVDA",
+      "ret": 31.4825,
+      "impact": 1.8092,
+      "weight": 5.7468
     },
     {
-      "ticker": "UNH",
-      "ret": 2.8353,
-      "impact": 0.013,
-      "weight": 0.46
+      "ticker": "GOOGL",
+      "ret": 6.3365,
+      "impact": 0.3169,
+      "weight": 5.0008
     },
     {
-      "ticker": "JNJ",
-      "ret": 1.2465,
-      "impact": 0.0123,
-      "weight": 0.9835
+      "ticker": "GOOG",
+      "ret": 5.8826,
+      "impact": 0.2915,
+      "weight": 4.9553
     },
     {
-      "ticker": "ABBV",
-      "ret": 0.9381,
-      "impact": 0.0072,
-      "weight": 0.7642
+      "ticker": "TSLA",
+      "ret": 11.4626,
+      "impact": 0.2518,
+      "weight": 2.197
     },
     {
-      "ticker": "XOM",
-      "ret": 0.667,
-      "impact": 0.0066,
-      "weight": 0.9858
+      "ticker": "MU",
+      "ret": 19.0392,
+      "impact": 0.2198,
+      "weight": 1.1546
     },
     {
-      "ticker": "KO",
-      "ret": 0.9366,
-      "impact": 0.0059,
-      "weight": 0.6303
+      "ticker": "META",
+      "ret": 6.5544,
+      "impact": 0.1444,
+      "weight": 2.2027
     },
     {
-      "ticker": "COST",
-      "ret": 0.7606,
-      "impact": 0.0056,
-      "weight": 0.7377
+      "ticker": "AAPL",
+      "ret": 1.9033,
+      "impact": 0.1392,
+      "weight": 7.3148
     },
     {
-      "ticker": "CVX",
-      "ret": 0.9056,
-      "impact": 0.0056,
-      "weight": 0.6142
+      "ticker": "AMZN",
+      "ret": 3.4722,
+      "impact": 0.1383,
+      "weight": 3.982
     },
     {
-      "ticker": "PG",
-      "ret": 0.9056,
-      "impact": 0.0054,
-      "weight": 0.593
+      "ticker": "MSFT",
+      "ret": 1.647,
+      "impact": 0.0869,
+      "weight": 5.2737
     },
     {
-      "ticker": "TMUS",
-      "ret": 1.8889,
-      "impact": 0.005,
-      "weight": 0.265
+      "ticker": "INTC",
+      "ret": 16.3417,
+      "impact": 0.0747,
+      "weight": 0.4572
     }
   ],
   "top_negative": [
     {
-      "ticker": "NVDA",
-      "ret": -14.0088,
-      "impact": -0.6414,
-      "weight": 4.5787
+      "ticker": "CRWD",
+      "ret": -8.9217,
+      "impact": -0.0275,
+      "weight": 0.3085
     },
     {
-      "ticker": "AVGO",
-      "ret": -12.1852,
-      "impact": -0.2675,
-      "weight": 2.195
+      "ticker": "XOM",
+      "ret": -1.9314,
+      "impact": -0.0178,
+      "weight": 0.9229
     },
     {
-      "ticker": "AMZN",
-      "ret": -4.0992,
-      "impact": -0.1653,
-      "weight": 4.0314
+      "ticker": "KO",
+      "ret": -1.1444,
+      "impact": -0.0068,
+      "weight": 0.5947
     },
     {
-      "ticker": "TSLA",
-      "ret": -7.636,
-      "impact": -0.1577,
-      "weight": 2.0648
+      "ticker": "COP",
+      "ret": -2.8872,
+      "impact": -0.0065,
+      "weight": 0.2254
     },
     {
-      "ticker": "MSFT",
-      "ret": -2.7654,
-      "impact": -0.1503,
-      "weight": 5.4351
+      "ticker": "CVX",
+      "ret": -1.0558,
+      "impact": -0.0061,
+      "weight": 0.5801
     },
     {
-      "ticker": "AAPL",
-      "ret": -1.9043,
-      "impact": -0.1432,
-      "weight": 7.5196
+      "ticker": "UNH",
+      "ret": -1.1093,
+      "impact": -0.0048,
+      "weight": 0.4342
     },
     {
-      "ticker": "MU",
-      "ret": -13.894,
-      "impact": -0.1412,
-      "weight": 1.016
+      "ticker": "ELV",
+      "ret": -3.7847,
+      "impact": -0.0045,
+      "weight": 0.1182
     },
     {
-      "ticker": "AMD",
-      "ret": -13.2464,
-      "impact": -0.1405,
-      "weight": 1.061
+      "ticker": "MPC",
+      "ret": -2.5872,
+      "impact": -0.0036,
+      "weight": 0.1404
     },
     {
-      "ticker": "GOOGL",
-      "ret": -2.703,
-      "impact": -0.1332,
-      "weight": 4.9266
+      "ticker": "PM",
+      "ret": -0.8637,
+      "impact": -0.0035,
+      "weight": 0.4102
     },
     {
-      "ticker": "META",
-      "ret": -5.934,
-      "impact": -0.1285,
-      "weight": 2.1656
+      "ticker": "MNST",
+      "ret": -2.884,
+      "impact": -0.0035,
+      "weight": 0.1198
     }
   ]
 }
