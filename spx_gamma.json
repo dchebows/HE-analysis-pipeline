@@ -18,7 +18,7 @@
   "spx_gamma": -2.79,
   "spx_spot": 7182.78,
   "spx_flip": 7305.63,
-  "timestamp": "2026-11-25 20:33:57",
+  "timestamp": "2026-11-25 22:32:29",
   "symbol": "_SPX",
   "data_source": "yfinance (ETF proxy scaled to index)"
 }
