@@ -1,24 +1,24 @@
 {
   "as_of": "2026-11-25",
-  "generated": "2026-11-26 04:12 UTC",
+  "generated": "2026-11-27 00:39 UTC",
   "risk": {
     "score": 92,
     "regime": "HIGH STRESS",
     "components": {
       "Rate Vol (MOVE)": {
-        "pct": 80.81534772182253,
+        "pct": 80.76923076923077,
         "weight": 0.25
       },
       "HY Credit": {
-        "pct": 95.4337899543379,
+        "pct": 95.4233409610984,
         "weight": 0.3
       },
       "IG Credit (BBB)": {
-        "pct": 94.06392694063926,
+        "pct": 94.05034324942791,
         "weight": 0.2
       },
       "Yield Curve (2-10)": {
-        "pct": 96.40287769784173,
+        "pct": 96.39423076923077,
         "weight": 0.25
       }
     }
@@ -49,7 +49,7 @@
         "change": true,
         "score": 40,
         "strength": "Moderate",
-        "z": 0.2759038984664403
+        "z": 0.2759038984664321
       },
       "kind": "vol",
       "name": "MOVE"
@@ -79,7 +79,7 @@
         "change": true,
         "score": 16,
         "strength": "Weak",
-        "z": 1.941057009856144
+        "z": 1.9410570098561513
       },
       "kind": "credit",
       "name": "HY OAS"
@@ -109,7 +109,7 @@
         "change": true,
         "score": 17,
         "strength": "Weak",
-        "z": 2.068142342753663
+        "z": 2.0681423427536316
       },
       "kind": "credit",
       "name": "BBB OAS"
@@ -139,7 +139,7 @@
         "change": true,
         "score": 13,
         "strength": "Weak",
-        "z": 1.5347831681321702
+        "z": 1.534783168132254
       },
       "kind": "credit",
       "name": "CCC OAS"
@@ -169,7 +169,7 @@
         "change": false,
         "score": 0,
         "strength": "-",
-        "z": -0.9724678811684625
+        "z": -0.9724678811684621
       },
       "kind": "curve",
       "name": "2-10 Spread",
@@ -240,7 +240,7 @@
         "change": true,
         "score": 35,
         "strength": "Weak",
-        "z": -0.31990175353790107
+        "z": -0.31990175353789596
       },
       "kind": "rate",
       "name": "2-Yr Yield"
