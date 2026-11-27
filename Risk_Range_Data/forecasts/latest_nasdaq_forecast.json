@@ -2,27 +2,27 @@
   "ticker": "^IXIC",
   "forecast_date": "2026-11-26",
   "based_on_date": "2026-11-25",
-  "based_on_close": 23585.802734375,
+  "based_on_close": 23585.80078125,
   "vix": 38.529998779296875,
   "regime": "get_out",
-  "forecast_high": 24195.759255186906,
-  "forecast_low": 22141.66603522278,
-  "high_pct": 2.586117282847142,
-  "low_pct": -6.12290671390832,
-  "range_width": 2054.0932199641247,
+  "forecast_high": 24195.757251551804,
+  "forecast_low": 22141.664201685802,
+  "high_pct": 2.5861172828471486,
+  "low_pct": -6.122906713908322,
+  "range_width": 2054.093049866002,
   "floor_active": true,
   "reference_levels": {
-    "trr_50": 23877.392654919848,
-    "llr_95": 22463.300752291103,
-    "llr_90": 22730.599167172168,
-    "llr_80": 22999.434551340568
+    "trr_50": 23877.390677648476,
+    "llr_95": 22463.298892119765,
+    "llr_90": 22730.597284866017,
+    "llr_80": 22999.432646772333
   },
   "risks": [
     "Range persistence detected (1.00x median) \u2014 floor applied",
     "Get_out regime active \u2014 model reliability reduced",
     "Predicted range (8.71%) above 90th percentile for regime"
   ],
-  "timestamp": "2026-11-25 23:15:26 EST",
+  "timestamp": "2026-11-26 23:23:29 EST",
   "model_version": "v5",
   "status": "success"
 }
