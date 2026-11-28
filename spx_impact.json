@@ -1,131 +1,131 @@
 {
-  "trading_date": "2026-11-25",
-  "generated": "2026-11-26 23:13:32",
+  "trading_date": "2026-11-27",
+  "generated": "2026-11-27 22:54:18",
   "n_stocks": 502,
   "n_total": 503,
-  "spx_est_move": -0.3071,
+  "spx_est_move": 1.5964,
   "top_positive": [
     {
+      "ticker": "AMZN",
+      "ret": 3.9643,
+      "impact": 0.156,
+      "weight": 3.9355
+    },
+    {
+      "ticker": "TSLA",
+      "ret": 5.2244,
+      "impact": 0.1183,
+      "weight": 2.2645
+    },
+    {
+      "ticker": "AVGO",
+      "ret": 3.8157,
+      "impact": 0.0815,
+      "weight": 2.1354
+    },
+    {
+      "ticker": "MU",
+      "ret": 7.6008,
+      "impact": 0.0799,
+      "weight": 1.0516
+    },
+    {
       "ticker": "META",
-      "ret": 3.4027,
-      "impact": 0.0772,
-      "weight": 2.2677
+      "ret": 3.1268,
+      "impact": 0.072,
+      "weight": 2.3027
     },
     {
       "ticker": "AAPL",
-      "ret": 0.4265,
-      "impact": 0.0321,
-      "weight": 7.5164
+      "ret": 0.8324,
+      "impact": 0.0621,
+      "weight": 7.4624
     },
     {
-      "ticker": "V",
-      "ret": 1.8259,
-      "impact": 0.021,
-      "weight": 1.1518
+      "ticker": "AMD",
+      "ret": 4.5588,
+      "impact": 0.0459,
+      "weight": 1.0063
     },
     {
-      "ticker": "TXN",
-      "ret": 4.5465,
-      "impact": 0.0163,
-      "weight": 0.3591
+      "ticker": "NVDA",
+      "ret": 0.7971,
+      "impact": 0.0415,
+      "weight": 5.2045
     },
     {
-      "ticker": "MA",
-      "ret": 1.9353,
-      "impact": 0.0162,
-      "weight": 0.8363
+      "ticker": "GOOGL",
+      "ret": 0.6811,
+      "impact": 0.033,
+      "weight": 4.8414
     },
     {
-      "ticker": "ADI",
-      "ret": 6.4419,
-      "impact": 0.0151,
-      "weight": 0.2339
-    },
-    {
-      "ticker": "HD",
-      "ret": 2.1403,
-      "impact": 0.0112,
-      "weight": 0.5244
-    },
-    {
-      "ticker": "DE",
-      "ret": 4.4415,
-      "impact": 0.0112,
-      "weight": 0.2514
-    },
-    {
-      "ticker": "IBM",
-      "ret": 3.3316,
-      "impact": 0.0112,
-      "weight": 0.3347
-    },
-    {
-      "ticker": "PLTR",
-      "ret": 1.4952,
-      "impact": 0.0086,
-      "weight": 0.5734
+      "ticker": "MSFT",
+      "ret": 0.596,
+      "impact": 0.0312,
+      "weight": 5.2419
     }
   ],
   "top_negative": [
     {
-      "ticker": "NVDA",
-      "ret": -3.913,
-      "impact": -0.2052,
-      "weight": 5.244
+      "ticker": "VRTX",
+      "ret": -5.2382,
+      "impact": -0.0102,
+      "weight": 0.1941
     },
     {
-      "ticker": "AMZN",
-      "ret": -3.1155,
-      "impact": -0.1198,
-      "weight": 3.8446
+      "ticker": "ABBV",
+      "ret": -0.8829,
+      "impact": -0.0065,
+      "weight": 0.7389
     },
     {
-      "ticker": "GOOGL",
-      "ret": -2.1322,
-      "impact": -0.1041,
-      "weight": 4.8838
+      "ticker": "TJX",
+      "ret": -1.5881,
+      "impact": -0.0036,
+      "weight": 0.2265
     },
     {
-      "ticker": "GOOG",
-      "ret": -2.0247,
-      "impact": -0.0981,
-      "weight": 4.8459
+      "ticker": "TRGP",
+      "ret": -1.7441,
+      "impact": -0.0015,
+      "weight": 0.0862
     },
     {
-      "ticker": "MSFT",
-      "ret": -1.2497,
-      "impact": -0.0661,
-      "weight": 5.2923
+      "ticker": "EBAY",
+      "ret": -1.9128,
+      "impact": -0.0014,
+      "weight": 0.0713
     },
     {
-      "ticker": "MU",
-      "ret": -4.5317,
-      "impact": -0.045,
-      "weight": 0.9926
+      "ticker": "TMO",
+      "ret": -0.3618,
+      "impact": -0.0013,
+      "weight": 0.3625
     },
     {
-      "ticker": "TSLA",
-      "ret": -1.1802,
-      "impact": -0.0258,
-      "weight": 2.1857
+      "ticker": "BMY",
+      "ret": -0.7148,
+      "impact": -0.0013,
+      "weight": 0.1789
     },
     {
-      "ticker": "ORCL",
-      "ret": -5.1324,
-      "impact": -0.0242,
-      "weight": 0.4711
+      "ticker": "PG",
+      "ret": -0.2136,
+      "impact": -0.0012,
+      "weight": 0.5738
     },
     {
-      "ticker": "LLY",
-      "ret": -1.0919,
-      "impact": -0.0197,
-      "weight": 1.8039
+      "ticker": "MDT",
+      "ret": -0.6767,
+      "impact": -0.0012,
+      "weight": 0.1748
     },
     {
-      "ticker": "LRCX",
-      "ret": -5.6841,
-      "impact": -0.0191,
-      "weight": 0.3362
+      "ticker": "KO",
+      "ret": -0.1947,
+      "impact": -0.0012,
+      "weight": 0.6001
     }
   ]
 }
