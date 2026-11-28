@@ -1,8 +1,8 @@
 {
-  "gamma_throttle": -7.36,
-  "rv_10day": 34.17,
-  "vix": 26.8,
-  "dist_to_flip_pct": -1.73,
+  "gamma_throttle": -2.48,
+  "rv_10day": 35.89,
+  "vix": 23.81,
+  "dist_to_flip_pct": -0.72,
   "regime": "TRANSITION ZONE",
   "regime_description": "Gamma near neutral. Regime could flip. Elevated uncertainty.",
   "risk_level": "ELEVATED",
@@ -10,15 +10,15 @@
   "vol_signal": "CAUTION - REDUCE EXPOSURE",
   "dir_signal": "NO CLEAR DIRECTION",
   "key_levels": {
-    "gamma_flip": 7307.0,
-    "put_wall": 7088.0,
-    "call_wall": 7398.0,
-    "danger_zone": 6942.0
+    "gamma_flip": 7350.0,
+    "put_wall": 7130.0,
+    "call_wall": 7516.0,
+    "danger_zone": 6983.0
   },
-  "spx_gamma": -2.87,
-  "spx_spot": 7182.78,
-  "spx_flip": 7307.36,
-  "timestamp": "2026-11-26 22:37:58",
+  "spx_gamma": -0.42,
+  "spx_spot": 7297.49,
+  "spx_flip": 7350.13,
+  "timestamp": "2026-11-27 22:17:55",
   "symbol": "_SPX",
   "data_source": "yfinance (ETF proxy scaled to index)"
 }
